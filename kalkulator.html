@@ -2638,25 +2638,34 @@ function calculateFOBv2() {
   document.getElementById('fob-res-volume').textContent = volume.toLocaleString('id-ID');
   document.getElementById('fob-res-total').textContent = formatUSDv2(totalShipment);
 
-  // Market Reality Check (reuse existing gradeOpt)
-  var fobMin = parseFloat(gradeOpt.dataset.fobMin) || 0;
-  var fobMax = parseFloat(gradeOpt.dataset.fobMax) || 0;
+  // Market Reality Check — DYNAMIC based on current C-Market + costs
+  // Formula: Min = (beanValue + localCosts) * 1.05, Max = (beanValue + localCosts) * 1.45
+  var localCosts = olahUSD + kemasanUSD + dokumenUSD + logistikUSD;
+  var fobMin = (beanValue + localCosts) * 1.05;
+  var fobMax = (beanValue + localCosts) * 1.45;
+
+  // Specialty gets wider range
+  if (gradeType === 'specialty') {
+    fobMin = (beanValue + localCosts) * 1.15;
+    fobMax = (beanValue + localCosts) * 1.60;
+  }
+
   var marketCheck = document.getElementById('fob-market-check');
   var marketGrade = document.getElementById('fob-market-grade');
   var marketRange = document.getElementById('fob-market-range');
   var marketStatus = document.getElementById('fob-market-status');
 
-  if (marketCheck && fobMin > 0 && fobMax > 0) {
+  if (marketCheck) {
     marketCheck.classList.remove('hidden');
     if (marketGrade) marketGrade.textContent = gradeOpt.text.split(' —')[0];
-    if (marketRange) marketRange.textContent = '$' + fobMin.toFixed(2) + ' – $' + fobMax.toFixed(2) + '/kg';
+    if (marketRange) marketRange.textContent = '$' + fobMin.toFixed(2) + ' – $' + fobMax.toFixed(2) + '/kg (auto)';
 
-    if (fobFinal < fobMin * 0.85) {
+    if (fobFinal < fobMin * 0.90) {
       if (marketStatus) {
         marketStatus.textContent = 'UNDERVALUE ⚠️';
         marketStatus.className = 'ml-auto px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-500/20 text-red-300 border border-red-500/30';
       }
-    } else if (fobFinal > fobMax * 1.15) {
+    } else if (fobFinal > fobMax * 1.10) {
       if (marketStatus) {
         marketStatus.textContent = 'OVERVALUE ⚠️';
         marketStatus.className = 'ml-auto px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-500/20 text-red-300 border border-red-500/30';
@@ -3623,6 +3632,7 @@ main {
 
 
 
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -3859,16 +3869,16 @@ main {
                         <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Grade</label>
                         <select id="fob-grade" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white w-full" onchange="updateFobDefaults(); calculateFOBv2()">
                             <optgroup label="━ Komersial Grade ━" class="text-coffee-400">
-                                <option value="g1" data-prem="0.80" data-diff="0.80" data-type="commercial" data-fob-min="5.50" data-fob-max="7.50">Grade 1 (G1) — Diff rec: +$0.80</option>
-                                <option value="g1plus" data-prem="1.20" data-diff="1.20" data-type="commercial" data-fob-min="6.00" data-fob-max="8.50">Grade 1+ (G1+) — Diff rec: +$1.20</option>
-                                <option value="g2" data-prem="0.40" data-diff="0.40" data-type="commercial" data-fob-min="4.80" data-fob-max="6.50">Grade 2 (G2) — Diff rec: +$0.40</option>
-                                <option value="g3" data-prem="0.20" data-diff="0.20" data-type="commercial" data-fob-min="4.20" data-fob-max="5.80">Grade 3 (G3) — Diff rec: +$0.20</option>
+                                <option value="g1" data-prem="0.80" data-diff="0.80" data-type="commercial">Grade 1 (G1) — Diff rec: +$0.80</option>
+                                <option value="g1plus" data-prem="1.20" data-diff="1.20" data-type="commercial">Grade 1+ (G1+) — Diff rec: +$1.20</option>
+                                <option value="g2" data-prem="0.40" data-diff="0.40" data-type="commercial">Grade 2 (G2) — Diff rec: +$0.40</option>
+                                <option value="g3" data-prem="0.20" data-diff="0.20" data-type="commercial">Grade 3 (G3) — Diff rec: +$0.20</option>
                             </optgroup>
                             <optgroup label="━ Specialty Grade ━" class="text-purple-400">
-                                <option value="q84" data-prem="2.00" data-diff="1.50" data-type="specialty" data-fob-min="7.50" data-fob-max="10.00">Q-Grade 84-85 — Diff rec: +$1.50</option>
-                                <option value="q86" data-prem="4.50" data-diff="2.50" data-type="specialty" data-fob-min="9.00" data-fob-max="13.00">Q-Grade 86+ — Diff rec: +$2.50</option>
-                                <option value="q88" data-prem="8.00" data-diff="4.00" data-type="specialty" data-fob-min="12.00" data-fob-max="18.00">Q-Grade 88+ — Diff rec: +$4.00</option>
-                                <option value="micro" data-prem="12.00" data-diff="6.00" data-type="specialty" data-fob-min="15.00" data-fob-max="25.00">Micro-lot — Diff rec: +$6.00</option>
+                                <option value="q84" data-prem="2.00" data-diff="1.50" data-type="specialty">Q-Grade 84-85 — Diff rec: +$1.50</option>
+                                <option value="q86" data-prem="4.50" data-diff="2.50" data-type="specialty">Q-Grade 86+ — Diff rec: +$2.50</option>
+                                <option value="q88" data-prem="8.00" data-diff="4.00" data-type="specialty">Q-Grade 88+ — Diff rec: +$4.00</option>
+                                <option value="micro" data-prem="12.00" data-diff="6.00" data-type="specialty">Micro-lot — Diff rec: +$6.00</option>
                             </optgroup>
                         </select>
                     </div>
