@@ -2826,9 +2826,11 @@ function updateGradeCalculator() {
   var score = parseFloat(slider ? slider.value : (input ? input.value : 84));
   if (input) input.value = score;
 
-  var cMarketLb = parseFloat(document.getElementById("coffee-pub-arabica").value) || 275.70;
+  var arabicaEl = document.getElementById("coffee-pub-arabica");
+  var kursEl = document.getElementById("coffee-pub-kurs");
+  var cMarketLb = arabicaEl ? parseFloat(arabicaEl.value) || 275.70 : 275.70;
   var cMarketKg = (cMarketLb / 100) / 0.453592;
-  var kurs = parseFloat(document.getElementById("coffee-pub-kurs").value) || 17570;
+  var kurs = kursEl ? parseFloat(kursEl.value) || 17570 : 17570;
 
   var classification = "";
   var premiumMin = 0;
@@ -3412,7 +3414,7 @@ function initHistorisCharts() {
         statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse mr-1.5"></span><span class="text-yellow-600">Loading live data...</span>';
     }
 
-    fetch('./data/market-data.json?v=' + Date.now())
+    fetch('https://KGS-blog.github.io/Update-Coffee-Data/data/market-data.json?v=' + Date.now())
         .then(function(response) {
             if (!response.ok) throw new Error('HTTP ' + response.status);
             return response.json();
@@ -4070,7 +4072,7 @@ main {
         <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase">📊 Data Historis</span>
         <h2 class="section-title mt-2">Tren Historis Pasar Kopi</h2>
         <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-2">
-            Pergerakan harga Arabica C-Market, Robusta London, dan kurs IDR/USD dalam 5 tahun terakhir. <strong class="text-coffee-700">Catatan: Data bersifat simulasi berdasarkan tren historis untuk referensi visual.</strong> Untuk data live real-time, diperlukan integrasi API Barchart / Yahoo Finance dengan backend proxy.
+            Pergerakan harga Arabica C-Market, Robusta London, dan kurs IDR/USD dalam 5 tahun terakhir. <strong class="text-coffee-700">Data live diperbarui otomatis via GitHub Actions setiap 6 jam.</strong> Jika koneksi gagal, chart beralih ke mode offline dengan data baseline.
         </p>
             <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
                 <span id="historis-status-badge" class="inline-flex items-center px-3 py-1.5 rounded-full bg-coffee-100 text-xs font-medium">
