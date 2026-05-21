@@ -2482,6 +2482,106 @@ function formatIDRv2(num) {
   return 'Rp ' + Math.round(num).toLocaleString('id-ID');
 }
 
+// ========== OCEAN FREIGHT MATRIX (Origin ID Port → US Port) ==========
+// Rates in USD/kg — based on FCL 20ft container averages (~18-21 MT)
+// Rates vary by origin port distance to US route and port congestion
+// Pallet standard export: 1 pallet = 16-20 bags × 60kg = ~1,000 kg (1 MT)
+// Mode shipment:
+//   < 10,000 kg  → LCL (Less than Container Load)
+//   10,000-21,000 kg → FCL 20ft (Full Container Load, ~18-21 MT)
+//   > 21,000 kg → FCL 40ft (Full Container Load, ~26-28 MT)
+const PALLET_KG = 1000;
+const LCL_THRESHOLD = 10000;
+const FCL20_THRESHOLD = 21000;
+
+const OCEAN_FREIGHT_MATRIX = {
+  // Belawan (Medan)
+  "belawan": {
+    "ny": { "lcl": 1.75, "fcl20": 1.35, "fcl40": 1.15 },
+    "la": { "lcl": 1.45, "fcl20": 1.05, "fcl40": 0.90 },
+    "mia": { "lcl": 1.90, "fcl20": 1.50, "fcl40": 1.28 },
+    "sea": { "lcl": 1.60, "fcl20": 1.20, "fcl40": 1.02 }
+  },
+  // Tanjung Priok (Jakarta) — central hub, most competitive
+  "tanjungpriok": {
+    "ny": { "lcl": 1.65, "fcl20": 1.25, "fcl40": 1.06 },
+    "la": { "lcl": 1.35, "fcl20": 0.95, "fcl40": 0.81 },
+    "mia": { "lcl": 1.80, "fcl20": 1.40, "fcl40": 1.19 },
+    "sea": { "lcl": 1.50, "fcl20": 1.10, "fcl40": 0.94 }
+  },
+  // Makassar — eastern Indonesia, longer route
+  "makassar": {
+    "ny": { "lcl": 1.95, "fcl20": 1.55, "fcl40": 1.32 },
+    "la": { "lcl": 1.60, "fcl20": 1.20, "fcl40": 1.02 },
+    "mia": { "lcl": 2.05, "fcl20": 1.65, "fcl40": 1.40 },
+    "sea": { "lcl": 1.75, "fcl20": 1.35, "fcl40": 1.15 }
+  },
+  // Surabaya / Benoa
+  "surabaya": {
+    "ny": { "lcl": 1.70, "fcl20": 1.30, "fcl40": 1.11 },
+    "la": { "lcl": 1.40, "fcl20": 1.00, "fcl40": 0.85 },
+    "mia": { "lcl": 1.85, "fcl20": 1.45, "fcl40": 1.23 },
+    "sea": { "lcl": 1.55, "fcl20": 1.15, "fcl40": 0.98 }
+  }
+};
+
+function getShipmentMode(volumeKg) {
+  if (volumeKg < LCL_THRESHOLD) return "lcl";
+  if (volumeKg <= FCL20_THRESHOLD) return "fcl20";
+  return "fcl40";
+}
+
+function getShipmentModeLabel(mode) {
+  if (mode === "lcl") return "LCL (< 10 ton)";
+  if (mode === "fcl20") return "FCL 20ft (10-21 ton)";
+  return "FCL 40ft (> 21 ton)";
+}
+
+function getPalletCount(volumeKg) {
+  return Math.ceil(volumeKg / PALLET_KG);
+}
+
+function getOceanFreight(originKey, usPortKey, volumeKg) {
+  var matrix = OCEAN_FREIGHT_MATRIX[originKey] || OCEAN_FREIGHT_MATRIX["tanjungpriok"];
+  var portRates = matrix[usPortKey] || matrix["ny"];
+  var mode = getShipmentMode(volumeKg);
+  return portRates[mode] || portRates["fcl20"] || 1.25;
+}
+
+function updateUsPortDefaults() {
+  var portSel = document.getElementById("fob-us-port");
+  var originSel = document.getElementById("fob-port");
+  var volumeInput = document.getElementById("fob-volume");
+  if (!portSel) return;
+  var portOpt = portSel.options[portSel.selectedIndex];
+  var usPortKey = portOpt.value;
+  var originKey = originSel ? originSel.value : "tanjungpriok";
+  var volume = parseFloat(volumeInput ? volumeInput.value : 5000) || 5000;
+  var ship = getOceanFreight(originKey, usPortKey, volume);
+  var mode = getShipmentMode(volume);
+  var modeLabel = getShipmentModeLabel(mode);
+  var pallets = getPalletCount(volume);
+  var broker = parseFloat(portOpt.dataset.broker) || 0.45;
+  var mpf = parseFloat(portOpt.dataset.mpf) || 0.08;
+  var hmf = parseFloat(portOpt.dataset.hmf) || 0.04;
+  var ins = parseFloat(portOpt.dataset.ins) || 0.10;
+  var shipInput = document.getElementById("fob-shipping");
+  var customsInput = document.getElementById("fob-customs");
+  var mpfInput = document.getElementById("fob-mpf");
+  var hmfInput = document.getElementById("fob-hmf");
+  var insInput = document.getElementById("fob-insurance");
+  if (shipInput) shipInput.value = ship.toFixed(2);
+  if (customsInput) customsInput.value = broker.toFixed(2);
+  if (mpfInput) mpfInput.value = mpf.toFixed(2);
+  if (hmfInput) hmfInput.value = hmf.toFixed(2);
+  if (insInput) insInput.value = ins.toFixed(2);
+  // Update shipment mode display
+  var modeEl = document.getElementById("fob-shipment-mode");
+  var palletEl = document.getElementById("fob-pallet-count");
+  if (modeEl) modeEl.textContent = modeLabel;
+  if (palletEl) palletEl.textContent = pallets + " pallet (" + volume.toLocaleString("id-ID") + " kg)";
+}
+
 function updateFobDefaults() {
   const originSel = document.getElementById('fob-origin');
   const gradeSel = document.getElementById('fob-grade');
@@ -2595,6 +2695,11 @@ function calculateFOBv2() {
   const cMarketKg = cMarketLb / FOB_LB_TO_KG;
   const kurs = parseFloat(document.getElementById('fob-kurs').value) || 16500;
 
+  // Landed cost inputs
+  const shippingUSD = parseFloat(document.getElementById('fob-shipping').value) || 0;
+  const customsUSD = parseFloat(document.getElementById('fob-customs').value) || 0;
+  const insuranceUSD = parseFloat(document.getElementById('fob-insurance').value) || 0;
+
   const diferensial = parseFloat(document.getElementById('fob-diferensial').value) || 0;
   const premium = parseFloat(document.getElementById('fob-premium').value) || 0;
 
@@ -2602,11 +2707,18 @@ function calculateFOBv2() {
   const kemasanIDR = parseFloat(document.getElementById('fob-kemasan').value) || 0;
   const dokumenIDR = parseFloat(document.getElementById('fob-dokumen').value) || 0;
   const logistikIDR = parseFloat(document.getElementById('fob-logistik').value) || 0;
+  const palletPriceIDR = parseFloat(document.getElementById('fob-pallet-price').value) || 300000;
+  const palletCapKg = parseFloat(document.getElementById('fob-pallet-capacity').value) || 1000;
+  const palletPerKgIDR = palletPriceIDR / palletCapKg;
+  // Update display
+  var palletPerKgInput = document.getElementById('fob-pallet-perkg');
+  if (palletPerKgInput) palletPerKgInput.value = Math.round(palletPerKgIDR);
 
   const olahUSD = toUSDv2(olahIDR, kurs);
   const kemasanUSD = toUSDv2(kemasanIDR, kurs);
   const dokumenUSD = toUSDv2(dokumenIDR, kurs);
   const logistikUSD = toUSDv2(logistikIDR, kurs);
+  const palletUSD = toUSDv2(palletPerKgIDR, kurs);
 
   const marginPct = parseFloat(document.getElementById('fob-margin').value) || 0;
   const volume = parseFloat(document.getElementById('fob-volume').value) || 0;
@@ -2616,7 +2728,7 @@ function calculateFOBv2() {
   const gradeLabel = gradeOpt.textContent || '';
 
   const beanValue = cMarketKg + diferensial + premium;
-  const totalCost = beanValue + olahUSD + kemasanUSD + dokumenUSD + logistikUSD;
+  const totalCost = beanValue + olahUSD + kemasanUSD + dokumenUSD + logistikUSD + palletUSD;
   const marginValue = totalCost * (marginPct / 100);
   const fobFinal = totalCost + marginValue;
   const totalShipment = fobFinal * volume;
@@ -2634,9 +2746,42 @@ function calculateFOBv2() {
   var diffDetailEl = document.getElementById('fob-res-diff-detail');
   if (diffDetailEl) diffDetailEl.textContent = "Diff: +$" + diferensial.toFixed(2) + " + Grade: +$" + premium.toFixed(2);
   document.getElementById('fob-res-cost').textContent = formatUSDv2(totalCost);
+  // Pallet cost display
+  var palletResEl = document.getElementById('fob-res-pallet');
+  if (palletResEl) palletResEl.textContent = formatUSDv2(palletUSD) + " (Rp" + Math.round(palletPerKgIDR).toLocaleString("id-ID") + "/kg)";
   document.getElementById('fob-res-margin').textContent = formatUSDv2(marginValue) + ' (' + marginPct + '%)';
   document.getElementById('fob-res-volume').textContent = volume.toLocaleString('id-ID');
   document.getElementById('fob-res-total').textContent = formatUSDv2(totalShipment);
+
+  // === LANDED COST CALCULATION ===
+  const mpfUSD = parseFloat(document.getElementById('fob-mpf').value) || 0;
+  const hmfUSD = parseFloat(document.getElementById('fob-hmf').value) || 0;
+  var landedCostPerKg = shippingUSD + customsUSD + mpfUSD + hmfUSD + insuranceUSD;
+  var landedFinal = fobFinal + landedCostPerKg;
+  var landedTotal = landedFinal * volume;
+
+  var landedFobEl = document.getElementById('fob-res-landed-fob');
+  if (landedFobEl) landedFobEl.textContent = formatUSDv2(fobFinal);
+  var landedCostEl = document.getElementById('fob-res-landed-cost');
+  if (landedCostEl) landedCostEl.textContent = formatUSDv2(landedCostPerKg);
+  var landedFinalEl = document.getElementById('fob-res-landed-final');
+  if (landedFinalEl) landedFinalEl.textContent = formatUSDv2(landedFinal);
+  var landedTotalEl = document.getElementById('fob-res-landed-total');
+  if (landedTotalEl) landedTotalEl.textContent = formatUSDv2(landedTotal);
+  var landedVolEl = document.getElementById('fob-res-landed-vol');
+  if (landedVolEl) landedVolEl.textContent = volume.toLocaleString('id-ID');
+  var landedFinal2El = document.getElementById('fob-res-landed-final-2');
+  if (landedFinal2El) landedFinal2El.textContent = formatUSDv2(landedFinal);
+  var shipEl = document.getElementById('fob-res-ship');
+  if (shipEl) shipEl.textContent = '$' + shippingUSD.toFixed(2);
+  var brokerEl = document.getElementById('fob-res-broker');
+  if (brokerEl) brokerEl.textContent = '$' + customsUSD.toFixed(2);
+  var mpfEl = document.getElementById('fob-res-mpf');
+  if (mpfEl) mpfEl.textContent = '$' + mpfUSD.toFixed(2);
+  var hmfEl = document.getElementById('fob-res-hmf');
+  if (hmfEl) hmfEl.textContent = '$' + hmfUSD.toFixed(2);
+  var insEl = document.getElementById('fob-res-ins');
+  if (insEl) insEl.textContent = '$' + insuranceUSD.toFixed(2);
 
   // Market Reality Check — DYNAMIC based on current C-Market + costs
   // Formula: Min = (beanValue + localCosts) * 1.05, Max = (beanValue + localCosts) * 1.45
@@ -2682,7 +2827,9 @@ function calculateFOBv2() {
     cMarketKg, diferensial, premium, beanValue,
     olahUSD, kemasanUSD, dokumenUSD, logistikUSD,
     totalCost, marginPct, marginValue, fobFinal, totalShipment,
-    gradeType, gradeLabel
+    gradeType, gradeLabel,
+    shippingUSD, customsUSD, mpfUSD, hmfUSD, insuranceUSD, landedCostPerKg, landedFinal, landedTotal,
+    palletPriceIDR, palletCapKg, palletPerKgIDR, palletUSD
   };
 }
 
@@ -2708,13 +2855,25 @@ function addFobProduct() {
     kemasanIDR: parseFloat(document.getElementById('fob-kemasan').value) || 0,
     dokumenIDR: parseFloat(document.getElementById('fob-dokumen').value) || 0,
     logistikIDR: parseFloat(document.getElementById('fob-logistik').value) || 0,
+    palletPriceIDR: calc.palletPriceIDR,
+    palletCapKg: calc.palletCapKg,
+    palletPerKgIDR: calc.palletPerKgIDR,
+    palletUSD: calc.palletUSD,
     kurs: kurs,
     marginPct: parseFloat(document.getElementById('fob-margin').value) || 0,
     fobFinal: calc.fobFinal,
     totalShipment: calc.totalShipment,
     beanValue: calc.beanValue,
     totalCost: calc.totalCost,
-    marginValue: calc.marginValue
+    marginValue: calc.marginValue,
+    shippingUSD: calc.shippingUSD,
+    customsUSD: calc.customsUSD,
+    mpfUSD: calc.mpfUSD,
+    hmfUSD: calc.hmfUSD,
+    insuranceUSD: calc.insuranceUSD,
+    landedCostPerKg: calc.landedCostPerKg,
+    landedFinal: calc.landedFinal,
+    landedTotal: calc.landedTotal
   };
 
   fobProducts.push(product);
@@ -2737,14 +2896,17 @@ function renderFobProductList() {
       ? '<span class="inline-block px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-medium border border-purple-500/30 ml-2">Specialty</span>'
       : '<span class="inline-block px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-medium border border-blue-500/30 ml-2">Komersial</span>';
     const priceColor = p.gradeType === 'specialty' ? 'text-purple-300' : 'text-green-300';
+    var palletInfo = p.palletPriceIDR ? ' | Pallet Rp' + Math.round(p.palletPriceIDR).toLocaleString('id-ID') + '/unit (' + p.palletCapKg + 'kg)' : '';
     return '<div class="bg-white/5 rounded-xl p-4 border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">' +
       '<div class="flex-1">' +
         '<h4 class="font-serif text-sm font-bold text-white">' + (idx + 1) + '. ' + p.origin + gradeBadge + '</h4>' +
-        '<p class="text-xs text-coffee-300">' + p.grade + ' | ' + p.volume.toLocaleString('id-ID') + ' kg | Kurs ' + p.kurs.toLocaleString('id-ID') + '</p>' +
+        '<p class="text-xs text-coffee-300">' + p.grade + ' | ' + p.volume.toLocaleString('id-ID') + ' kg | Kurs ' + p.kurs.toLocaleString('id-ID') + palletInfo + '</p>' +
+        '<p class="text-[10px] text-coffee-500 mt-0.5">Landed: Ship $' + p.shippingUSD.toFixed(2) + ' + Broker $' + p.customsUSD.toFixed(2) + ' + MPF $' + (p.mpfUSD||0).toFixed(2) + ' + HMF $' + (p.hmfUSD||0).toFixed(2) + ' + Ins $' + p.insuranceUSD.toFixed(2) + ' = $' + p.landedCostPerKg.toFixed(2) + '/kg</p>' +
       '</div>' +
       '<div class="text-right">' +
-        '<div class="text-lg font-mono font-bold ' + priceColor + '">' + formatUSDv2(p.fobFinal) + '/kg</div>' +
-        '<div class="text-xs text-coffee-400">Total: ' + formatUSDv2(p.totalShipment) + '</div>' +
+        '<div class="text-sm font-mono font-bold ' + priceColor + '">' + formatUSDv2(p.fobFinal) + '/kg FOB</div>' +
+        '<div class="text-xs font-mono font-bold text-orange-300">' + formatUSDv2(p.landedFinal) + '/kg Landed</div>' +
+        '<div class="text-[10px] text-coffee-400">FOB: ' + formatUSDv2(p.totalShipment) + ' | Landed: ' + formatUSDv2(p.landedTotal) + '</div>' +
       '</div>' +
       '<button type="button" onclick="deleteFobProduct(' + p.id + ')" class="w-8 h-8 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center justify-center text-xs transition-colors">' +
         '<i class="fas fa-times"></i>' +
@@ -2776,29 +2938,40 @@ function showFobQuotation() {
   section.classList.remove('hidden');
 
   const kurs = fobProducts[0].kurs;
+  var originSel = document.getElementById('fob-port');
+  var destSel = document.getElementById('fob-us-port');
+  var originText = originSel ? originSel.options[originSel.selectedIndex].text : '—';
+  var destText = destSel ? destSel.options[destSel.selectedIndex].text : '—';
   document.getElementById('fob-q-date').textContent = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
   document.getElementById('fob-q-kurs').textContent = kurs.toLocaleString('id-ID');
+  document.getElementById('fob-q-origin-port').textContent = originText;
+  document.getElementById('fob-q-dest-port').textContent = destText;
 
   let tbody = '';
   let grandTotal = 0;
 
+  var grandTotalLanded = 0;
   fobProducts.forEach((p, idx) => {
     grandTotal += p.totalShipment;
+    grandTotalLanded += p.landedTotal;
     const gradeBadge = p.gradeType === 'specialty'
       ? '<span class="inline-block px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-medium border border-purple-200">Specialty</span>'
       : '<span class="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-medium border border-blue-200">Komersial</span>';
     tbody += '<tr class="hover:bg-coffee-50/50">' +
-      '<td class="px-4 py-3 text-sm">' + (idx + 1) + '</td>' +
-      '<td class="px-4 py-3"><strong class="text-coffee-900">' + p.origin + '</strong><br><small class="text-coffee-500">' + p.grade + '</small></td>' +
-      '<td class="px-4 py-3 text-sm text-coffee-600">' + p.grade + '<br>' + gradeBadge + '</td>' +
-      '<td class="px-4 py-3 text-sm text-right">' + p.volume.toLocaleString('id-ID') + '</td>' +
-      '<td class="px-4 py-3 text-sm text-right font-bold text-coffee-800">' + formatUSDv2(p.fobFinal) + '</td>' +
-      '<td class="px-4 py-3 text-sm text-right font-bold text-coffee-900">' + formatUSDv2(p.totalShipment) + '</td>' +
+      '<td class="px-3 py-3 text-sm">' + (idx + 1) + '</td>' +
+      '<td class="px-3 py-3"><strong class="text-coffee-900">' + p.origin + '</strong><br><small class="text-coffee-500">' + p.grade + '</small></td>' +
+      '<td class="px-3 py-3 text-sm text-coffee-600">' + p.grade + '<br>' + gradeBadge + '</td>' +
+      '<td class="px-3 py-3 text-sm text-right">' + p.volume.toLocaleString('id-ID') + '</td>' +
+      '<td class="px-3 py-3 text-sm text-right font-bold text-coffee-800">' + formatUSDv2(p.fobFinal) + '</td>' +
+      '<td class="px-3 py-3 text-sm text-right font-bold text-orange-600">' + formatUSDv2(p.landedFinal) + '</td>' +
+      '<td class="px-3 py-3 text-sm text-right font-bold text-coffee-800">' + formatUSDv2(p.totalShipment) + '</td>' +
+      '<td class="px-3 py-3 text-sm text-right font-bold text-orange-700">' + formatUSDv2(p.landedTotal) + '</td>' +
     '</tr>';
   });
 
   document.getElementById('fob-q-body').innerHTML = tbody;
   document.getElementById('fob-q-grand').textContent = formatUSDv2(grandTotal);
+  document.getElementById('fob-q-grand-landed').textContent = formatUSDv2(grandTotalLanded);
 
   section.scrollIntoView({behavior: 'smooth'});
 }
@@ -2817,7 +2990,11 @@ function resetFobForm() {
   document.getElementById('fob-olah').value = '25000';
   document.getElementById('fob-kemasan').value = '5000';
   document.getElementById('fob-margin').value = '25';
+  document.getElementById('fob-us-port').selectedIndex = 0;
+  document.getElementById('fob-pallet-price').value = '300000';
+  document.getElementById('fob-pallet-capacity').value = '1000';
   updateFobDefaults();
+  updateUsPortDefaults();
   calculateFOBv2();
 }
 
@@ -2984,6 +3161,7 @@ function syncCoffeeToFob() {
   var fobKurs = document.getElementById("fob-kurs");
   if (fobCmarket) fobCmarket.value = (arabicaCents / 100).toFixed(2);
   if (fobKurs) fobKurs.value = kurs;
+  calculateFOBv2();
 }
 
 // ========== USDA AUTO-UPDATE SYSTEM ==========
@@ -3633,6 +3811,7 @@ main {
 
 
 <base target="_blank">
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -3704,7 +3883,12 @@ main {
                 </div>
                 <div>
                     <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Kurs IDR</label>
-                    <input type="number" id="coffee-pub-kurs" value="17570" step="10" readonly class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full cursor-not-allowed" title="Live data — klik Refresh untuk update">
+                    <div class="flex gap-1.5">
+                        <input type="number" id="coffee-pub-kurs" value="17570" step="10" readonly class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full cursor-not-allowed" title="Live data — klik Refresh untuk update">
+                        <button type="button" onclick="fetchKurs()" class="bg-white/10 hover:bg-white/20 text-coffee-300 px-2 py-2 rounded-lg text-xs transition-all border border-white/10 flex items-center gap-1" title="Refresh kurs real-time">
+                            <i class="fas fa-sync-alt text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Diff Arabica (¢) - editable</label>
@@ -3809,8 +3993,8 @@ main {
         <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="font-serif text-lg font-bold text-white">📋 Kalkulator FOB</h3>
-                    <p class="text-xs text-coffee-300 mt-0.5">Estimasi harga FOB per kg — Biaya lokal IDR, referensi USD</p>
+                    <h3 class="font-serif text-lg font-bold text-white">📋 Kalkulator FOB & Landed</h3>
+                    <p class="text-xs text-coffee-300 mt-0.5">Estimasi harga FOB per kg + Landed Cost ke US Port (keluar customs)</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="setFobGradeType('commercial')" id="fob-btn-commercial" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30 transition-all">Komersial</button>
@@ -3833,7 +4017,12 @@ main {
                     </div>
                     <div>
                         <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Kurs IDR/USD</label>
-                        <input type="number" id="fob-kurs" step="1" value="16500" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-yellow-300 w-full" oninput="calculateFOBv2()">
+                        <div class="flex gap-1.5">
+                            <input type="number" id="fob-kurs" step="1" value="16500" class="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-yellow-300 w-full" oninput="calculateFOBv2()">
+                            <button type="button" onclick="fetchKurs()" class="bg-white/10 hover:bg-white/20 text-coffee-300 px-2 py-2 rounded-lg text-xs transition-all border border-white/10 flex items-center gap-1" title="Refresh kurs real-time">
+                                <i class="fas fa-sync-alt text-[10px]"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -3887,11 +4076,15 @@ main {
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Volume (kg)</label>
-                        <input type="number" id="fob-volume" value="5000" min="1" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-white w-full" oninput="updateFobDefaults(); calculateFOBv2()">
+                        <input type="number" id="fob-volume" value="5000" min="1" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-white w-full" oninput="updateFobDefaults(); updateUsPortDefaults(); calculateFOBv2()">
+                        <div class="flex items-center gap-2 mt-1.5">
+                            <span id="fob-shipment-mode" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 text-[9px] font-medium border border-blue-500/20">LCL (< 10 ton)</span>
+                            <span id="fob-pallet-count" class="text-[9px] text-coffee-400">5 pallet (5,000 kg)</span>
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Port FOB</label>
-                        <select id="fob-port" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white w-full" onchange="updateFobDefaults(); calculateFOBv2()">
+                        <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Port FOB Indonesia</label>
+                        <select id="fob-port" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white w-full" onchange="updateFobDefaults(); updateUsPortDefaults(); calculateFOBv2()">
                             <option value="belawan" data-log="3500">Belawan (Medan)</option>
                             <option value="tanjungpriok" data-log="2500">Tanjung Priok (Jakarta)</option>
                             <option value="makassar" data-log="5000">Makassar</option>
@@ -3934,12 +4127,70 @@ main {
                         <input type="number" id="fob-kemasan" step="100" value="5000" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-yellow-300 w-full" oninput="calculateFOBv2()">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Dokumen (IDR/kg)</label>
+                        <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Dokumen Export (IDR/kg)</label>
                         <input type="number" id="fob-dokumen" step="100" value="1500" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-yellow-300 w-full" oninput="calculateFOBv2()">
                     </div>
                     <div>
                         <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Logistik (IDR/kg)</label>
                         <input type="number" id="fob-logistik" step="100" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-yellow-300 w-full" oninput="calculateFOBv2()">
+                    </div>
+                </div>
+                <!-- Pallet Cost -->
+                <div class="mt-2 grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Harga Pallet (IDR/unit)</label>
+                        <input type="number" id="fob-pallet-price" step="1000" value="300000" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-yellow-300 w-full" oninput="calculateFOBv2()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Kapasitas Pallet (kg)</label>
+                        <input type="number" id="fob-pallet-capacity" step="50" value="1000" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-yellow-300 w-full" oninput="calculateFOBv2()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Pallet Cost/kg (auto)</label>
+                        <input type="number" id="fob-pallet-perkg" step="1" readonly class="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs font-mono text-coffee-300 w-full cursor-not-allowed" title="Auto: Harga Pallet ÷ Kapasitas Pallet">
+                    </div>
+                </div>
+
+                <!-- LANDED COST TO US -->
+                <div class="mt-4 pt-3 border-t border-white/10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>
+                        <span class="text-xs font-bold text-orange-300 uppercase tracking-wider">🚢 Estimasi Landed Cost ke US</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Port Tujuan US (Landed)</label>
+                            <select id="fob-us-port" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs text-white w-full" onchange="updateUsPortDefaults(); calculateFOBv2()">
+                                <option value="ny" data-ship="1.10" data-broker="0.35">New York / Baltimore</option>
+                                <option value="la" data-ship="0.85" data-broker="0.30">Los Angeles / Long Beach</option>
+                                <option value="mia" data-ship="1.25" data-broker="0.40">Miami / Houston</option>
+                                <option value="sea" data-ship="0.95" data-broker="0.32">Seattle / Tacoma</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Shipping (USD/kg)</label>
+                            <input type="number" id="fob-shipping" step="0.05" value="1.10" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-orange-300 w-full" oninput="calculateFOBv2()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Customs Broker (USD/kg)</label>
+                            <input type="number" id="fob-customs" step="0.05" value="0.45" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-orange-300 w-full" oninput="calculateFOBv2()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">MPF Customs (USD/kg)</label>
+                            <input type="number" id="fob-mpf" step="0.01" value="0.08" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-orange-300 w-full" oninput="calculateFOBv2()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">HMF Harbor (USD/kg)</label>
+                            <input type="number" id="fob-hmf" step="0.01" value="0.04" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-orange-300 w-full" oninput="calculateFOBv2()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Insurance (USD/kg)</label>
+                            <input type="number" id="fob-insurance" step="0.01" value="0.10" class="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-mono text-orange-300 w-full" oninput="calculateFOBv2()">
+                        </div>
+                    </div>
+                    <div class="text-[9px] text-coffee-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        <strong>Shipment mode otomatis:</strong> &lt;10 ton = LCL | 10-21 ton = FCL 20ft | &gt;21 ton = FCL 40ft. <strong>Pallet standard export:</strong> 1 pallet = 16-20 bags × 60kg = ~1,000 kg. Ocean freight bervariasi berdasarkan pasangan port asal-tujuan + mode shipment. Customs: broker + MPF + HMF. Insurance: ~0.5% CIF. Semua cost sampai coffee keluar dari port US (Landed).
                     </div>
                 </div>
             </div>
@@ -3954,6 +4205,7 @@ main {
                 <div class="bg-black/20 rounded-xl p-3 text-center">
                     <div class="text-[9px] text-coffee-400 uppercase tracking-wider mb-1">Total Cost</div>
                     <div class="text-sm font-mono font-bold text-yellow-300" id="fob-res-cost">—</div>
+                    <div class="text-[8px] text-coffee-500 mt-0.5" id="fob-res-pallet">Pallet: —</div>
                 </div>
                 <div class="bg-black/20 rounded-xl p-3 text-center">
                     <div class="text-[9px] text-coffee-400 uppercase tracking-wider mb-1">Margin</div>
@@ -3962,6 +4214,72 @@ main {
                 <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-3 text-center">
                     <div class="text-[9px] text-green-400 uppercase tracking-wider mb-1">Harga FOB Final</div>
                     <div class="text-lg font-mono font-bold text-green-300" id="fob-res-final">—</div>
+                </div>
+            </div>
+
+            <!-- LANDED COST RESULTS -->
+            <div class="mt-3 bg-orange-500/10 border border-orange-500/20 rounded-xl p-3">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>
+                    <span class="text-xs font-bold text-orange-300 uppercase">🚢 Estimasi Harga Landed — US Port (Keluar Customs)</span>
+                </div>
+                <div class="grid grid-cols-5 gap-1.5 mb-2">
+                    <div class="bg-black/20 rounded-lg p-1.5 text-center">
+                        <div class="text-[8px] text-coffee-400 uppercase leading-tight">Ocean Freight</div>
+                        <div class="text-[10px] font-mono font-bold text-orange-300" id="fob-res-ship">—</div>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-1.5 text-center">
+                        <div class="text-[8px] text-coffee-400 uppercase leading-tight">Broker</div>
+                        <div class="text-[10px] font-mono font-bold text-orange-300" id="fob-res-broker">—</div>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-1.5 text-center">
+                        <div class="text-[8px] text-coffee-400 uppercase leading-tight">MPF</div>
+                        <div class="text-[10px] font-mono font-bold text-orange-300" id="fob-res-mpf">—</div>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-1.5 text-center">
+                        <div class="text-[8px] text-coffee-400 uppercase leading-tight">HMF</div>
+                        <div class="text-[10px] font-mono font-bold text-orange-300" id="fob-res-hmf">—</div>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-1.5 text-center">
+                        <div class="text-[8px] text-coffee-400 uppercase leading-tight">Insurance</div>
+                        <div class="text-[10px] font-mono font-bold text-orange-300" id="fob-res-ins">—</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-black/20 rounded-lg p-2 text-center">
+                        <div class="text-[9px] text-coffee-400 uppercase">FOB Final</div>
+                        <div class="text-sm font-mono font-bold text-white" id="fob-res-landed-fob">—</div>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-2 text-center">
+                        <div class="text-[9px] text-coffee-400 uppercase">Total Landed Cost/kg</div>
+                        <div class="text-sm font-mono font-bold text-orange-300" id="fob-res-landed-cost">—</div>
+                    </div>
+                </div>
+                <div class="mt-2 bg-orange-500/20 border border-orange-500/30 rounded-lg p-2 text-center">
+                    <div class="text-[9px] text-orange-400 uppercase tracking-wider mb-1">Harga Landed Final (US Port)</div>
+                    <div class="text-xl font-mono font-bold text-orange-300" id="fob-res-landed-final">—</div>
+                    <div class="text-[9px] text-coffee-400 mt-0.5">per kg di port US — sudah termasuk shipping, customs broker, MPF, HMF, insurance</div>
+                </div>
+                <div class="mt-2 text-[9px] text-coffee-500 text-center">
+                    <span id="fob-res-landed-vol" class="text-coffee-300">5,000</span> kg × 
+                    <span id="fob-res-landed-final-2" class="text-coffee-300 font-mono">$0</span> = 
+                    <span id="fob-res-landed-total" class="text-orange-300 font-mono font-bold">$0</span> total landed
+                </div>
+            </div>
+
+            <!-- DISCLAIMER -->
+            <div class="mt-3 px-3 py-3 rounded-lg bg-yellow-500/5 border border-yellow-500/15 text-[10px] text-coffee-400 leading-relaxed">
+                <div class="flex items-start gap-2">
+                    <i class="fas fa-exclamation-triangle text-yellow-500/60 mt-0.5"></i>
+                    <div>
+                        <strong class="text-coffee-300">Disclaimer:</strong> 
+                        Landed price is an estimate based on average market rates. 
+                        <strong>Included:</strong> FOB, ocean freight (Indonesia origin port → US destination port), customs broker, MPF (0.3464% CIF), HMF (0.125% CIF), marine insurance, export documentation (Certificate of Origin, Phytosanitary Certificate, etc.), and standard export pallet — up to coffee released from US port (Landed). 
+                        <strong>Standard Export Pallet:</strong> 1 pallet = 16–20 bags × 60kg = ~1,000 kg. 
+                        <strong>Shipment Mode:</strong> &lt;10 MT = LCL | 10–21 MT = FCL 20ft | &gt;21 MT = FCL 40ft. Ocean freight rate auto-adjusts by mode and port pair. 
+                        <strong>Not Included / To Confirm:</strong> FDA Prior Notice fee (~$175–$500), fumigation/ISPM-15 (if required), demurrage/detention, inland trucking US (port → buyer warehouse), US warehouse/storage, currency fluctuation. 
+                        Actual rates may vary depending on real-time ocean freight, shipment volume, and current US customs policy. Final quotation confirmed after definitive port pair and volume confirmation.
+                    </div>
                 </div>
             </div>
 
@@ -4018,27 +4336,35 @@ main {
     <div id="fob-quotation-section" class="hidden mt-6">
         <div class="bg-white rounded-2xl p-8 text-coffee-900">
             <div class="text-center mb-6">
-                <h2 class="font-serif text-2xl font-bold text-coffee-900 mb-1">QUOTATION — FOB INDONESIA</h2>
-                <p class="text-sm text-coffee-500"> |  | </p>
-                <p class="text-xs text-coffee-400 mt-1">Date: <span id="fob-q-date"></span> | Kurs: <span id="fob-q-kurs"></span> IDR/USD</p>
+                <h2 class="font-serif text-2xl font-bold text-coffee-900 mb-1">QUOTATION — FOB & LANDED INDONESIA</h2>
+                <p class="text-sm text-coffee-500">Indonesia Coffee Export to United States</p>
+                <div class="flex items-center justify-center gap-4 mt-2 text-xs text-coffee-400">
+                    <span><i class="fas fa-ship mr-1 text-coffee-600"></i>Origin: <strong id="fob-q-origin-port" class="text-coffee-700">—</strong></span>
+                    <span><i class="fas fa-arrow-right mx-1 text-coffee-300"></i></span>
+                    <span><i class="fas fa-anchor mr-1 text-coffee-600"></i>Destination: <strong id="fob-q-dest-port" class="text-coffee-700">—</strong></span>
+                </div>
+                <p class="text-xs text-coffee-400 mt-1">Date: <span id="fob-q-date"></span> | Exchange Rate: <span id="fob-q-kurs"></span> IDR/USD</p>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm border-collapse" style="min-width:600px;">
                     <thead>
                         <tr class="bg-coffee-800 text-white">
-                            <th class="px-4 py-3 text-left rounded-tl-lg">No</th>
-                            <th class="px-4 py-3 text-left">Product / Origin</th>
-                            <th class="px-4 py-3 text-left">Grade</th>
-                            <th class="px-4 py-3 text-right">Volume (kg)</th>
-                            <th class="px-4 py-3 text-right">FOB (USD/kg)</th>
-                            <th class="px-4 py-3 text-right rounded-tr-lg">Total (USD)</th>
+                            <th class="px-3 py-3 text-left rounded-tl-lg">No</th>
+                            <th class="px-3 py-3 text-left">Product / Origin</th>
+                            <th class="px-3 py-3 text-left">Grade</th>
+                            <th class="px-3 py-3 text-right">Volume (kg)</th>
+                            <th class="px-3 py-3 text-right">FOB/kg</th>
+                            <th class="px-3 py-3 text-right">Landed/kg<br><span class="text-[9px] font-normal opacity-75">(US Port)</span></th>
+                            <th class="px-3 py-3 text-right">FOB Total</th>
+                            <th class="px-3 py-3 text-right rounded-tr-lg">Landed Total<br><span class="text-[9px] font-normal opacity-75">(Keluar Customs)</span></th>
                         </tr>
                     </thead>
                     <tbody id="fob-q-body" class="divide-y divide-coffee-100"></tbody>
                     <tfoot>
                         <tr class="bg-coffee-100">
-                            <td colspan="5" class="px-4 py-3 text-right font-bold text-coffee-900">GRAND TOTAL FOB</td>
-                            <td class="px-4 py-3 text-right font-bold text-coffee-900 text-lg" id="fob-q-grand"></td>
+                            <td colspan="6" class="px-3 py-3 text-right font-bold text-coffee-900">GRAND TOTAL FOB</td>
+                            <td class="px-3 py-3 text-right font-bold text-coffee-900 text-lg" id="fob-q-grand"></td>
+                            <td class="px-3 py-3 text-right font-bold text-orange-700 text-lg" id="fob-q-grand-landed"></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -4046,14 +4372,29 @@ main {
             <div class="mt-6 p-4 bg-cream rounded-xl border border-coffee-100">
                 <h4 class="font-serif font-bold text-coffee-900 mb-2">Terms & Conditions</h4>
                 <ul class="text-xs text-coffee-600 space-y-1 list-disc list-inside">
-                    <li>Price basis: FOB (Free On Board) named port — risk transfers at ship's rail</li>
-                    <li>Payment terms: 30% deposit, 70% against copy of BL</li>
-                    <li>Lead time: 14–21 days after deposit confirmation</li>
-                    <li>Certifications: Certificate of Origin, Phytosanitary, Q-Grade report included</li>
-                    <li>Packaging: Jute bag + GrainPro liner (60kg net) unless otherwise specified</li>
-                    <li>Validity: 30 days from quotation date</li>
-                    <li>C-Market reference locked at quotation date — subject to change if market moves &gt;5%</li>
+                    <li><strong>FOB Price:</strong> Free On Board named Indonesian port — risk transfers at ship's rail</li>
+                    <li><strong>Landed Price:</strong> Includes ocean freight to US port, customs broker, MPF (0.3464% CIF), HMF (0.125% CIF), marine insurance, export documentation (Certificate of Origin, Phytosanitary Certificate, etc.), and standard export pallet — coffee ready to pick up at US port (released from customs)</li>
+                    <li><strong>Payment Terms:</strong> 30% deposit, 70% against copy of Bill of Lading (B/L)</li>
+                    <li><strong>Lead Time:</strong> 14–21 days after deposit confirmation</li>
+                    <li><strong>Export Documentation Included:</strong> Certificate of Origin, Phytosanitary Certificate, Q-Grade / Cupping Report</li>
+                    <li><strong>Packaging:</strong> Jute bag + GrainPro liner (60kg net) on standard export pallet unless otherwise specified</li>
+                    <li><strong>Standard Export Pallet:</strong> 1 pallet = 16–20 bags × 60kg = ~1,000 kg. Pallet cost estimated at Rp 300,000/unit (adjustable per quotation)</li>
+                    <li><strong>Validity:</strong> 30 days from quotation date</li>
+                    <li><strong>C-Market Reference:</strong> Locked at quotation date — subject to revision if market moves &gt;5%</li>
                 </ul>
+            </div>
+            <div class="mt-4 p-3 bg-yellow-50 rounded-xl border border-yellow-200 text-[10px] text-coffee-600 leading-relaxed">
+                <div class="flex items-start gap-2">
+                    <i class="fas fa-info-circle text-yellow-600 mt-0.5"></i>
+                    <div>
+                        <strong>Disclaimer:</strong> Landed price is an estimate based on average market rates. 
+                        <strong>Included:</strong> FOB, ocean freight (Indonesia origin port → US destination port), customs broker, MPF, HMF, marine insurance, export documentation (Certificate of Origin, Phytosanitary Certificate, etc.), and standard export pallet — up to coffee released from US port (Landed). 
+                        <strong>Standard Export Pallet:</strong> 1 pallet = 16–20 bags × 60kg = ~1,000 kg. Pallet cost estimated at Rp 300,000/unit (adjustable). 
+                        <strong>Shipment Mode:</strong> &lt;10 MT = LCL | 10–21 MT = FCL 20ft | &gt;21 MT = FCL 40ft. Ocean freight rate auto-adjusts by mode and port pair. 
+                        <strong>Not Included:</strong> FDA Prior Notice fee, fumigation/ISPM-15 (if required), demurrage/detention, inland trucking US (port → buyer warehouse), US warehouse/storage, currency fluctuation. 
+                        Actual rates may vary. Final quotation confirmed after definitive port pair and volume confirmation.
+                    </div>
+                </div>
             </div>
             <div class="text-center mt-6 text-xs text-coffee-400">
                 <p>Generated by Q.co FOB Calculator v2.1 | Author: Ganjar Satyanagara | Q.co Indonesia</p>
