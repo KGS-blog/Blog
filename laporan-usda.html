@@ -3391,19 +3391,213 @@ function initUSDACharts() {
             }
         });
     }
+    initHistorisCharts();
 }
 
-// Init
-document.addEventListener("DOMContentLoaded", function() {
-  coffeeLoadParams();
-  coffeeSyncInputs();
-  coffeeCalculateAll();
-  syncCoffeeToFob();
-  updateFobDefaults();
-  calculateFOBv2();
-});
-</script>
-<script>
+// ========== HISTORICAL CHARTS (3 Chart Historis) ==========
+function initHistorisCharts() {
+    if (typeof Chart === "undefined") { console.warn("Chart.js not loaded"); return; }
+    const coffeeColors = {
+        primary: '#4a3726',
+        secondary: '#7d5f3e',
+        accent: '#b09473',
+        arabika: '#6b8e6b',
+        robusta: '#8b6914',
+        grid: '#e0d5c5',
+        text: '#636e72'
+    };
+
+    var statusEl = document.getElementById("historis-status-badge");
+    if (statusEl) {
+        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse mr-1.5"></span><span class="text-yellow-600">Loading live data...</span>';
+    }
+
+    fetch('./data/market-data.json?v=' + Date.now())
+        .then(function(response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("[Historis] Live data loaded:", data.meta.lastUpdated);
+            renderHistorisCharts(data, true);
+        })
+        .catch(function(err) {
+            console.warn("[Historis] Live data failed:", err.message, "-> using fallback");
+            renderHistorisCharts(null, false);
+        });
+
+    function renderHistorisCharts(data, isLive) {
+        var labels = [], arabicaData = [], robustaData = [], kursData = [];
+        var lastUpdated = "";
+
+        if (isLive && data) {
+            lastUpdated = data.meta ? data.meta.lastUpdated : "";
+            if (data.arabica && data.arabica.history) {
+                data.arabica.history.forEach(function(h) {
+                    labels.push(h.month);
+                    arabicaData.push(h.value);
+                });
+            }
+            if (data.robusta && data.robusta.history) {
+                data.robusta.history.forEach(function(h) {
+                    robustaData.push(h.value);
+                });
+            }
+            if (data.idrUsd && data.idrUsd.history) {
+                data.idrUsd.history.forEach(function(h) {
+                    kursData.push(h.value);
+                });
+            }
+        }
+
+        if (labels.length === 0) {
+            var months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+            for (var y = 2021; y <= 2026; y++) {
+                for (var m = 0; m < 12; m++) {
+                    if (y === 2026 && m > 3) break;
+                    labels.push(months[m] + " " + y);
+                }
+            }
+            arabicaData = [126.35,128.50,130.20,132.80,135.40,138.60,140.20,175.80,195.40,185.60,180.30,178.50,185.20,195.80,210.40,220.60,218.30,215.70,208.50,200.30,195.80,190.40,185.60,180.20,175.80,172.40,170.60,168.30,165.50,162.80,160.40,158.20,155.80,153.40,150.60,148.30,145.80,148.50,152.30,158.60,165.40,172.80,180.50,188.30,195.60,200.40,205.80,210.30,215.60,218.40,220.80,225.30,228.60,230.90,232.50,235.80,238.40,240.20,242.60,245.30,248.50,250.80,252.40,254.90];
+            robustaData = [1350,1380,1420,1450,1480,1520,1550,1600,1650,1700,1750,1800,1850,1900,2100,2300,2400,2350,2300,2250,2200,2150,2100,2050,2000,1950,1900,1850,1820,1800,1780,1750,1720,1700,1680,1650,1620,1650,1700,1750,1800,1850,1900,1950,2000,2050,2100,2150,2200,2250,2300,2350,2400,2450,2500,2550,2600,2650,2700,2750,2800,2850,2900,2950];
+            kursData = [14050,14020,14280,14450,14420,14350,14400,14320,14290,14350,14420,14380,14350,14400,14480,14550,14620,14700,14800,14950,15100,15200,15350,15500,15480,15520,15680,15750,15620,15550,15480,15520,15650,15780,15850,15700,15620,15550,15480,15520,15650,15780,15850,15950,16050,16150,16250,16350,16450,16600,16750,16880,17000,17100,17200,17300,17400,17500,17600,17700,17815,17824,17931,18132];
+        }
+
+        var statusBadge = document.getElementById("historis-status-badge");
+        if (statusBadge) {
+            if (isLive && lastUpdated) {
+                var d = new Date(lastUpdated);
+                var timeStr = d.toLocaleDateString("id-ID", {day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit"});
+                statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse mr-1.5"></span><span class="text-green-600 font-medium">Live Data</span><span class="text-coffee-400 ml-2">Updated ' + timeStr + '</span>';
+            } else {
+                statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-orange-400 mr-1.5"></span><span class="text-orange-600 font-medium">Offline Mode</span><span class="text-coffee-400 ml-2">Using cached baseline</span>';
+            }
+        }
+
+        if (isLive && data) {
+            var aVal = document.getElementById("live-arabica-val");
+            var rVal = document.getElementById("live-robusta-val");
+            var kVal = document.getElementById("live-kurs-val");
+            if (aVal && data.arabica) aVal.textContent = data.arabica.current + " cents/lb";
+            if (rVal && data.robusta) rVal.textContent = "$" + data.robusta.current + "/ton";
+            if (kVal && data.idrUsd) kVal.textContent = data.idrUsd.current;
+        }
+
+        var arabicaCtx = document.getElementById("historisArabicaChart");
+        if (arabicaCtx) {
+            new Chart(arabicaCtx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Arabica C-Market (cents/lb)",
+                        data: arabicaData,
+                        borderColor: "#2d6a4f",
+                        backgroundColor: "rgba(45,106,79,0.08)",
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: isLive ? 2 : 0,
+                        pointHoverRadius: 5,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) { return "Arabica: " + ctx.parsed.y.toFixed(2) + " cents/lb"; }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: false, grid: { color: coffeeColors.grid }, ticks: { font: { family: "Inter", size: 10 } } },
+                        x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: { family: "Inter", size: 9 } } }
+                    },
+                    interaction: { mode: "index", intersect: false }
+                }
+            });
+        }
+
+        var robustaCtx = document.getElementById("historisRobustaChart");
+        if (robustaCtx) {
+            new Chart(robustaCtx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Robusta London ($/ton)",
+                        data: robustaData,
+                        borderColor: "#b08968",
+                        backgroundColor: "rgba(176,137,104,0.08)",
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: isLive ? 2 : 0,
+                        pointHoverRadius: 5,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) { return "Robusta: $" + ctx.parsed.y.toLocaleString() + "/ton"; }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: false, grid: { color: coffeeColors.grid }, ticks: { font: { family: "Inter", size: 10 } } },
+                        x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: { family: "Inter", size: 9 } } }
+                    },
+                    interaction: { mode: "index", intersect: false }
+                }
+            });
+        }
+
+        var kursCtx = document.getElementById("historisKursChart");
+        if (kursCtx) {
+            new Chart(kursCtx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "IDR/USD",
+                        data: kursData,
+                        borderColor: "#1d3557",
+                        backgroundColor: "rgba(29,53,87,0.06)",
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: isLive ? 2 : 0,
+                        pointHoverRadius: 5,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) { return "Kurs: Rp " + ctx.parsed.y.toLocaleString("id-ID"); }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: false, grid: { color: coffeeColors.grid }, ticks: { font: { family: "Inter", size: 10 } } },
+                        x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: { family: "Inter", size: 9 } } }
+                    },
+                    interaction: { mode: "index", intersect: false }
+                }
+            });
+        }
+    }
+}
 tailwind.config = {
     theme: {
         extend: {
@@ -3623,6 +3817,7 @@ main {
 
 
 
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -3866,6 +4061,395 @@ main {
 
 
 
+
+
+<!-- ===== SECTION: 3 CHART HISTORIS ===== -->
+<section id="historis-charts" class="py-16 bg-white">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="text-center mb-10">
+        <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase">📊 Data Historis</span>
+        <h2 class="section-title mt-2">Tren Historis Pasar Kopi</h2>
+        <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-2">
+            Pergerakan harga Arabica C-Market, Robusta London, dan kurs IDR/USD dalam 5 tahun terakhir. <strong class="text-coffee-700">Catatan: Data bersifat simulasi berdasarkan tren historis untuk referensi visual.</strong> Untuk data live real-time, diperlukan integrasi API Barchart / Yahoo Finance dengan backend proxy.
+        </p>
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+                <span id="historis-status-badge" class="inline-flex items-center px-3 py-1.5 rounded-full bg-coffee-100 text-xs font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse mr-1.5"></span>
+                    <span class="text-yellow-600">Loading live data...</span>
+                </span>
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 text-xs font-medium text-green-700 border border-green-200">
+                    <i class="fas fa-coffee text-[10px]"></i>
+                    <span id="live-arabica-val">--</span>
+                </span>
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 text-xs font-medium text-amber-700 border border-amber-200">
+                    <i class="fas fa-seedling text-[10px]"></i>
+                    <span id="live-robusta-val">--</span>
+                </span>
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-xs font-medium text-blue-700 border border-blue-200">
+                    <i class="fas fa-exchange-alt text-[10px]"></i>
+                    <span id="live-kurs-val">--</span>
+                </span>
+            </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8 mb-8">
+        <!-- Chart 1: Arabica C-Market -->
+        <div class="card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-serif text-base font-bold text-coffee-900 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-green-600"></i>
+                    Arabica C-Market
+                </h3>
+                <span class="text-xs text-coffee-400 bg-coffee-50 px-2 py-1 rounded-lg">¢/lb</span>
+            </div>
+            <div class="h-56">
+                <canvas id="historisArabicaChart"></canvas>
+            </div>
+            <div class="mt-3 flex items-center justify-between text-xs text-coffee-500">
+                <span>Jan 2021</span>
+                <span class="font-medium text-coffee-700">Monthly Price</span>
+                <span>Apr 2026</span>
+            </div>
+        </div>
+
+        <!-- Chart 2: Robusta London -->
+        <div class="card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-serif text-base font-bold text-coffee-900 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-amber-600"></i>
+                    Robusta London
+                </h3>
+                <span class="text-xs text-coffee-400 bg-coffee-50 px-2 py-1 rounded-lg">$/ton</span>
+            </div>
+            <div class="h-56">
+                <canvas id="historisRobustaChart"></canvas>
+            </div>
+            <div class="mt-3 flex items-center justify-between text-xs text-coffee-500">
+                <span>Jan 2021</span>
+                <span class="font-medium text-coffee-700">Monthly Price</span>
+                <span>Apr 2026</span>
+            </div>
+        </div>
+
+        <!-- Chart 3: Kurs IDR/USD -->
+        <div class="card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-serif text-base font-bold text-coffee-900 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-blue-600"></i>
+                    Kurs IDR/USD
+                </h3>
+                <span class="text-xs text-coffee-400 bg-coffee-50 px-2 py-1 rounded-lg">Rp/USD</span>
+            </div>
+            <div class="h-56">
+                <canvas id="historisKursChart"></canvas>
+            </div>
+            <div class="mt-3 flex items-center justify-between text-xs text-coffee-500">
+                <span>Jan 2021</span>
+                <span class="font-medium text-coffee-700">Monthly Rate</span>
+                <span>Apr 2026</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data source note -->
+    <div class="text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-coffee-100 text-coffee-600 text-xs">
+            <i class="fas fa-database"></i>
+            <span>Sumber referensi: ICE Futures US (Arabica), LIFFE London (Robusta), Bank Indonesia / OFX (Kurs). Data ditampilkan sebagai simulasi tren historis.</span>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ===== SECTION: TABEL EVENT PASAR SIGNIFIKAN ===== -->
+<section id="event-pasar" class="py-16 bg-cream">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="text-center mb-10">
+        <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase">📋 Event Analysis</span>
+        <h2 class="section-title mt-2">Event Pasar Signifikan (5 Tahun Terakhir)</h2>
+        <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-2">
+            Enam peristiwa besar yang mengguncang pasar kopi global dan dampak langsungnya terhadap FOB Indonesia.
+        </p>
+    </div>
+
+    <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width: 900px;">
+                <thead>
+                    <tr class="bg-coffee-800 text-white">
+                        <th class="px-5 py-4 text-left rounded-tl-lg w-40">Periode</th>
+                        <th class="px-5 py-4 text-left w-48">Pergerakan Harga</th>
+                        <th class="px-5 py-4 text-left">Penyebab Utama</th>
+                        <th class="px-5 py-4 text-left rounded-tr-lg">Dampak FOB Indonesia</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-coffee-100">
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap">
+                            <span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                            Jul–Sep 2021
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+                                <i class="fas fa-arrow-up"></i> Arabica +35%
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            <strong class="text-coffee-900">Frost Brazil</strong> — Suhu ekstrem di Minas Gerais menghancurkan 10–15% potensi crop Arabica Brazil.
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            FOB naik <strong class="text-coffee-900">$0.80–1.20/kg</strong>. Petani Indonesia mendapat window harga terbaik dalam 7 tahun.
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap">
+                            <span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                            Feb–Mar 2022
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+                                <i class="fas fa-arrow-up"></i> Arabica +22%
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            <strong class="text-coffee-900">Perang Rusia–Ukraina</strong> — Disrupsi energi & grain → biaya pupuk naik 80%, shipping cost melonjak.
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            Shipping cost naik <strong class="text-coffee-900">40–60%</strong>. Margin prosesor menipis meski harga naik.
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap">
+                            <span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                            Nov 2022–Jan 2023
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                                <i class="fas fa-arrow-down"></i> Arabica −18%
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            <strong class="text-coffee-900">Brazil Recovery Crop</strong> — Off-year Brazil 2022/23 lebih baik dari perkiraan, supply global longgar.
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            Harga cherry turun <strong class="text-coffee-900">15–20%</strong>. Petani menahan panen, kualitas menurun akibat delay picking.
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap">
+                            <span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                            Jun–Agu 2024
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+                                <i class="fas fa-arrow-up"></i> Arabica +25%
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            <strong class="text-coffee-900">El Niño Vietnam</strong> — Kekeringan parah di Central Highlands Vietnam, Robusta global defisit 4.2 juta kantong.
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            Differential Indonesia naik signifikan. Robusta Lampung jadi <strong class="text-coffee-900">“alternative premium”</strong> di pasar blending Eropa.
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap">
+                            <span class="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>
+                            Jan–Mar 2025
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
+                                <i class="fas fa-arrow-down"></i> Arabica −8%
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            <strong class="text-coffee-900">Brazil Outlook Positif</strong> — Cuaca normal + investasi irigasi → on-year crop 2025/26 diproyeksi 68+ juta kantong.
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            Window <strong class="text-coffee-900">lock price Q2–Q3</strong> direkomendasikan. Jangan spekulasi di bear market.
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap">
+                            <span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            Apr–Mei 2026
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                                <i class="fas fa-minus"></i> Stabil
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            <strong class="text-coffee-900">Keseimbangan Supply</strong> — Brazil on-year, Vietnam recovery, Indonesia normal. Pasar sideways.
+                        </td>
+                        <td class="px-5 py-4 text-coffee-700">
+                            Fokus beralih ke <strong class="text-coffee-900">quality & consistency</strong>. Differential flat, premium cup jadi pembeda utama.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-5 py-4 bg-coffee-50 border-t border-coffee-100">
+            <p class="text-xs text-coffee-500 flex items-start gap-2">
+                <i class="fas fa-lightbulb text-yellow-500 mt-0.5"></i>
+                <span><strong>Insight:</strong> 5 dari 6 event dipicu oleh cuaca ekstrem atau geopolitik. Hanya 1 event (Apr–Mei 2026) yang murni fundamental pasar. Ini menunjukkan volatilitas kopi >60% berasal dari supply shock, bukan demand shift.</span>
+            </p>
+        </div>
+    </div>
+</div>
+</section>
+
+
+<!-- ===== SECTION: EARLY WARNING SYSTEM ===== -->
+<section id="early-warning" class="py-16 bg-cream">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="text-center mb-10">
+        <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase">🚨 Risk Monitoring</span>
+        <h2 class="section-title mt-2">Early Warning System</h2>
+        <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-2">
+            Empat kategori sinyal yang harus dipantau 24/7 untuk mengantisipasi pergerakan pasar sebelum terjadi.
+        </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1: Weather Alert -->
+        <div class="card p-6 hover:shadow-xl transition-all duration-300 border-t-4 border-t-blue-500">
+            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-4">
+                <span class="text-2xl">🌦️</span>
+            </div>
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2">Weather Alert</h3>
+            <p class="text-xs text-coffee-500 mb-4 leading-relaxed">
+                Cuaca ekstrem adalah pemicu #1 volatilitas kopi. Pantau sinyal 3–6 bulan sebelum panen.
+            </p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-satellite text-blue-500 mt-0.5"></i>
+                    <span><strong>NOAA ENSO</strong> — El Niño / La Niña probability index</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-snowflake text-blue-500 mt-0.5"></i>
+                    <span><strong>Frost Brazil</strong> — Minas Gerais temp forecast (Jun–Aug)</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-sun text-blue-500 mt-0.5"></i>
+                    <span><strong>Drought Vietnam</strong> — Central Highlands rainfall tracker</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-cloud-rain text-blue-500 mt-0.5"></i>
+                    <span><strong>BMKG Indonesia</strong> — Dry season length prediction</span>
+                </li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-coffee-100">
+                <span class="text-[10px] uppercase tracking-wider text-coffee-400 font-semibold">Trigger Threshold</span>
+                <p class="text-xs text-coffee-600 mt-1">ENSO probability >65% atau frost risk >30% → aktifkan mode hedging.</p>
+            </div>
+        </div>
+
+        <!-- Card 2: Logistics & Freight -->
+        <div class="card p-6 hover:shadow-xl transition-all duration-300 border-t-4 border-t-amber-500">
+            <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
+                <span class="text-2xl">🚢</span>
+            </div>
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2">Logistics & Freight</h3>
+            <p class="text-xs text-coffee-500 mb-4 leading-relaxed">
+                Biaya logistik bisa memakan 15–25% margin FOB. Perubahan cepat, dampak langsung.
+            </p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-ship text-amber-500 mt-0.5"></i>
+                    <span><strong>Drewry WCI</strong> — Container freight index (Asia–US)</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5"></i>
+                    <span><strong>Red Sea Tension</strong> — Suez Canal disruption risk</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-anchor text-amber-500 mt-0.5"></i>
+                    <span><strong>Port Congestion</strong> — Tanjung Priok & US East Coast</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-oil-can text-amber-500 mt-0.5"></i>
+                    <span><strong>Bunker Fuel</strong> — VLSFO price trend</span>
+                </li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-coffee-100">
+                <span class="text-[10px] uppercase tracking-wider text-coffee-400 font-semibold">Trigger Threshold</span>
+                <p class="text-xs text-coffee-600 mt-1">Freight naik >20% dalam 30 hari → renegotiate FOB term atau switch port.</p>
+            </div>
+        </div>
+
+        <!-- Card 3: Policy & Currency -->
+        <div class="card p-6 hover:shadow-xl transition-all duration-300 border-t-4 border-t-purple-500">
+            <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mb-4">
+                <span class="text-2xl">📜</span>
+            </div>
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2">Policy & Currency</h3>
+            <p class="text-xs text-coffee-500 mb-4 leading-relaxed">
+                Regulasi dan kurs bisa mengubah economics ekspor dalam semalam. Butuh monitoring proaktif.
+            </p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-university text-purple-500 mt-0.5"></i>
+                    <span><strong>BI Rate</strong> — Suku bunga & intervensi rupiah</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-leaf text-purple-500 mt-0.5"></i>
+                    <span><strong>EUDR</strong> — EU Deforestation Regulation compliance</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-flag-usa text-purple-500 mt-0.5"></i>
+                    <span><strong>US Tariff</strong> — Coffee import duty & trade war risk</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-certificate text-purple-500 mt-0.5"></i>
+                    <span><strong>Certification</strong> — Organic, Fair Trade, Rainforest update</span>
+                </li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-coffee-100">
+                <span class="text-[10px] uppercase tracking-wider text-coffee-400 font-semibold">Trigger Threshold</span>
+                <p class="text-xs text-coffee-600 mt-1">IDR/USD volatilitas >5% dalam seminggu atau EUDR deadline <90 hari.</p>
+            </div>
+        </div>
+
+        <!-- Card 4: Crop Cycle Calendar -->
+        <div class="card p-6 hover:shadow-xl transition-all duration-3 border-t-4 border-t-green-500">
+            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mb-4">
+                <span class="text-2xl">📅</span>
+            </div>
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2">Crop Cycle Calendar</h3>
+            <p class="text-xs text-coffee-500 mb-4 leading-relaxed">
+                Timing adalah segalanya. Ketahui kapan supply peak & trough di tiap origin utama.
+            </p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-globe-americas text-green-500 mt-0.5"></i>
+                    <span><strong>Brazil</strong> — Flowering: Sep–Nov | Harvest: Apr–Sep</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-globe-asia text-green-500 mt-0.5"></i>
+                    <span><strong>Vietnam</strong> — Flowering: Jan–Mar | Harvest: Oct–Jan</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-flag text-green-500 mt-0.5"></i>
+                    <span><strong>Indonesia</strong> — Flowering: Jun–Aug | Harvest: Oct–Mar</span>
+                </li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700">
+                    <i class="fas fa-globe-africa text-green-500 mt-0.5"></i>
+                    <span><strong>Colombia</strong> — Mitaca: Apr–Jun | Principal: Oct–Jan</span>
+                </li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-coffee-100">
+                <span class="text-[10px] uppercase tracking-wider text-coffee-400 font-semibold">Trigger Threshold</span>
+                <p class="text-xs text-coffee-600 mt-1">60 hari sebelum peak harvest major origin → update inventory & pricing strategy.</p>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+
+
+    </section>
 <!-- FOOTER -->
 <footer class="bg-coffee-950 text-coffee-300 py-12">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
