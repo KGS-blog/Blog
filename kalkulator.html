@@ -2264,6 +2264,11 @@ function initStatsCharts() {
     }
 }
 
+// ========== GITHUB AUTO-UPDATE CONFIG ==========
+const GITHUB_USERNAME = 'KGS-blog';
+const GITHUB_REPO = 'coffee-prices';
+const GITHUB_DATA_URL = `https://${GITHUB_USERNAME}.github.io/${GITHUB_REPO}/prices.json`;
+
 // ========== COFFEE PRICE CALCULATOR (v2) ==========
 const COFFEE_LB_TO_KG = 0.45359237;
 const COFFEE_DEFAULTS = {
@@ -2422,43 +2427,67 @@ function coffeePublicEdit() {
 }
 
 async function coffeeFetchPrices() {
-  showToast("Mengambil harga terkini...", "info");
+  const icon = document.getElementById('coffee-refresh-icon');
+  const kursIcon = document.getElementById('coffee-kurs-icon');
+  const lastUpdate = document.getElementById('coffee-last-update');
+
+  if (icon) icon.classList.add('fa-spin');
+  if (kursIcon) kursIcon.classList.add('fa-spin');
+  showToast("Mengambil data dari GitHub...", "info");
+
   try {
-    var resA = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/KC=F?interval=1d&range=1d").catch(function() { return null; });
-    var resR = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/RM=F?interval=1d&range=1d").catch(function() { return null; });
-    var updated = false;
-    if (resA && resA.ok) {
-      var dataA = await resA.json();
-      var meta = dataA.chart && dataA.chart.result && dataA.chart.result[0] && dataA.chart.result[0].meta;
-      if (meta && meta.regularMarketPrice) {
-        var price = meta.regularMarketPrice;
-        if (price < 10) price = price * 100;
-        coffeeParams.arabicaCents = parseFloat(price.toFixed(2));
-        updated = true;
-      }
+    const url = GITHUB_DATA_URL + '?t=' + Date.now();
+    const res = await fetch(url, { cache: 'no-store' });
+
+    if (!res.ok) throw new Error('GitHub Pages tidak merespons (' + res.status + ')');
+
+    const data = await res.json();
+
+    if (!data.arabica || !data.robusta || !data.kurs) {
+      throw new Error('Format data tidak valid');
     }
-    if (resR && resR.ok) {
-      var dataR = await resR.json();
-      var metaR = dataR.chart && dataR.chart.result && dataR.chart.result[0] && dataR.chart.result[0].meta;
-      if (metaR && metaR.regularMarketPrice) {
-        var priceR = metaR.regularMarketPrice;
-        if (priceR < 1000) priceR = priceR * 1000;
-        coffeeParams.robustaTon = Math.round(priceR);
-        updated = true;
-      }
+
+    const arabicaInput = document.getElementById('coffee-pub-arabica');
+    const robustaInput = document.getElementById('coffee-pub-robusta');
+    const kursInput = document.getElementById('coffee-pub-kurs');
+
+    if (arabicaInput) arabicaInput.value = data.arabica.price;
+    if (robustaInput) robustaInput.value = data.robusta.price;
+    if (kursInput) kursInput.value = data.kurs.rate;
+
+    if (lastUpdate && data.lastUpdated) {
+      const date = new Date(data.lastUpdated);
+      const timeStr = date.toLocaleString('id-ID', { 
+        day: 'numeric', month: 'short', year: 'numeric', 
+        hour: '2-digit', minute: '2-digit',
+        timeZone: 'Asia/Jakarta'
+      });
+      lastUpdate.innerHTML = '<i class="fas fa-check-circle text-green-400 mr-1"></i>Update: ' + timeStr + ' WIB (GitHub Auto)';
     }
-    if (updated) {
-      coffeeSaveParams();
-      coffeeSyncInputs();
-      coffeeCalculateAll();
-      syncCoffeeToFob();
-      showToast("Harga futures berhasil diperbarui!", "success");
-    } else {
-      showToast("Gagal fetch. Update manual.", "error");
+
+    coffeePublicEdit();
+    syncCoffeeToFob();
+
+    showToast(
+      'Data diperbarui! Arabica: ' + data.arabica.price + '¢/lb | Robusta: ' + data.robusta.price + '$/t | Kurs: ' + data.kurs.rate,
+      'success'
+    );
+
+  } catch (err) {
+    console.error('[coffeeFetchPrices] Error:', err);
+    showToast('Gagal fetch dari GitHub: ' + err.message + '. Silakan edit manual atau cek repo.', 'error');
+
+    if (lastUpdate) {
+      lastUpdate.innerHTML = '<i class="fas fa-exclamation-triangle text-red-400 mr-1"></i>Gagal: ' + err.message;
     }
-  } catch (e) {
-    showToast("Gagal fetch dari Yahoo.", "error");
+  } finally {
+    if (icon) icon.classList.remove('fa-spin');
+    if (kursIcon) kursIcon.classList.remove('fa-spin');
   }
+}
+
+async function fetchKurs() {
+  await coffeeFetchPrices();
 }
 
 function coffeeResetDefault() {
@@ -3726,6 +3755,11 @@ document.addEventListener("DOMContentLoaded", function() {
   syncCoffeeToFob();
   updateFobDefaults();
   calculateFOBv2();
+
+  // Auto-fetch coffee prices from GitHub on load
+  setTimeout(function() {
+    coffeeFetchPrices();
+  }, 1500);
 });
 </script>
 <script>
@@ -3980,6 +4014,7 @@ main {
 
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -4157,19 +4192,16 @@ main {
                     <p class="text-xs text-coffee-300 mt-0.5">C-Market Futures → USD/IDR per Kg</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-medium border border-blue-500/20">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>Komersial Grade
-                    </span>
-                </div>
-                <div class="flex items-center gap-2">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 text-[10px] font-medium border border-green-500/20">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>Live
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>Auto (GitHub)
                     </span>
-                    <button type="button" onclick="coffeeFetchPrices()" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all backdrop-blur-sm border border-white/10 flex items-center gap-1.5">
-                        <i class="fas fa-sync-alt text-[10px]"></i> Refresh
+                    <button type="button" onclick="coffeeFetchPrices()" 
+                            class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all backdrop-blur-sm border border-white/10 flex items-center gap-1.5">
+                        <i class="fas fa-sync-alt text-[10px]" id="coffee-refresh-icon"></i> Refresh
                     </button>
-                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-coffee-800/50 text-coffee-400 text-[10px] border border-coffee-700/30" title="Arabica, Robusta, dan Kurs bersumber dari data live">
-                        <i class="fas fa-lock text-[8px]"></i> Locked
+                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-coffee-800/50 text-coffee-400 text-[10px] border border-coffee-700/30" 
+                          title="Data otomatis dari GitHub Actions setiap 6 jam">
+                        <i class="fas fa-robot text-[8px]"></i> Auto
                     </span>
                 </div>
             </div>
@@ -4177,37 +4209,60 @@ main {
             <!-- Inputs -->
             <div class="grid grid-cols-3 gap-2 mb-4">
                 <div>
-                    <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Arabica C-Market (¢/lb) — Grade C</label>
-                    <input type="number" id="coffee-pub-arabica" value="275.70" step="0.01" readonly class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full cursor-not-allowed" title="Live data — klik Refresh untuk update">
+                    <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Arabica C-Market (¢/lb)</label>
+                    <input type="number" id="coffee-pub-arabica" value="275.70" step="0.01" 
+                           class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full" 
+                           oninput="coffeePublicEdit()" title="Auto-update dari GitHub — bisa juga edit manual">
                 </div>
                 <div>
                     <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Robusta London ($/t) — Grade Komersial</label>
-                    <input type="number" id="coffee-pub-robusta" value="3487" step="1" readonly class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full cursor-not-allowed" title="Live data — klik Refresh untuk update">
+                    <input type="number" id="coffee-pub-robusta" value="3487" step="1" 
+                           class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full" 
+                           oninput="coffeePublicEdit()" title="Auto-update dari GitHub — bisa juga edit manual">
                 </div>
                 <div>
                     <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Kurs IDR</label>
                     <div class="flex gap-1.5">
-                        <input type="number" id="coffee-pub-kurs" value="17570" step="10" readonly class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full cursor-not-allowed" title="Live data — klik Refresh untuk update">
-                        <button type="button" onclick="fetchKurs()" class="bg-white/10 hover:bg-white/20 text-coffee-300 px-2 py-2 rounded-lg text-xs transition-all border border-white/10 flex items-center gap-1" title="Refresh kurs real-time">
-                            <i class="fas fa-sync-alt text-[10px]"></i>
+                        <input type="number" id="coffee-pub-kurs" value="17570" step="10" 
+                               class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full" 
+                               oninput="coffeePublicEdit()" title="Auto-update dari GitHub — bisa juga edit manual">
+                        <button type="button" onclick="fetchKurs()" 
+                                class="bg-white/10 hover:bg-white/20 text-coffee-300 px-2 py-2 rounded-lg text-xs transition-all border border-white/10 flex items-center gap-1" 
+                                title="Refresh dari GitHub">
+                            <i class="fas fa-sync-alt text-[10px]" id="coffee-kurs-icon"></i>
                         </button>
                     </div>
                 </div>
                 <div>
                     <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Diff Arabica (¢) - editable</label>
-                    <input type="number" id="coffee-pub-diff-a" value="20" step="0.5" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-white w-full" oninput="coffeePublicEdit()">
+                    <input type="number" id="coffee-pub-diff-a" value="20" step="0.5" 
+                           class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-white w-full" 
+                           oninput="coffeePublicEdit()">
                 </div>
                 <div>
                     <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Diff Robusta ($/t) - editable</label>
-                    <input type="number" id="coffee-pub-diff-r" value="150" step="1" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-white w-full" oninput="coffeePublicEdit()">
+                    <input type="number" id="coffee-pub-diff-r" value="150" step="1" 
+                           class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-white w-full" 
+                           oninput="coffeePublicEdit()">
                 </div>
                 <div>
                     <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Cherry Ratio editable </label>
-                    <input type="number" id="coffee-pub-ratio" value="5" step="0.1" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-white w-full" oninput="coffeePublicEdit()">
+                    <input type="number" id="coffee-pub-ratio" value="5" step="0.1" 
+                           class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-white w-full" 
+                           oninput="coffeePublicEdit()">
                 </div>
             </div>
 
-            <!-- Results -->
+            <!-- STATUS LAST UPDATE -->
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] text-coffee-400" id="coffee-last-update">Memuat data dari GitHub...</span>
+                <a href="https://github.com/KGS-blog/coffee-prices/actions" target="_blank" 
+                   class="text-[10px] text-coffee-400 hover:text-coffee-300 underline">
+                    <i class="fab fa-github mr-1"></i>Lihat log GitHub
+                </a>
+            </div>
+
+<!-- Results -->
             <div class="space-y-3">
                 <!-- Arabica -->
                 <div class="bg-black/20 rounded-xl p-3">
