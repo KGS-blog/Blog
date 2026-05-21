@@ -331,7 +331,7 @@ function updateStaticContent() {
 
     // NAVBAR (public view)
     const navLinks = document.querySelectorAll("#public-view .nav-link");
-    const navTextsID = ["Beranda", "Tentang", "Kalkulator", "Artikel", "Laporan USDA", "Langganan"];
+    const navTextsID = ["Beranda", "Tentang", "Kalkulator", "Artikel", "Market Analysis", "Langganan"];
     const navTextsEN = ["Home", "About", "Calculator", "Articles", "USDA Report", "Subscribe"];
     navLinks.forEach((link, idx) => {
         if (idx < 6 && link.textContent.trim() && !link.querySelector("i")) {
@@ -4031,7 +4031,7 @@ main {
     </a>
     <div class="flex items-center gap-4">
         <a href="index.html" class="nav-link"><i class="fas fa-arrow-left mr-2"></i>Kembali ke Blog</a>
-        <a href="laporan-usda.html" class="nav-link">Laporan USDA</a>
+        <a href="laporan-usda.html" class="nav-link">Market Analysis</a>
         <div class="flex items-center gap-1 bg-coffee-100 rounded-lg p-1">
             <button type="button" id="btn-id" class="lang-btn active" onclick="setLanguage('id')">ID</button>
             <button type="button" id="btn-en" class="lang-btn inactive" onclick="setLanguage('en')">EN</button>
@@ -5053,7 +5053,7 @@ main {
     <div class="flex gap-6 text-sm">
         <a href="index.html" class="hover:text-white transition-colors">Blog</a>
         <a href="kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a>
-        <a href="laporan-usda.html" class="hover:text-white transition-colors">Laporan USDA</a>
+        <a href="laporan-usda.html" class="hover:text-white transition-colors">Market Analysis</a>
     </div>
     <p class="text-sm text-coffee-500"> 2026 Ganjar Satyanagara</p>
 </div>
