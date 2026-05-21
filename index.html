@@ -338,7 +338,7 @@ main {
         <button type="button" class="nav-link nav-btn" data-nav="about">Tentang</button>
         <a href="kalkulator.html" class="nav-link">Kalkulator</a>
         <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
-        <a href="laporan-usda.html" class="nav-link">Market analysis</a>
+        <a href="laporan-usda.html" class="nav-link">Market Analysis</a>
         <button type="button" class="nav-link nav-btn" data-nav="subscribe">Langganan</button>
     </div>
     <div class="flex items-center gap-3">
@@ -1468,8 +1468,8 @@ function updateStaticContent() {
 
     // NAVBAR (public view)
     const navLinks = document.querySelectorAll("#public-view .nav-link");
-    const navTextsID = ["Beranda", "Tentang", "Kalkulator", "Artikel", "Laporan USDA", "Langganan"];
-    const navTextsEN = ["Home", "About", "Calculator", "Articles", "USDA Report", "Subscribe"];
+    const navTextsID = ["Beranda", "Tentang", "Kalkulator", "Artikel", "Market Analysis", "Langganan"];
+    const navTextsEN = ["Home", "About", "Calculator", "Articles", "Market Analysis", "Subscribe"];
     navLinks.forEach((link, idx) => {
         if (idx < 6 && link.textContent.trim() && !link.querySelector("i")) {
             link.textContent = currentLang === "id" ? navTextsID[idx] : navTextsEN[idx];
