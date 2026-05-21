@@ -48,7 +48,7 @@ function showDataStatus(status, message) {
     text.textContent = message;
     pill.className = "status-pill " + status;
     if (status === "loaded" || status === "offline") {
-        setTimeout(() => bar.classList.add("hidden"), 5000);
+        setTimeout(() => { if (bar) bar.classList.add("hidden"); }, 5000);
     }
 }
 
@@ -67,6 +67,7 @@ function showSaveStatus(status, message) {
     const box = document.getElementById("save-status-box");
     const icon = document.getElementById("save-status-icon");
     const text = document.getElementById("save-status-text");
+    if (!indicator || !box || !icon || !text) return;
     indicator.classList.remove("hidden");
     text.textContent = message;
     if (status === "saving") {
@@ -75,11 +76,11 @@ function showSaveStatus(status, message) {
     } else if (status === "saved") {
         box.className = "px-4 py-2 rounded-xl shadow-lg flex items-center gap-2 text-sm font-medium bg-green-50 text-green-700 border border-green-200";
         icon.className = "fas fa-check-circle";
-        setTimeout(() => indicator.classList.add("hidden"), 2000);
+        setTimeout(() => { if (indicator) indicator.classList.add("hidden"); }, 2000);
     } else if (status === "error") {
         box.className = "px-4 py-2 rounded-xl shadow-lg flex items-center gap-2 text-sm font-medium bg-red-50 text-red-700 border border-red-200";
         icon.className = "fas fa-exclamation-circle";
-        setTimeout(() => indicator.classList.add("hidden"), 3000);
+        setTimeout(() => { if (indicator) indicator.classList.add("hidden"); }, 3000);
     }
 }
 
@@ -993,7 +994,7 @@ function renderDashboardOverview() {
     if (elDraftCount) elDraftCount.textContent = draftArticles + " Draft";
     if (elTotalComments) elTotalComments.textContent = totalComments;
     if (elTotalSubscribers) elTotalSubscribers.textContent = totalSubscribers;
-    if (elTotalViews) elTotalViews.textContent = totalViews.toLocaleString();
+    if (elTotalViews) elTotalViews.textContent = formatNumber(totalViews);
     const pendingComments = commentsData.filter(c => c.status === "pending").length;
     const commentBadge = document.getElementById("comment-badge");
     const subscriberBadge = document.getElementById("subscriber-badge");
@@ -1361,12 +1362,14 @@ function showToast(message, type) {
     const toast = document.getElementById("toast");
     const icon = document.getElementById("toast-icon");
     const box = document.getElementById("toast-box");
-    document.getElementById("toast-message").textContent = message;
+    const msg = document.getElementById("toast-message");
+    if (!toast || !icon || !box || !msg) { console.log("[Toast] Elements missing:", message); return; }
+    msg.textContent = message;
     if (type === "success") { icon.className = "fas fa-check-circle text-green-400"; box.className = "bg-coffee-800 text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3"; }
     else if (type === "error") { icon.className = "fas fa-times-circle text-red-400"; box.className = "bg-red-900 text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3"; }
     else { icon.className = "fas fa-info-circle text-coffee-400"; box.className = "bg-coffee-800 text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3"; }
     toast.classList.remove("translate-y-20", "opacity-0");
-    setTimeout(() => toast.classList.add("translate-y-20", "opacity-0"), 3000);
+    setTimeout(() => { if (toast) toast.classList.add("translate-y-20", "opacity-0"); }, 3000);
 }
 // ========== CHARTS ==========
 let chartsInitialized = false;
@@ -2001,7 +2004,7 @@ function renderDashboardStatistics() {
     if (elTotalArticles) elTotalArticles.textContent = totalArticles;
     if (elPubBadge) elPubBadge.textContent = publishedArticles + " Published";
     if (elDraftCount) elDraftCount.textContent = draftArticles + " Draft";
-    if (elTotalViews) elTotalViews.textContent = totalViews.toLocaleString();
+    if (elTotalViews) elTotalViews.textContent = formatNumber(totalViews);
     if (elAvgViews) elAvgViews.textContent = avgViews + (currentLang === "id" ? " rata-rata" : " avg");
     if (elTotalComments) elTotalComments.textContent = totalComments;
     if (elPendingBadge) elPendingBadge.textContent = pendingComments + " Pending";
@@ -2067,7 +2070,7 @@ function renderStatsTopArticles() {
         var isPublished = art.status === "Published";
         var views = parseInt(art.views) || 0;
         var barWidth = maxViews > 0 ? (views / maxViews) * 100 : 0;
-        return "<tr class='hover:bg-gray-50 transition-colors'><td class='px-5 py-3 text-sm font-medium text-gray-400'>" + (idx + 1) + "</td><td class='px-5 py-3'><div class='font-medium text-gray-800 text-sm truncate max-w-xs'>" + title + "</div></td><td class='px-5 py-3'><span class='inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600'>" + catLabel + "</span></td><td class='px-5 py-3 text-sm text-gray-600 text-right'>" + views.toLocaleString() + "</td><td class='px-5 py-3'><span class='inline-block px-2 py-0.5 rounded-full text-xs font-medium " + (isPublished ? "bg-green-50 text-green-600" : "bg-yellow-50 text-yellow-600") + "'><i class='fas " + (isPublished ? "fa-check-circle" : "fa-pencil-ruler") + " mr-1'></i>" + (isPublished ? "Published" : "Draft") + "</span></td><td class='px-5 py-3'><div class='w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden'><div class='h-full bg-coffee-500 rounded-full transition-all duration-500' style='width:" + barWidth + "%'></div></div></td></tr>";
+        return "<tr class='hover:bg-gray-50 transition-colors'><td class='px-5 py-3 text-sm font-medium text-gray-400'>" + (idx + 1) + "</td><td class='px-5 py-3'><div class='font-medium text-gray-800 text-sm truncate max-w-xs'>" + title + "</div></td><td class='px-5 py-3'><span class='inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600'>" + catLabel + "</span></td><td class='px-5 py-3 text-sm text-gray-600 text-right'>" + formatNumber(views) + "</td><td class='px-5 py-3'><span class='inline-block px-2 py-0.5 rounded-full text-xs font-medium " + (isPublished ? "bg-green-50 text-green-600" : "bg-yellow-50 text-yellow-600") + "'><i class='fas " + (isPublished ? "fa-check-circle" : "fa-pencil-ruler") + " mr-1'></i>" + (isPublished ? "Published" : "Draft") + "</span></td><td class='px-5 py-3'><div class='w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden'><div class='h-full bg-coffee-500 rounded-full transition-all duration-500' style='width:" + barWidth + "%'></div></div></td></tr>";
     }).join("");
 }
 
@@ -2123,8 +2126,8 @@ function renderStatsInteractionSummary() {
     }
 
     var items = [
-        [currentLang === "id" ? "Rata-rata views per artikel" : "Avg views per article", avgViews.toLocaleString()],
-        [currentLang === "id" ? "Artikel paling banyak views" : "Top article by views", topArticleTitle + " (" + topArticleViews.toLocaleString() + ")"],
+        [currentLang === "id" ? "Rata-rata views per artikel" : "Avg views per article", formatNumber(avgViews)],
+        [currentLang === "id" ? "Artikel paling banyak views" : "Top article by views", topArticleTitle + " (" + formatNumber(topArticleViews) + ")"],
         [currentLang === "id" ? "Komentar pending" : "Pending comments", pendingComments.toString()],
         [currentLang === "id" ? "Rasio Published / Draft" : "Published / Draft ratio", pubRatio + "% / " + (100 - pubRatio) + "%"],
         [currentLang === "id" ? "Total artikel tersedia" : "Total articles available", totalArticles.toString()]
@@ -2151,7 +2154,7 @@ function renderStatsViewerCountries() {
     var maxViews = countryData[0].views;
     container.innerHTML = countryData.slice(0, 8).map(function(c) {
         var pct = maxViews > 0 ? Math.round((c.views / maxViews) * 100) : 0;
-        return "<div class='flex items-center gap-2'><span class='text-base w-5 text-center'>" + c.flag + "</span><div class='flex-1'><div class='flex items-center justify-between mb-0.5'><span class='text-xs text-gray-600'>" + c.name + "</span><span class='text-xs font-medium text-gray-700'>" + c.views.toLocaleString() + "</span></div><div class='h-1 bg-gray-100 rounded-full overflow-hidden'><div class='h-full bg-cyan-500 rounded-full transition-all duration-500' style='width:" + pct + "%'></div></div></div></div>";
+        return "<div class='flex items-center gap-2'><span class='text-base w-5 text-center'>" + c.flag + "</span><div class='flex-1'><div class='flex items-center justify-between mb-0.5'><span class='text-xs text-gray-600'>" + c.name + "</span><span class='text-xs font-medium text-gray-700'>" + c.formatNumber(views) + "</span></div><div class='h-1 bg-gray-100 rounded-full overflow-hidden'><div class='h-full bg-cyan-500 rounded-full transition-all duration-500' style='width:" + pct + "%'></div></div></div></div>";
     }).join("");
 }
 
@@ -2285,17 +2288,17 @@ function coffeeSaveParams() {
 }
 function coffeeFmt(num, d) {
   d = d || 2;
-  return num.toLocaleString("en-US", {minimumFractionDigits: d, maximumFractionDigits: d});
+  return formatNumberDecimal(num, d);
 }
 function coffeeFmtIdr(num) {
-  return "Rp " + Math.round(num).toLocaleString("id-ID");
+  return "Rp " + formatNumber(Math.round(num));
 }
 function coffeeFmtIdrShort(num) {
   var n = Math.round(num);
   if (n >= 1000000000) return "Rp" + (n/1000000000).toFixed(2) + "M";
   if (n >= 1000000) return "Rp" + (n/1000000).toFixed(2) + "jt";
   if (n >= 1000) return "Rp" + (n/1000).toFixed(0) + "rb";
-  return "Rp" + n.toLocaleString("id-ID");
+  return "Rp" + formatNumber(n);
 }
 
 function coffeeCalculateAll() {
@@ -2354,7 +2357,7 @@ function coffeeCalculateAll() {
   var pubAq = document.getElementById("coffee-pub-a-quote");
   if (pubAq) pubAq.textContent = aCents.toFixed(2) + " ¢/lb";
   var pubRq = document.getElementById("coffee-pub-r-quote");
-  if (pubRq) pubRq.textContent = "$" + rTon.toLocaleString() + "/t";
+  if (pubRq) pubRq.textContent = "$" + formatNumber(rTon) + "/t";
   var pubDr = document.getElementById("coffee-pub-diff-r-txt");
   if (pubDr) pubDr.textContent = "+$" + diffR + "/t";
   var pubRatio = document.getElementById("coffee-pub-ratio-txt");
@@ -2475,11 +2478,20 @@ let fobProductIdCounter = 1;
 function toUSDv2(idr, kurs) {
   return idr / kurs;
 }
+function formatNumber(num) {
+  return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+function formatNumberDecimal(num, d) {
+  d = d || 2;
+  var parts = num.toFixed(d).split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
 function formatUSDv2(num) {
-  return '$' + num.toFixed(2);
+  return '$' + formatNumberDecimal(num, 2);
 }
 function formatIDRv2(num) {
-  return 'Rp ' + Math.round(num).toLocaleString('id-ID');
+  return 'Rp ' + formatNumber(Math.round(num));
 }
 
 // ========== OCEAN FREIGHT MATRIX (Origin ID Port → US Port) ==========
@@ -2579,7 +2591,7 @@ function updateUsPortDefaults() {
   var modeEl = document.getElementById("fob-shipment-mode");
   var palletEl = document.getElementById("fob-pallet-count");
   if (modeEl) modeEl.textContent = modeLabel;
-  if (palletEl) palletEl.textContent = pallets + " pallet (" + volume.toLocaleString("id-ID") + " kg)";
+  if (palletEl) palletEl.textContent = pallets + " pallet (" + formatNumber(volume) + " kg)";
 }
 
 function updateFobDefaults() {
@@ -2748,9 +2760,9 @@ function calculateFOBv2() {
   document.getElementById('fob-res-cost').textContent = formatUSDv2(totalCost);
   // Pallet cost display
   var palletResEl = document.getElementById('fob-res-pallet');
-  if (palletResEl) palletResEl.textContent = formatUSDv2(palletUSD) + " (Rp" + Math.round(palletPerKgIDR).toLocaleString("id-ID") + "/kg)";
+  if (palletResEl) palletResEl.textContent = formatUSDv2(palletUSD) + " (Rp" + formatNumber(Math.round(palletPerKgIDR)) + "/kg)";
   document.getElementById('fob-res-margin').textContent = formatUSDv2(marginValue) + ' (' + marginPct + '%)';
-  document.getElementById('fob-res-volume').textContent = volume.toLocaleString('id-ID');
+  document.getElementById('fob-res-volume').textContent = formatNumber(volume);
   document.getElementById('fob-res-total').textContent = formatUSDv2(totalShipment);
 
   // === LANDED COST CALCULATION ===
@@ -2769,7 +2781,7 @@ function calculateFOBv2() {
   var landedTotalEl = document.getElementById('fob-res-landed-total');
   if (landedTotalEl) landedTotalEl.textContent = formatUSDv2(landedTotal);
   var landedVolEl = document.getElementById('fob-res-landed-vol');
-  if (landedVolEl) landedVolEl.textContent = volume.toLocaleString('id-ID');
+  if (landedVolEl) landedVolEl.textContent = formatNumber(volume);
   var landedFinal2El = document.getElementById('fob-res-landed-final-2');
   if (landedFinal2El) landedFinal2El.textContent = formatUSDv2(landedFinal);
   var shipEl = document.getElementById('fob-res-ship');
@@ -2839,6 +2851,12 @@ function addFobProduct() {
   const originSel = document.getElementById('fob-origin');
   const gradeSel = document.getElementById('fob-grade');
   const gradeOpt = gradeSel.options[gradeSel.selectedIndex];
+  var portSel = document.getElementById('fob-port');
+  var usPortSel = document.getElementById('fob-us-port');
+  var originPortKey = portSel ? portSel.value : 'tanjungpriok';
+  var originPortText = portSel ? portSel.options[portSel.selectedIndex].text : '—';
+  var usPortKey = usPortSel ? usPortSel.value : 'ny';
+  var usPortText = usPortSel ? usPortSel.options[usPortSel.selectedIndex].text : '—';
 
   const product = {
     id: fobProductIdCounter++,
@@ -2873,12 +2891,16 @@ function addFobProduct() {
     insuranceUSD: calc.insuranceUSD,
     landedCostPerKg: calc.landedCostPerKg,
     landedFinal: calc.landedFinal,
-    landedTotal: calc.landedTotal
+    landedTotal: calc.landedTotal,
+    originPortKey: originPortKey,
+    originPortText: originPortText,
+    usPortKey: usPortKey,
+    usPortText: usPortText
   };
 
   fobProducts.push(product);
   renderFobProductList();
-  showToast('Produk ditambahkan ke daftar!', 'success');
+  showToast('Product added to list!', 'success');
 }
 
 function renderFobProductList() {
@@ -2896,11 +2918,13 @@ function renderFobProductList() {
       ? '<span class="inline-block px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-medium border border-purple-500/30 ml-2">Specialty</span>'
       : '<span class="inline-block px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-medium border border-blue-500/30 ml-2">Komersial</span>';
     const priceColor = p.gradeType === 'specialty' ? 'text-purple-300' : 'text-green-300';
-    var palletInfo = p.palletPriceIDR ? ' | Pallet Rp' + Math.round(p.palletPriceIDR).toLocaleString('id-ID') + '/unit (' + p.palletCapKg + 'kg)' : '';
+    var palletInfo = p.palletPriceIDR ? ' | Pallet Rp' + formatNumber(Math.round(p.palletPriceIDR)) + '/unit (' + p.palletCapKg + 'kg)' : '';
+    var portInfo = p.originPortText ? '<span class="inline-flex items-center gap-1 text-[9px] text-coffee-400"><i class="fas fa-ship text-[8px]"></i>' + p.originPortText + ' <i class="fas fa-arrow-right text-[7px]"></i> ' + p.usPortText + '</span>' : '';
     return '<div class="bg-white/5 rounded-xl p-4 border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">' +
       '<div class="flex-1">' +
         '<h4 class="font-serif text-sm font-bold text-white">' + (idx + 1) + '. ' + p.origin + gradeBadge + '</h4>' +
-        '<p class="text-xs text-coffee-300">' + p.grade + ' | ' + p.volume.toLocaleString('id-ID') + ' kg | Kurs ' + p.kurs.toLocaleString('id-ID') + palletInfo + '</p>' +
+        '<p class="text-xs text-coffee-300">' + p.grade + ' | ' + formatNumber(p.volume) + ' kg | Kurs ' + formatNumber(p.kurs) + palletInfo + '</p>' +
+        '<div class="flex items-center gap-2 mt-0.5">' + portInfo + '</div>' +
         '<p class="text-[10px] text-coffee-500 mt-0.5">Landed: Ship $' + p.shippingUSD.toFixed(2) + ' + Broker $' + p.customsUSD.toFixed(2) + ' + MPF $' + (p.mpfUSD||0).toFixed(2) + ' + HMF $' + (p.hmfUSD||0).toFixed(2) + ' + Ins $' + p.insuranceUSD.toFixed(2) + ' = $' + p.landedCostPerKg.toFixed(2) + '/kg</p>' +
       '</div>' +
       '<div class="text-right">' +
@@ -2928,32 +2952,131 @@ function clearFobProducts() {
   }
 }
 
-function showFobQuotation() {
-  if (fobProducts.length === 0) {
-    showToast('Daftar produk kosong. Tambahkan produk terlebih dahulu.', 'error');
-    return;
+// ========== LANDED COST PER QUOTATION (NOT PER PRODUCT) ==========
+// Landed cost is calculated based on GRAND TOTAL volume of ALL products in one shipment
+function calculateLandedForQuotation(products, originPortKey, usPortKey, kurs) {
+  if (!products || !Array.isArray(products) || products.length === 0) {
+    return { products: [], grandVolume: 0, mode: 'lcl', modeLabel: 'LCL', landedCostPerKg: 0, grandTotalFob: 0, grandTotalLanded: 0 };
   }
+  var grandVolume = products.reduce(function(sum, p) { return sum + (parseFloat(p.volume) || 0); }, 0);
+  var mode = getShipmentMode(grandVolume);
+  var modeLabel = getShipmentModeLabel(mode);
+  var oceanFreightPerKg = getOceanFreight(originPortKey, usPortKey, grandVolume);
+  var usPortSel = document.getElementById('fob-us-port');
+  var usPortOpt = usPortSel ? usPortSel.options[usPortSel.selectedIndex] : null;
+  var broker = usPortOpt ? (parseFloat(usPortOpt.dataset.broker) || 0.45) : 0.45;
+  var mpf = usPortOpt ? (parseFloat(usPortOpt.dataset.mpf) || 0.08) : 0.08;
+  var hmf = usPortOpt ? (parseFloat(usPortOpt.dataset.hmf) || 0.04) : 0.04;
+  var ins = usPortOpt ? (parseFloat(usPortOpt.dataset.ins) || 0.10) : 0.10;
+  var landedCostPerKg = oceanFreightPerKg + broker + mpf + hmf + ins;
+  var productLanded = products.map(function(p) {
+    var vol = parseFloat(p.volume) || 0;
+    var fobFinal = parseFloat(p.fobFinal) || 0;
+    var landedFinal = fobFinal + landedCostPerKg;
+    var totalShipment = parseFloat(p.totalShipment) || 0;
+    return {
+      id: p.id, nama: p.nama, origin: p.origin, grade: p.grade, gradeType: p.gradeType,
+      volume: p.volume, cMarketLb: p.cMarketLb, cMarketKg: p.cMarketKg,
+      diferensial: p.diferensial, premium: p.premium,
+      olahIDR: p.olahIDR, kemasanIDR: p.kemasanIDR, dokumenIDR: p.dokumenIDR,
+      logistikIDR: p.logistikIDR, palletPriceIDR: p.palletPriceIDR,
+      palletCapKg: p.palletCapKg, palletPerKgIDR: p.palletPerKgIDR, palletUSD: p.palletUSD,
+      kurs: p.kurs, marginPct: p.marginPct, fobFinal: fobFinal,
+      totalShipment: totalShipment, beanValue: p.beanValue, totalCost: p.totalCost,
+      marginValue: p.marginValue, originPortKey: p.originPortKey, originPortText: p.originPortText,
+      usPortKey: p.usPortKey, usPortText: p.usPortText,
+      _landedCostPerKg: landedCostPerKg, _oceanFreightPerKg: oceanFreightPerKg,
+      _brokerPerKg: broker, _mpfPerKg: mpf, _hmfPerKg: hmf, _insPerKg: ins,
+      _landedFinal: landedFinal, _landedTotal: landedFinal * vol,
+      _mode: mode, _modeLabel: modeLabel, _grandVolume: grandVolume
+    };
+  });
+  return {
+    products: productLanded, grandVolume: grandVolume, mode: mode, modeLabel: modeLabel,
+    oceanFreightPerKg: oceanFreightPerKg, landedCostPerKg: landedCostPerKg,
+    broker: broker, mpf: mpf, hmf: hmf, insurance: ins,
+    grandTotalFob: products.reduce(function(s, p) { return s + (parseFloat(p.totalShipment) || 0); }, 0),
+    grandTotalLanded: productLanded.reduce(function(s, p) { return s + (parseFloat(p._landedTotal) || 0); }, 0)
+  };
+}
+
+function showFobQuotation() {
+  console.log('[showFobQuotation] Starting...');
+  try {
+    if (!fobProducts || fobProducts.length === 0) {
+      showToast('Product list is empty. Add a product first.', 'error');
+      return;
+    }
+    console.log('[showFobQuotation] Products:', fobProducts.length);
+
+    // Validate all products have same origin and destination ports
+    var firstOriginKey = fobProducts[0].originPortKey || 'tanjungpriok';
+    var firstUsKey = fobProducts[0].usPortKey || 'ny';
+    var firstOriginText = fobProducts[0].originPortText || 'Tanjung Priok';
+    var firstUsText = fobProducts[0].usPortText || 'New York';
+    var mismatch = false;
+    var mismatchMsg = '';
+
+    for (var i = 1; i < fobProducts.length; i++) {
+      if ((fobProducts[i].originPortKey || 'tanjungpriok') !== firstOriginKey) {
+        mismatch = true;
+        mismatchMsg = 'Origin port mismatch: "' + firstOriginText + '" vs "' + (fobProducts[i].originPortText || 'Unknown') + '"';
+        break;
+      }
+      if ((fobProducts[i].usPortKey || 'ny') !== firstUsKey) {
+        mismatch = true;
+        mismatchMsg = 'Destination port mismatch: "' + firstUsText + '" vs "' + (fobProducts[i].usPortText || 'Unknown') + '"';
+        break;
+      }
+    }
+
+    if (mismatch) {
+      showToast('Cannot generate quotation: ' + mismatchMsg + '. All products must use the same origin and destination ports. Please clear the list and re-add with consistent ports.', 'error');
+      return;
+    }
+
+    // Calculate landed cost based on GRAND TOTAL volume (shared across all products)
+    var kurs = fobProducts[0].kurs || 16500;
+    console.log('[showFobQuotation] Calling calculateLandedForQuotation...');
+    var qResult = calculateLandedForQuotation(fobProducts, firstOriginKey, firstUsKey, kurs);
+    console.log('[showFobQuotation] qResult:', qResult);
+    if (!qResult || !qResult.products) {
+      showToast('Error calculating quotation. Please try again.', 'error');
+      return;
+    }
+    var landedProducts = qResult.products;
+    console.log('[showFobQuotation] landedProducts:', landedProducts.length);
 
   const section = document.getElementById('fob-quotation-section');
   section.classList.remove('hidden');
 
-  const kurs = fobProducts[0].kurs;
-  var originSel = document.getElementById('fob-port');
-  var destSel = document.getElementById('fob-us-port');
-  var originText = originSel ? originSel.options[originSel.selectedIndex].text : '—';
-  var destText = destSel ? destSel.options[destSel.selectedIndex].text : '—';
   document.getElementById('fob-q-date').textContent = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
-  document.getElementById('fob-q-kurs').textContent = kurs.toLocaleString('id-ID');
-  document.getElementById('fob-q-origin-port').textContent = originText;
-  document.getElementById('fob-q-dest-port').textContent = destText;
+  document.getElementById('fob-q-kurs').textContent = formatNumber(kurs);
+  document.getElementById('fob-q-origin-port').textContent = firstOriginText;
+  document.getElementById('fob-q-dest-port').textContent = firstUsText;
+
+  // Market Reference Data — locked at quotation date
+  var cMarketLb = parseFloat(document.getElementById('fob-cmarket').value) || 0;
+  var cMarketKg = cMarketLb / 0.453592;
+  var robustaTon = parseFloat(document.getElementById('coffee-pub-robusta').value) || 0;
+  var kursRef = parseFloat(document.getElementById('fob-kurs').value) || kurs;
+  document.getElementById('fob-q-cmarket-lb').textContent = (cMarketLb * 100).toFixed(2) + ' ¢/lb';
+  document.getElementById('fob-q-cmarket-kg').textContent = '$' + cMarketKg.toFixed(2) + '/kg';
+  document.getElementById('fob-q-robusta').textContent = '$' + formatNumber(robustaTon) + '/t';
+  document.getElementById('fob-q-kurs-ref').textContent = formatNumber(kursRef);
+
+  // Shipment summary
+  var palletCount = getPalletCount(qResult.grandVolume);
+  var shipSummary = '<div class="mb-3 px-4 py-3 bg-coffee-50 rounded-xl border border-coffee-100 flex flex-wrap items-center gap-4 text-xs text-coffee-600">' +
+    '<span><i class="fas fa-boxes mr-1 text-coffee-500"></i><strong>Total Volume:</strong> ' + formatNumber(qResult.grandVolume) + ' kg</span>' +
+    '<span><i class="fas fa-pallet mr-1 text-coffee-500"></i><strong>Pallets:</strong> ' + palletCount + ' (std export)</span>' +
+    '<span><i class="fas fa-ship mr-1 text-coffee-500"></i><strong>Mode:</strong> ' + qResult.modeLabel + '</span>' +
+    '<span><i class="fas fa-dollar-sign mr-1 text-coffee-500"></i><strong>Landed Cost/kg:</strong> $' + qResult.landedCostPerKg.toFixed(2) + ' (shared)</span>' +
+    '<span class="ml-auto text-coffee-400">Ocean: $' + qResult.oceanFreightPerKg.toFixed(2) + ' + Broker: $' + qResult.broker.toFixed(2) + ' + MPF: $' + qResult.mpf.toFixed(2) + ' + HMF: $' + qResult.hmf.toFixed(2) + ' + Ins: $' + qResult.insurance.toFixed(2) + '</span>' +
+  '</div>';
 
   let tbody = '';
-  let grandTotal = 0;
-
-  var grandTotalLanded = 0;
-  fobProducts.forEach((p, idx) => {
-    grandTotal += p.totalShipment;
-    grandTotalLanded += p.landedTotal;
+  landedProducts.forEach((p, idx) => {
     const gradeBadge = p.gradeType === 'specialty'
       ? '<span class="inline-block px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-medium border border-purple-200">Specialty</span>'
       : '<span class="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-medium border border-blue-200">Komersial</span>';
@@ -2961,21 +3084,26 @@ function showFobQuotation() {
       '<td class="px-3 py-3 text-sm">' + (idx + 1) + '</td>' +
       '<td class="px-3 py-3"><strong class="text-coffee-900">' + p.origin + '</strong><br><small class="text-coffee-500">' + p.grade + '</small></td>' +
       '<td class="px-3 py-3 text-sm text-coffee-600">' + p.grade + '<br>' + gradeBadge + '</td>' +
-      '<td class="px-3 py-3 text-sm text-right">' + p.volume.toLocaleString('id-ID') + '</td>' +
+      '<td class="px-3 py-3 text-sm text-right">' + formatNumber(p.volume) + '</td>' +
       '<td class="px-3 py-3 text-sm text-right font-bold text-coffee-800">' + formatUSDv2(p.fobFinal) + '</td>' +
-      '<td class="px-3 py-3 text-sm text-right font-bold text-orange-600">' + formatUSDv2(p.landedFinal) + '</td>' +
+      '<td class="px-3 py-3 text-sm text-right font-bold text-orange-600">' + formatUSDv2(p._landedFinal) + '</td>' +
       '<td class="px-3 py-3 text-sm text-right font-bold text-coffee-800">' + formatUSDv2(p.totalShipment) + '</td>' +
-      '<td class="px-3 py-3 text-sm text-right font-bold text-orange-700">' + formatUSDv2(p.landedTotal) + '</td>' +
+      '<td class="px-3 py-3 text-sm text-right font-bold text-orange-700">' + formatUSDv2(p._landedTotal) + '</td>' +
     '</tr>';
   });
 
+  document.getElementById('fob-q-shipment-summary').innerHTML = shipSummary;
   document.getElementById('fob-q-body').innerHTML = tbody;
-  document.getElementById('fob-q-grand').textContent = formatUSDv2(grandTotal);
-  document.getElementById('fob-q-grand-landed').textContent = formatUSDv2(grandTotalLanded);
+  document.getElementById('fob-q-grand').textContent = formatUSDv2(qResult.grandTotalFob);
+  document.getElementById('fob-q-grand-landed').textContent = formatUSDv2(qResult.grandTotalLanded);
 
-  section.scrollIntoView({behavior: 'smooth'});
+    section.scrollIntoView({behavior: 'smooth'});
+    console.log('[showFobQuotation] Done!');
+  } catch (err) {
+    console.error('[showFobQuotation] ERROR:', err);
+    showToast('Quotation error: ' + err.message, 'error');
+  }
 }
-
 function hideFobQuotation() {
   document.getElementById('fob-quotation-section').classList.add('hidden');
 }
@@ -3301,10 +3429,10 @@ function updateUSDADisplay(data) {
         var exp = document.getElementById("usda-val-export");
         var dom = document.getElementById("usda-val-domestic");
         var end = document.getElementById("usda-val-ending");
-        if (prod) prod.textContent = data.executive.production.toLocaleString();
-        if (exp) exp.textContent = data.executive.export.toLocaleString();
-        if (dom) dom.textContent = data.executive.domestic.toLocaleString();
-        if (end) end.textContent = data.executive.endingStocks.toLocaleString();
+        if (prod) prod.textContent = formatNumber(data.executive.production);
+        if (exp) exp.textContent = formatNumber(data.executive.export);
+        if (dom) dom.textContent = formatNumber(data.executive.domestic);
+        if (end) end.textContent = formatNumber(data.executive.endingStocks);
     }
 
     // Update charts if data has production/price arrays
@@ -3582,6 +3710,16 @@ function initUSDACharts() {
 
 // Init
 document.addEventListener("DOMContentLoaded", function() {
+  // Guide toggle button event binding (iframe-safe)
+  var guideBtn = document.querySelector('[onclick="openGuidePopup()"]');
+  if (guideBtn) {
+    guideBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openGuidePopup();
+      return false;
+    });
+  }
   coffeeLoadParams();
   coffeeSyncInputs();
   coffeeCalculateAll();
@@ -3602,6 +3740,36 @@ tailwind.config = {
         }
     }
 }
+</script>
+<script>
+// Guide Popup — reliable modal approach
+window.openGuidePopup = function() {
+  var popup = document.getElementById('guide-popup');
+  if (popup) {
+    popup.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    console.log('[Guide] Popup opened');
+  } else {
+    console.error('[Guide] Popup element not found');
+  }
+};
+window.closeGuidePopup = function() {
+  var popup = document.getElementById('guide-popup');
+  if (popup) {
+    popup.style.display = 'none';
+    document.body.style.overflow = '';
+    console.log('[Guide] Popup closed');
+  }
+};
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') window.closeGuidePopup();
+});
+// Close on click outside
+document.addEventListener('click', function(e) {
+  var popup = document.getElementById('guide-popup');
+  if (popup && e.target === popup) window.closeGuidePopup();
+});
 </script>
 <style type="text/tailwindcss">
 @layer base { body { @apply font-sans text-coffee-800 bg-cream; } h1,h2,h3,h4,h5,h6 { @apply font-serif; } }
@@ -3838,6 +4006,141 @@ main {
 </div>
 </nav>
 <div class="h-16"></div>
+
+<!-- KALKULATOR DESCRIPTION -->
+<section id="kalkulator-desc" class="py-8 bg-gradient-to-br from-coffee-950 via-coffee-900 to-coffee-800 border-b border-white/5">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8">
+        <div class="flex flex-col md:flex-row items-start gap-5">
+            <div class="w-14 h-14 bg-coffee-700 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-calculator text-coffee-200 text-2xl"></i>
+            </div>
+            <div class="flex-1">
+                <h2 class="font-serif text-2xl font-bold text-white mb-3">Q.co FOB & Landed Calculator</h2>
+                <div class="space-y-3 text-sm text-coffee-300 leading-relaxed">
+                    <p>
+                        Kalkulator ini membantu menghitung harga kopi Indonesia <strong class="text-white">dari kebun sampai FOB</strong> berdasarkan data pasar global (C-Market). Semua parameter dapat diedit sesuai kondisi riil: Differential, Premium, Grade, Margin, biaya proses, kemasan, logistik, dokumen export, dan pallet.
+                    </p>
+                    <p>
+                        Termasuk estimasi <strong class="text-white">harga Landed ke port USA</strong> (New York, Los Angeles, Miami, Seattle) dengan perhitungan lengkap: ocean freight, customs broker, MPF, HMF, dan marine insurance — semua cost sampai coffee keluar dari port US.
+                    </p>
+                    <p>
+                        Semua hasil merupakan <strong class="text-white">benchmark</strong> agar harga tidak over-value atau under-value dari pasar dunia. Mendukung mode <strong class="text-white">Komersial</strong> dan <strong class="text-white">Specialty</strong> dengan rekomendasi differential dan premium per grade.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/15 text-blue-300 text-xs font-medium border border-blue-500/20"><i class="fas fa-globe text-[10px]"></i>C-Market Live</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/15 text-green-300 text-xs font-medium border border-green-500/20"><i class="fas fa-ship text-[10px]"></i>FOB + Landed</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/15 text-purple-300 text-xs font-medium border border-purple-500/20"><i class="fas fa-star text-[10px]"></i>Specialty & Komersial</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/15 text-yellow-300 text-xs font-medium border border-yellow-500/20"><i class="fas fa-file-invoice text-[10px]"></i>Auto Quotation</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- STEP BY STEP GUIDE — POPUP MODAL -->
+<section id="panduan-kalkulator" class="py-6 bg-gradient-to-br from-coffee-950 via-coffee-900 to-coffee-800 border-b border-white/5">
+<div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+    <button type="button" onclick="openGuidePopup()" class="inline-flex items-center gap-3 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-medium transition-all">
+        <div class="w-8 h-8 bg-coffee-700 rounded-lg flex items-center justify-center">
+            <i class="fas fa-book-open text-coffee-200 text-sm"></i>
+        </div>
+        <span class="font-serif text-base">Panduan Step by Step — Cara Menggunakan Kalkulator FOB</span>
+        <i class="fas fa-external-link-alt text-coffee-400 text-sm"></i>
+    </button>
+</div>
+</section>
+
+<!-- GUIDE POPUP MODAL -->
+<div id="guide-popup" class="fixed inset-0 z-[100] hidden" style="background:rgba(0,0,0,0.7);">
+    <div class="flex items-center justify-center min-h-screen px-4 py-8">
+        <div class="bg-gradient-to-br from-coffee-950 via-coffee-900 to-coffee-800 rounded-2xl border border-white/20 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="sticky top-0 bg-coffee-900/95 backdrop-blur-sm border-b border-white/10 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-coffee-700 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-book-open text-coffee-200"></i>
+                    </div>
+                    <h3 class="font-serif text-lg font-bold text-white">Panduan Step by Step</h3>
+                </div>
+                <button type="button" onclick="closeGuidePopup()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <!-- Content -->
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-black/20 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-300 text-sm font-bold">1</span>
+                            <h4 class="text-sm font-bold text-white">Set Harga Pasar Global</h4>
+                        </div>
+                        <p class="text-xs text-coffee-300 leading-relaxed">
+                            Klik tombol <strong class="text-blue-300">Refresh</strong> di bagian <em>Harga Kopi Dunia</em> untuk mengambil C-Market Arabica (¢/lb) dan Robusta ($/ton) terkini dari Yahoo Finance. Kurs IDR/USD juga bisa di-refresh real-time. Data ini menjadi dasar perhitungan.
+                        </p>
+                    </div>
+                    <div class="bg-black/20 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center text-green-300 text-sm font-bold">2</span>
+                            <h4 class="text-sm font-bold text-white">Pilih Origin & Grade</h4>
+                        </div>
+                        <p class="text-xs text-coffee-300 leading-relaxed">
+                            Pilih <em>Origin</em> (Sumatra, Java, Sulawesi, Bali, Papua, dll) dan <em>Grade</em> (G1, G2, Q-Grade 84+, Micro-lot, dll). Sistem akan otomatis merekomendasikan <strong class="text-green-300">Differential</strong> dan <strong class="text-green-300">Premium</strong> berdasarkan origin dan grade.
+                        </p>
+                    </div>
+                    <div class="bg-black/20 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-8 h-8 bg-yellow-500/20 rounded-full flex items-center justify-center text-yellow-300 text-sm font-bold">3</span>
+                            <h4 class="text-sm font-bold text-white">Edit Biaya Lokal (IDR)</h4>
+                        </div>
+                        <p class="text-xs text-coffee-300 leading-relaxed">
+                            Sesuaikan biaya lokal dalam Rupiah: <strong>Olah & QC</strong>, <strong>Kemasan</strong>, <strong>Dokumen Export</strong>, <strong>Logistik</strong>, dan <strong>Pallet</strong>. Semua akan otomatis dikonversi ke USD per kg. Klik <em>Reset</em> untuk kembali ke default.
+                        </p>
+                    </div>
+                    <div class="bg-black/20 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-300 text-sm font-bold">4</span>
+                            <h4 class="text-sm font-bold text-white">Set Volume & Port</h4>
+                        </div>
+                        <p class="text-xs text-coffee-300 leading-relaxed">
+                            Masukkan <em>Volume (kg)</em> — sistem otomatis menentukan mode shipment: <strong class="text-purple-300">LCL</strong> (&lt;10 ton), <strong class="text-purple-300">FCL 20ft</strong> (10–21 ton), atau <strong class="text-purple-300">FCL 40ft</strong> (&gt;21 ton). Pilih <em>Port FOB Indonesia</em> dan <em>Port Tujuan US</em>.
+                        </p>
+                    </div>
+                    <div class="bg-black/20 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center text-orange-300 text-sm font-bold">5</span>
+                            <h4 class="text-sm font-bold text-white">Review Hasil & Market Check</h4>
+                        </div>
+                        <p class="text-xs text-coffee-300 leading-relaxed">
+                            Review <em>Harga FOB Final</em> dan <em>Harga Landed</em> dengan breakdown lengkap. Sistem menampilkan <strong class="text-orange-300">Market Reality Check</strong> — apakah harga PASAR, UNDERVALUE, atau OVERVALUE.
+                        </p>
+                    </div>
+                    <div class="bg-black/20 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center text-cyan-300 text-sm font-bold">6</span>
+                            <h4 class="text-sm font-bold text-white">Generate Quotation</h4>
+                        </div>
+                        <p class="text-xs text-coffee-300 leading-relaxed">
+                            Klik <strong class="text-cyan-300">Tambah Produk</strong> untuk menyimpan ke daftar. Klik <strong class="text-cyan-300">Generate Quotation</strong> untuk membuat quotation resmi — siap print atau dikirim ke buyer.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-yellow-500/5 rounded-xl border border-yellow-500/15 text-xs text-coffee-400">
+                    <i class="fas fa-lightbulb text-yellow-500/60 mr-1"></i>
+                    <strong>Tip:</strong> Gunakan <em>Grade Calculator</em> (di bawah) untuk konversi skor Q-Grade ke estimasi premium. Gunakan <em>Origin Comparison Table</em> untuk membandingkan karakteristik antar origin Indonesia.
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="sticky bottom-0 bg-coffee-900/95 backdrop-blur-sm border-t border-white/10 px-6 py-4 flex justify-end rounded-b-2xl z-10">
+                <button type="button" onclick="closeGuidePopup()" class="px-6 py-2 bg-coffee-700 hover:bg-coffee-600 text-white rounded-lg font-medium transition-all">
+                    Tutup Panduan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <section id="kalkulator-kopi" class="py-10 bg-gradient-to-br from-coffee-950 via-coffee-900 to-coffee-800">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -4275,7 +4578,7 @@ main {
                         <strong class="text-coffee-300">Disclaimer:</strong> 
                         Landed price is an estimate based on average market rates. 
                         <strong>Included:</strong> FOB, ocean freight (Indonesia origin port → US destination port), customs broker, MPF (0.3464% CIF), HMF (0.125% CIF), marine insurance, export documentation (Certificate of Origin, Phytosanitary Certificate, etc.), and standard export pallet — up to coffee released from US port (Landed). 
-                        <strong>Standard Export Pallet:</strong> 1 pallet = 16–20 bags × 60kg = ~1,000 kg. 
+                        <strong>Standard Export Pallet:</strong> 1 pallet = 16–20 bags × 60kg = ~1,000 kg.
                         <strong>Shipment Mode:</strong> &lt;10 MT = LCL | 10–21 MT = FCL 20ft | &gt;21 MT = FCL 40ft. Ocean freight rate auto-adjusts by mode and port pair. 
                         <strong>Not Included / To Confirm:</strong> FDA Prior Notice fee (~$175–$500), fumigation/ISPM-15 (if required), demurrage/detention, inland trucking US (port → buyer warehouse), US warehouse/storage, currency fluctuation. 
                         Actual rates may vary depending on real-time ocean freight, shipment volume, and current US customs policy. Final quotation confirmed after definitive port pair and volume confirmation.
@@ -4345,6 +4648,38 @@ main {
                 </div>
                 <p class="text-xs text-coffee-400 mt-1">Date: <span id="fob-q-date"></span> | Exchange Rate: <span id="fob-q-kurs"></span> IDR/USD</p>
             </div>
+            <!-- MARKET REFERENCE -->
+            <div class="mb-5 p-4 bg-coffee-50 rounded-xl border border-coffee-100">
+                <h4 class="text-xs font-bold text-coffee-800 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-coffee-600"></i>Market Reference — World Coffee Prices as of Invoice Date
+                </h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                    <div class="bg-white rounded-lg p-2 border border-coffee-100">
+                        <div class="text-[10px] text-coffee-500 uppercase">Arabica C-Market</div>
+                        <div class="text-sm font-mono font-bold text-coffee-800" id="fob-q-cmarket-lb">—</div>
+                        <div class="text-[9px] text-coffee-400">¢/lb</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-2 border border-coffee-100">
+                        <div class="text-[10px] text-coffee-500 uppercase">Arabica / kg</div>
+                        <div class="text-sm font-mono font-bold text-coffee-800" id="fob-q-cmarket-kg">—</div>
+                        <div class="text-[9px] text-coffee-400">USD/kg</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-2 border border-coffee-100">
+                        <div class="text-[10px] text-coffee-500 uppercase">Robusta London</div>
+                        <div class="text-sm font-mono font-bold text-coffee-800" id="fob-q-robusta">—</div>
+                        <div class="text-[9px] text-coffee-400">$/ton</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-2 border border-coffee-100">
+                        <div class="text-[10px] text-coffee-500 uppercase">USD/IDR Rate</div>
+                        <div class="text-sm font-mono font-bold text-coffee-800" id="fob-q-kurs-ref">—</div>
+                        <div class="text-[9px] text-coffee-400">IDR/USD</div>
+                    </div>
+                </div>
+                <p class="text-[9px] text-coffee-400 mt-2 text-center">
+                    <i class="fas fa-info-circle mr-1"></i>Source: C-Market Arabica & Robusta from Yahoo Finance (ICE Futures) | Kurs from exchangerate-api.com | Locked at quotation date
+                </p>
+            </div>
+            <div id="fob-q-shipment-summary"></div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm border-collapse" style="min-width:600px;">
                     <thead>
@@ -4373,7 +4708,7 @@ main {
                 <h4 class="font-serif font-bold text-coffee-900 mb-2">Terms & Conditions</h4>
                 <ul class="text-xs text-coffee-600 space-y-1 list-disc list-inside">
                     <li><strong>FOB Price:</strong> Free On Board named Indonesian port — risk transfers at ship's rail</li>
-                    <li><strong>Landed Price:</strong> Includes ocean freight to US port, customs broker, MPF (0.3464% CIF), HMF (0.125% CIF), marine insurance, export documentation (Certificate of Origin, Phytosanitary Certificate, etc.), and standard export pallet — coffee ready to pick up at US port (released from customs)</li>
+                    <li><strong>Landed Price:</strong> Calculated per TOTAL shipment volume (all products combined), NOT per individual product. Includes ocean freight to US port, customs broker, MPF (0.3464% CIF), HMF (0.125% CIF), marine insurance, export documentation (Certificate of Origin, Phytosanitary Certificate, etc.), and standard export pallet — coffee ready to pick up at US port (released from customs). Shipping, customs, and insurance costs are shared proportionally across all products in the same container/shipment.</li>
                     <li><strong>Payment Terms:</strong> 30% deposit, 70% against copy of Bill of Lading (B/L)</li>
                     <li><strong>Lead Time:</strong> 14–21 days after deposit confirmation</li>
                     <li><strong>Export Documentation Included:</strong> Certificate of Origin, Phytosanitary Certificate, Q-Grade / Cupping Report</li>
@@ -4670,5 +5005,62 @@ main {
 </div>
 </footer>
 
+<script>
+// GLOBAL EVENT BINDING — works in iframe/Google Sites
+(function() {
+  function bindWhenReady() {
+    // Guide toggle
+    var guideBtn = document.getElementById('guide-toggle-btn');
+    if (guideBtn) {
+      guideBtn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); openGuidePopup(); return false; };
+    }
+
+    // Generate Quotation button
+    var qBtns = document.querySelectorAll('[onclick*="showFobQuotation()"]');
+    qBtns.forEach(function(btn) {
+      btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); showFobQuotation(); return false; };
+    });
+
+    // Add Product button
+    var addBtns = document.querySelectorAll('[onclick*="addFobProduct()"]');
+    addBtns.forEach(function(btn) {
+      btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); addFobProduct(); return false; };
+    });
+
+    // Clear products button
+    var clearBtns = document.querySelectorAll('[onclick*="clearFobProducts()"]');
+    clearBtns.forEach(function(btn) {
+      btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); clearFobProducts(); return false; };
+    });
+
+    // Hide quotation button
+    var hideBtns = document.querySelectorAll('[onclick*="hideFobQuotation()"]');
+    hideBtns.forEach(function(btn) {
+      btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); hideFobQuotation(); return false; };
+    });
+
+    // Reset form button
+    var resetBtns = document.querySelectorAll('[onclick*="resetFobForm()"]');
+    resetBtns.forEach(function(btn) {
+      btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); resetFobForm(); return false; };
+    });
+
+    console.log('[Global Events] Bound ' + (guideBtn ? 1 : 0) + ' guide, ' + qBtns.length + ' quotation, ' + addBtns.length + ' add product buttons');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindWhenReady);
+  } else {
+    bindWhenReady();
+  }
+})();
+</script>
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] translate-y-20 opacity-0 transition-all duration-300">
+    <div id="toast-box" class="bg-coffee-800 text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3">
+        <i id="toast-icon" class="fas fa-info-circle text-coffee-400"></i>
+        <span id="toast-message" class="text-sm font-medium">Message</span>
+    </div>
+</div>
 </body>
 </html>
