@@ -279,6 +279,7 @@ main {
 
 
 
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -621,7 +622,7 @@ main {
         <h4 class="font-serif font-bold text-white mb-4" data-editable="footer_contact_title">Kontak</h4>
         <ul class="space-y-3 text-sm">
             <li class="flex items-center gap-2"><i class="fas fa-envelope text-coffee-500"></i><a href="mailto:hello@qcoid.com" class="hover:text-white transition-colors" data-editable="footer_email">ganjar@qco.my.id</a></li>
-            <li class="flex items-center gap-2"><i class="fas fa-globe text-coffee-500"></i><a href="https://www.qcoid.com" class="hover:text-white transition-colors" data-editable="footer_web">www.qcoid.com</a></li>
+            <li class="flex items-center gap-2"><i class="fas fa-globe text-coffee-500"></i><a href="https://blog.qcoid.com" class="hover:text-white transition-colors" data-editable="footer_web">www.qcoid.com</a></li>
         </ul>
     </div>
 </div>
@@ -1150,7 +1151,83 @@ main {
 <!-- JAVASCRIPT -->
 <script>
 // ========== DEFAULT DATA ==========
-const defaultArticles = [];
+const defaultArticles = [
+    {
+        id: 1,
+        title_id: "Memahami Pasar Kopi Amerika Serikat",
+        title_en: "Understanding the US Coffee Market",
+        category: "riset-pasar",
+        status: "Published",
+        image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&h=500&fit=crop",
+        date: "15 Mei 2026",
+        readTime: "8",
+        desc_id: "Analisis mendalam tentang dinamika pasar kopi AS, tren konsumen, dan peluang bagi eksportir Indonesia.",
+        desc_en: "In-depth analysis of US coffee market dynamics, consumer trends, and opportunities for Indonesian exporters.",
+        content_id: "<p>Pasar kopi Amerika Serikat merupakan salah satu pasar terbesar di dunia dengan konsumsi tahunan mencapai lebih dari 400 juta cangkir per hari. Bagi eksportir kopi Indonesia, memahami karakteristik pasar ini adalah kunci sukses.</p><h3>Tren Konsumen AS</h3><p>Konsumen kopi AS semakin menyukai kopi specialty dengan traceability yang jelas. Single origin dan micro-lots dari Indonesia seperti Gayo, Toraja, dan Kintamani semakin diminati.</p><h3>Peluang untuk Indonesia</h3><p>Dengan sertifikasi Q Grader dan Q Processing, kopi Indonesia memiliki keunggulan kompetitif di pasar specialty AS yang terus tumbuh 15% per tahun.</p>",
+        content_en: "<p>The US coffee market is one of the largest in the world, with annual consumption exceeding 400 million cups per day. For Indonesian coffee exporters, understanding this market is key to success.</p><h3>US Consumer Trends</h3><p>US consumers increasingly prefer specialty coffee with clear traceability. Single origin and micro-lots from Indonesia such as Gayo, Toraja, and Kintamani are increasingly sought after.</p><h3>Opportunities for Indonesia</h3><p>With Q Grader and Q Processing certifications, Indonesian coffee has a competitive advantage in the US specialty market, which is growing 15% annually.</p>",
+        views: 245
+    },
+    {
+        id: 2,
+        title_id: "Perjalanan ke SCA Expo 2025",
+        title_en: "Journey to SCA Expo 2025",
+        category: "perjalanan",
+        status: "Published",
+        image: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800&h=500&fit=crop",
+        date: "10 Mei 2026",
+        readTime: "6",
+        desc_id: "Dokumentasi pengalaman menghadiri Specialty Coffee Association Expo di Houston, Texas dan insight yang didapat.",
+        desc_en: "Documentation of the experience attending the Specialty Coffee Association Expo in Houston, Texas and insights gained.",
+        content_id: "<p>SCA Expo 2025 di Houston menjadi momen penting dalam perjalanan memahami pasar kopi AS. Pameran ini menghadirkan lebih dari 500 eksibitor dari seluruh dunia.</p><h3>Highlight Expo</h3><p>Banyak roaster AS menunjukkan ketertarikan tinggi pada kopi Indonesia, terutama yang memiliki sertifikasi dan traceability lengkap. Cupping session kopi Gayo dan Toraja mendapat antusiasme luar biasa.</p>",
+        content_en: "<p>SCA Expo 2025 in Houston was a pivotal moment in understanding the US coffee market. The exhibition featured over 500 exhibitors from around the world.</p><h3>Expo Highlights</h3><p>Many US roasters showed high interest in Indonesian coffee, especially those with certifications and complete traceability. Cupping sessions of Gayo and Toraja coffee received extraordinary enthusiasm.</p>",
+        views: 189
+    },
+    {
+        id: 3,
+        title_id: "Strategi Pemasaran Kopi ke Pasar Global",
+        title_en: "Coffee Marketing Strategy for Global Markets",
+        category: "pemasaran",
+        status: "Published",
+        image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefda?w=800&h=500&fit=crop",
+        date: "5 Mei 2026",
+        readTime: "10",
+        desc_id: "Panduan praktis memasarkan kopi Indonesia ke pasar internasional dengan pendekatan digital dan relationship marketing.",
+        desc_en: "Practical guide to marketing Indonesian coffee to international markets with digital and relationship marketing approaches.",
+        content_id: "<p>Pemasaran kopi di era digital memerlukan strategi yang berbeda. Bukan lagi sekadar menjual komoditas, tapi menjual cerita, nilai, dan pengalaman.</p><h3>Digital Presence</h3><p>Website, Instagram, dan LinkedIn menjadi kanal utama untuk menjangkau buyer internasional. Konten yang menampilkan proses dari cherry hingga cup sangat diminati.</p><h3>Relationship Marketing</h3><p>Membangun hubungan jangka panjang dengan roaster dan buyer melalui cupping session, farm visit, dan transparansi supply chain.</p>",
+        content_en: "<p>Coffee marketing in the digital era requires a different strategy. It is no longer just about selling commodities, but selling stories, values, and experiences.</p><h3>Digital Presence</h3><p>Website, Instagram, and LinkedIn are the main channels to reach international buyers. Content showcasing the process from cherry to cup is highly sought after.</p><h3>Relationship Marketing</h3><p>Building long-term relationships with roasters and buyers through cupping sessions, farm visits, and supply chain transparency.</p>",
+        views: 156
+    },
+    {
+        id: 4,
+        title_id: "Sensory Analysis: Membedah Profil Rasa Kopi Indonesia",
+        title_en: "Sensory Analysis: Deconstructing Indonesian Coffee Flavor Profiles",
+        category: "kopi-indonesia",
+        status: "Published",
+        image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&h=500&fit=crop",
+        date: "1 Mei 2026",
+        readTime: "7",
+        desc_id: "Analisis sensory kopi dari berbagai daerah di Indonesia menggunakan metodologi SCA dan Q Grader.",
+        desc_en: "Sensory analysis of coffee from various regions in Indonesia using SCA and Q Grader methodology.",
+        content_id: "<p>Sebagai Q Grader bersertifikasi CQI, analisis sensory menjadi fondasi dalam memahami kualitas dan karakteristik kopi Indonesia.</p><h3>Profil Regional</h3><p><strong>Gayo (Aceh):</strong> Herbal, spicy, dark chocolate, full body. Score: 84-86.</p><p><strong>Toraja (Sulawesi):</strong> Earthy, tobacco, cedar, syrupy body. Score: 83-85.</p><p><strong>Kintamani (Bali):</strong> Citrus, floral, clean, bright acidity. Score: 85-87.</p><p><strong>Flores:</strong> Sweet, nutty, chocolate, smooth. Score: 84-86.</p>",
+        content_en: "<p>As a CQI-certified Q Grader, sensory analysis is the foundation for understanding the quality and characteristics of Indonesian coffee.</p><h3>Regional Profiles</h3><p><strong>Gayo (Aceh):</strong> Herbal, spicy, dark chocolate, full body. Score: 84-86.</p><p><strong>Toraja (Sulawesi):</strong> Earthy, tobacco, cedar, syrupy body. Score: 83-85.</p><p><strong>Kintamani (Bali):</strong> Citrus, floral, clean, bright acidity. Score: 85-87.</p><p><strong>Flores:</strong> Sweet, nutty, chocolate, smooth. Score: 84-86.</p>",
+        views: 312
+    },
+    {
+        id: 5,
+        title_id: "Pengalaman Direct Trade dengan Roaster AS",
+        title_en: "Direct Trade Experience with US Roasters",
+        category: "pengalaman",
+        status: "Published",
+        image: "https://images.unsplash.com/photo-1498804103079-a6351b050096?w=800&h=500&fit=crop",
+        date: "25 April 2026",
+        readTime: "9",
+        desc_id: "Cerita pengalaman membangun hubungan direct trade dengan roaster di Brooklyn, New York dan Portland, Oregon.",
+        desc_en: "Story of building direct trade relationships with roasters in Brooklyn, New York and Portland, Oregon.",
+        content_id: "<p>Direct trade bukan sekadar transaksi jual-beli, tapi membangun partnership yang saling menguntungkan antara petani/processor di Indonesia dan roaster di AS.</p><h3>Brooklyn Roaster</h3><p>Pertemuan pertama di Brooklyn membuka pemahaman bahwa roaster AS sangat menghargai transparansi. Mereka ingin tahu siapa petaninya, bagaimana prosesnya, dan dampak sosialnya.</p><h3>Portland Roaster</h3><p>Di Portland, fokusnya pada sustainability dan organic certification. Komitmen jangka panjang dengan harga premium 30% di atas market price menjadi kesepakatan awal yang menjanjikan.</p>",
+        content_en: "<p>Direct trade is not just a buy-sell transaction, but building a mutually beneficial partnership between farmers/processors in Indonesia and roasters in the US.</p><h3>Brooklyn Roaster</h3><p>The first meeting in Brooklyn opened my understanding that US roasters highly value transparency. They want to know who the farmer is, how the process works, and the social impact.</p><h3>Portland Roaster</h3><p>In Portland, the focus is on sustainability and organic certification. A long-term commitment with a premium price of 30% above market price became a promising initial agreement.</p>",
+        views: 278
+    }
+];
 
 const defaultCategories = [
     { id: "cat1", key: "kopi-indonesia", title_id: "Kopi Indonesia", title_en: "Indonesian Coffee", desc_id: "Segala sesuatu tentang kopi Indonesia", desc_en: "Everything about Indonesian coffee", image: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&h=375&fit=crop", count: 2 },
@@ -1230,6 +1307,9 @@ function loadAllData() {
     categoriesData = [...defaultCategories];
     dataLoadState = "local";
 
+    // Ensure all default article views are numbers
+    articlesData.forEach(a => { a.views = parseInt(a.views) || 0; });
+
     // Google Sites iframe may block localStorage access (SecurityError)
     // Wrap in try-catch so defaults are preserved if localStorage fails
     try {
@@ -1240,6 +1320,8 @@ function loadAllData() {
             let parsed = JSON.parse(storedArticles);
             if (Array.isArray(parsed) && parsed.length > 0) {
                 articlesData = parsed;
+                // Ensure views are numbers after loading from storage
+                articlesData.forEach(a => { a.views = parseInt(a.views) || 0; });
             }
         }
 
@@ -1488,6 +1570,28 @@ function renderArticles(filter) {
     let filtered = articlesData.filter(a => a.status === "Published");
     if (filter && filter !== "all") filtered = filtered.filter(a => a.category === filter);
 
+    // SORT by date: newest first (parse Indonesian date format)
+    filtered.sort((a, b) => {
+        const parseDate = (dateStr) => {
+            if (!dateStr) return 0;
+            // Handle format: "15 Mei 2026" or "May 15, 2026"
+            const monthsID = ["januari","februari","maret","april","mei","juni","juli","agustus","september","oktober","november","desember"];
+            const monthsEN = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+            const parts = dateStr.toLowerCase().split(/\s+/);
+            if (parts.length >= 3) {
+                const day = parseInt(parts[0]) || parseInt(parts[1]) || 1;
+                const monthStr = parts[1] || parts[0];
+                const year = parseInt(parts[parts.length - 1]) || 2026;
+                let month = monthsID.indexOf(monthStr);
+                if (month === -1) month = monthsEN.indexOf(monthStr);
+                if (month === -1) month = 0;
+                return new Date(year, month, day).getTime();
+            }
+            return new Date(dateStr).getTime() || 0;
+        };
+        return parseDate(b.date) - parseDate(a.date);
+    });
+
     if (filtered.length === 0) {
         if (hasSkeletons && dataLoadState !== "error" && articlesData.length === 0) {
             if (featured) featured.classList.add("hidden");
@@ -1524,7 +1628,7 @@ function renderArticles(filter) {
             <div class="p-6"><div class="flex items-center gap-3 mb-3"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
             <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors">${title}</h3>
             <p class="text-coffee-600 text-sm line-clamp-3 mb-4">${desc}</p>
-            <div class="flex items-center justify-between"><div class="flex items-center gap-2"><i class="far fa-clock text-coffee-400 text-xs"></i><span class="text-xs text-coffee-400">${art.readTime} menit baca</span></div><div class="flex items-center gap-1 text-coffee-500"><span class="text-sm font-medium">Baca</span><i class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i></div></div></div>
+            <div class="flex items-center justify-between"><div class="flex items-center gap-2"><i class="far fa-clock text-coffee-400 text-xs"></i><span class="text-xs text-coffee-400">${art.readTime} menit baca</span></div><div class="flex items-center gap-2 text-coffee-400"><i class="far fa-eye text-xs"></i><span class="text-xs">${(parseInt(art.views) || 0).toLocaleString()}</span></div></div></div>
         </article>`;
         }).join("");
     }
@@ -1539,6 +1643,27 @@ function renderArticlesSidebar() {
 
     const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
     const published = articlesData.filter(a => a.status === "Published");
+
+    // SORT by date: newest first
+    published.sort((a, b) => {
+        const parseDate = (dateStr) => {
+            if (!dateStr) return 0;
+            const monthsID = ["januari","februari","maret","april","mei","juni","juli","agustus","september","oktober","november","desember"];
+            const monthsEN = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+            const parts = dateStr.toLowerCase().split(/\s+/);
+            if (parts.length >= 3) {
+                const day = parseInt(parts[0]) || parseInt(parts[1]) || 1;
+                const monthStr = parts[1] || parts[0];
+                const year = parseInt(parts[parts.length - 1]) || 2026;
+                let month = monthsID.indexOf(monthStr);
+                if (month === -1) month = monthsEN.indexOf(monthStr);
+                if (month === -1) month = 0;
+                return new Date(year, month, day).getTime();
+            }
+            return new Date(dateStr).getTime() || 0;
+        };
+        return parseDate(b.date) - parseDate(a.date);
+    });
 
     if (published.length === 0) {
         sidebar.innerHTML = '<div class="p-6 text-center text-coffee-400"><i class="fas fa-inbox text-2xl mb-2"></i><p>' + (currentLang === "id" ? "Belum ada artikel" : "No articles yet") + '</p></div>';
@@ -1578,7 +1703,7 @@ function renderArticlesSidebar() {
             <h4 class="font-serif text-sm font-bold text-coffee-900 line-clamp-2 ${isActive ? 'text-coffee-600' : ''}">${title}</h4>
             <div class="flex items-center gap-3 mt-2 text-xs text-coffee-400">
                 <span><i class="far fa-clock mr-1"></i>${art.readTime} min</span>
-                <span><i class="far fa-eye mr-1"></i>${art.views || 0}</span>
+                <span><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span>
             </div>
         </div>`;
     }).join("");
@@ -1607,6 +1732,8 @@ function showFeaturedArticle(id) {
     // Increment views
     art.views = (parseInt(art.views) || 0) + 1;
     saveToLocalStorage();
+    // Refresh views display
+    refreshViewsDisplay();
 }
 
 function renderFeaturedArticle(art) {
@@ -1637,7 +1764,7 @@ function renderFeaturedArticle(art) {
                     <span class="tag">${catLabel}</span>
                     <span class="text-sm text-coffee-400"><i class="far fa-calendar mr-1"></i>${art.date}</span>
                     <span class="text-sm text-coffee-400"><i class="far fa-clock mr-1"></i>${art.readTime} min read</span>
-                    <span class="text-sm text-coffee-400"><i class="far fa-eye mr-1"></i>${art.views || 0} views</span>
+                    <span class="text-sm text-coffee-400"><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()} views</span>
                 </div>
                 <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-coffee-900 mb-6 leading-tight">${title}</h2>
 
@@ -1702,7 +1829,7 @@ function filterArticles(category) {
 // Method 3: postMessage (for iframe/parent communication)
 // Method 4: URL path component fallback
 
-const BLOG_BASE_URL = "https://sites.google.com/view/ganjarslenses/kgs-blog";
+const BLOG_BASE_URL = "https://blog.qcoid.com";
 
 function getCurrentArticleUrl() {
     const articleId = document.getElementById("modal-title").getAttribute("data-article-id");
@@ -1747,6 +1874,21 @@ function openArticle(id) {
     document.body.style.overflow = "hidden";
     art.views = (parseInt(art.views) || 0) + 1;
     saveToLocalStorage();
+    // Refresh views display in all places
+    refreshViewsDisplay();
+}
+
+// Refresh views count display across all UI components
+function refreshViewsDisplay() {
+    // Refresh main grid and sidebar
+    renderArticles();
+    renderArticlesSidebar();
+    // Refresh dashboard if visible
+    if (!document.getElementById("dashboard-view").classList.contains("hidden")) {
+        renderDashboardOverview();
+        renderDashboardStatistics();
+        renderDashboardArticles();
+    }
 }
 
 function closeArticle() {
@@ -1756,6 +1898,8 @@ function closeArticle() {
     try {
         sessionStorage.removeItem("qco_target_article_id");
     } catch (e) { /* ignore */ }
+    // Refresh views display to show updated counts
+    refreshViewsDisplay();
 }
 
 // ========== ARTICLE LINK DETECTION (ROBUST - GOOGLE SITES IFRAME) ==========
@@ -2094,6 +2238,26 @@ function toggleArticleStatus(id) {
 function renderDashboardArticles() {
     const tbody = document.getElementById("dashboard-articles-table");
     if (!tbody) return;
+    // SORT by date: newest first for dashboard too
+    articlesData.sort((a, b) => {
+        const parseDate = (dateStr) => {
+            if (!dateStr) return 0;
+            const monthsID = ["januari","februari","maret","april","mei","juni","juli","agustus","september","oktober","november","desember"];
+            const monthsEN = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+            const parts = dateStr.toLowerCase().split(/\s+/);
+            if (parts.length >= 3) {
+                const day = parseInt(parts[0]) || parseInt(parts[1]) || 1;
+                const monthStr = parts[1] || parts[0];
+                const year = parseInt(parts[parts.length - 1]) || 2026;
+                let month = monthsID.indexOf(monthStr);
+                if (month === -1) month = monthsEN.indexOf(monthStr);
+                if (month === -1) month = 0;
+                return new Date(year, month, day).getTime();
+            }
+            return new Date(dateStr).getTime() || 0;
+        };
+        return parseDate(b.date) - parseDate(a.date);
+    });
     if (articlesData.length === 0) {
         tbody.innerHTML = "<tr><td colspan=6 class='px-6 py-8 text-center text-coffee-400'><i class='fas fa-inbox text-3xl mb-2'></i><p>Belum ada artikel</p></td></tr>";
         return;
@@ -2107,7 +2271,7 @@ function renderDashboardArticles() {
             <td class="px-6 py-4"><div class="font-medium text-coffee-900">${title}</div><div class="text-xs text-coffee-400 mt-1">${art.readTime} menit baca</div></td>
             <td class="px-6 py-4"><span class="tag">${catLabel}</span></td>
             <td class="px-6 py-4"><button type="button" onclick="toggleArticleStatus(${art.id})" class="cursor-pointer transition-all hover:opacity-80 ${isPublished ? "status-badge-published" : "status-badge-draft"}"><i class="fas ${isPublished ? "fa-check-circle" : "fa-pencil-ruler"} mr-1"></i>${isPublished ? "Published" : "Draft"}</button></td>
-            <td class="px-6 py-4 text-sm text-coffee-600">${art.views || 0}</td>
+            <td class="px-6 py-4 text-sm text-coffee-600">${(parseInt(art.views) || 0).toLocaleString()}</td>
             <td class="px-6 py-4 text-sm text-coffee-500">${art.date}</td>
             <td class="px-6 py-4"><div class="flex gap-1"><button type="button" class="p-2 text-coffee-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors" onclick="editArticle(${art.id})" title="Edit"><i class="fas fa-pen"></i></button><button type="button" class="p-2 text-coffee-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors" onclick="deleteArticle(${art.id})" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
         </tr>`;
@@ -2120,6 +2284,7 @@ function renderDashboardOverview() {
     const totalComments = commentsData.length;
     const totalSubscribers = subscribersData.length;
     const totalViews = articlesData.reduce((sum, a) => sum + (parseInt(a.views) || 0), 0);
+    const totalPublishedViews = articlesData.filter(a => a.status === "Published").reduce((sum, a) => sum + (parseInt(a.views) || 0), 0);
     const elTotalArticles = document.getElementById("overview-total-articles");
     const elPubBadge = document.getElementById("overview-pub-badge");
     const elDraftCount = document.getElementById("overview-draft-count");
@@ -2131,7 +2296,7 @@ function renderDashboardOverview() {
     if (elDraftCount) elDraftCount.textContent = draftArticles + " Draft";
     if (elTotalComments) elTotalComments.textContent = totalComments;
     if (elTotalSubscribers) elTotalSubscribers.textContent = totalSubscribers;
-    if (elTotalViews) elTotalViews.textContent = totalViews.toLocaleString();
+    if (elTotalViews) elTotalViews.textContent = totalPublishedViews.toLocaleString();
     const pendingComments = commentsData.filter(c => c.status === "pending").length;
     const commentBadge = document.getElementById("comment-badge");
     const subscriberBadge = document.getElementById("subscriber-badge");
@@ -2555,6 +2720,27 @@ function openAllArticlesModal() {
     const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
     const published = articlesData.filter(a => a.status === "Published");
 
+    // SORT by date: newest first
+    published.sort((a, b) => {
+        const parseDate = (dateStr) => {
+            if (!dateStr) return 0;
+            const monthsID = ["januari","februari","maret","april","mei","juni","juli","agustus","september","oktober","november","desember"];
+            const monthsEN = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+            const parts = dateStr.toLowerCase().split(/\s+/);
+            if (parts.length >= 3) {
+                const day = parseInt(parts[0]) || parseInt(parts[1]) || 1;
+                const monthStr = parts[1] || parts[0];
+                const year = parseInt(parts[parts.length - 1]) || 2026;
+                let month = monthsID.indexOf(monthStr);
+                if (month === -1) month = monthsEN.indexOf(monthStr);
+                if (month === -1) month = 0;
+                return new Date(year, month, day).getTime();
+            }
+            return new Date(dateStr).getTime() || 0;
+        };
+        return parseDate(b.date) - parseDate(a.date);
+    });
+
     if (published.length === 0) {
         content.innerHTML = '<div class="text-center py-12 text-coffee-400"><i class="fas fa-inbox text-4xl mb-4"></i><p>' + (currentLang === "id" ? "Belum ada artikel." : "No articles yet.") + '</p></div>';
     } else {
@@ -2567,7 +2753,7 @@ function openAllArticlesModal() {
                 <div class="p-5"><div class="flex items-center gap-2 mb-2"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
                 <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors line-clamp-2">${title}</h3>
                 <p class="text-coffee-600 text-sm line-clamp-2 mb-3">${desc}</p>
-                <div class="flex items-center justify-between text-xs text-coffee-400"><span><i class="far fa-clock mr-1"></i>${art.readTime} min</span><span><i class="far fa-eye mr-1"></i>${art.views || 0}</span></div></div>
+                <div class="flex items-center justify-between text-xs text-coffee-400"><span><i class="far fa-clock mr-1"></i>${art.readTime} min</span><span><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span></div></div>
             </article>`;
         }).join('') + '</div>';
     }
@@ -3139,7 +3325,7 @@ function renderDashboardStatistics() {
     if (elTotalArticles) elTotalArticles.textContent = totalArticles;
     if (elPubBadge) elPubBadge.textContent = publishedArticles + " Published";
     if (elDraftCount) elDraftCount.textContent = draftArticles + " Draft";
-    if (elTotalViews) elTotalViews.textContent = totalViews.toLocaleString();
+    if (elTotalViews) elTotalViews.textContent = totalPublishedViews.toLocaleString();
     if (elAvgViews) elAvgViews.textContent = avgViews + (currentLang === "id" ? " rata-rata" : " avg");
     if (elTotalComments) elTotalComments.textContent = totalComments;
     if (elPendingBadge) elPendingBadge.textContent = pendingComments + " Pending";
@@ -3189,6 +3375,27 @@ function getViewerCountryData() {
 function renderStatsTopArticles() {
     var tbody = document.getElementById("stats-top-articles");
     if (!tbody) return;
+
+    // SORT by date: newest first
+    articlesData.sort((a, b) => {
+        const parseDate = (dateStr) => {
+            if (!dateStr) return 0;
+            const monthsID = ["januari","februari","maret","april","mei","juni","juli","agustus","september","oktober","november","desember"];
+            const monthsEN = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+            const parts = dateStr.toLowerCase().split(/\s+/);
+            if (parts.length >= 3) {
+                const day = parseInt(parts[0]) || parseInt(parts[1]) || 1;
+                const monthStr = parts[1] || parts[0];
+                const year = parseInt(parts[parts.length - 1]) || 2026;
+                let month = monthsID.indexOf(monthStr);
+                if (month === -1) month = monthsEN.indexOf(monthStr);
+                if (month === -1) month = 0;
+                return new Date(year, month, day).getTime();
+            }
+            return new Date(dateStr).getTime() || 0;
+        };
+        return parseDate(b.date) - parseDate(a.date);
+    });
 
     if (articlesData.length === 0) {
         tbody.innerHTML = "<tr><td colspan=6 class='px-5 py-8 text-center text-gray-400'><i class='fas fa-inbox text-2xl mb-2'></i><p>" + (currentLang === "id" ? "Belum ada artikel" : "No articles yet") + "</p></td></tr>";
