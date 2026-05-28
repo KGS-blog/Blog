@@ -280,6 +280,7 @@ main {
 
 
 <base target="_blank">
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -2850,7 +2851,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }, 500);
 
     try {
-// CLEAN NAVIGATION HANDLER
+// CLEAN NAVIGATION HANDLER - FIXED for iframe/Google Sites
 (function() {
     function handleNav(e) {
         var btn = e.target.closest('[data-nav]');
@@ -2861,7 +2862,11 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!section) return;
         var el = document.getElementById(section);
         if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Use window.scrollTo with offset calculation instead of scrollIntoView
+            // This works correctly inside Google Sites iframe
+            var navbarHeight = 80;
+            var offsetTop = el.offsetTop - navbarHeight;
+            window.scrollTo({ top: offsetTop, behavior: 'smooth' });
         }
         // Close mobile menu if open
         var mm = document.getElementById('mobile-menu');
