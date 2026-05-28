@@ -278,7 +278,6 @@ main {
 
 
 
-
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
@@ -336,12 +335,13 @@ main {
             <p class="text-xs text-coffee-500 -mt-1">Coffee Researcher</p>
         </div>
     </button>
+    <!-- DESKTOP NAV: urutan di HTML = Beranda, Tentang, Artikel, Kalkulator, Market Analysis, Langganan -->
     <div class="hidden sm:flex items-center gap-6">
         <button type="button" class="nav-link nav-btn" data-nav="hero">Beranda</button>
         <button type="button" class="nav-link nav-btn" data-nav="about">Tentang</button>
-        <button type="button" class="nav-link nav-btn" onclick="openLatestArticle()">Artikel</button>
-        <a href="kalkulator.html" target="_blank" class="nav-link">Kalkulator</a>
-        <a href="laporan-usda.html" target="_blank" class="nav-link">Market Analysis</a>
+        <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
+        <a href="kalkulator.html" class="nav-link">Kalkulator</a>
+        <a href="laporan-usda.html" class="nav-link">Market Analysis</a>
         <button type="button" class="nav-link nav-btn" data-nav="subscribe">Langganan</button>
     </div>
     <div class="flex items-center gap-3">
@@ -355,13 +355,14 @@ main {
     </div>
 </div>
 </div>
+<!-- MOBILE NAV: urutan harus SAMA PERSIS dengan desktop nav -->
 <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-lg border-t border-coffee-100 z-40 relative">
 <div class="px-6 py-4 space-y-3">
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="hero" data-mobile="1">Beranda</button>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="about" data-mobile="1">Tentang</button>
-    <button type="button" class="block nav-link nav-btn py-2 text-left w-full" onclick="openLatestArticle(); toggleMobileMenu();" data-mobile="1">Artikel</button>
-    <a href="kalkulator.html" target="_blank" class="block nav-link py-2 text-left w-full">Kalkulator</a>
-    <a href="laporan-usda.html" target="_blank" class="block nav-link py-2 text-left w-full">Market Analysis</a>
+    <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="articles" data-mobile="1">Artikel</button>
+    <a href="kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
+    <a href="laporan-usda.html" class="block nav-link py-2 text-left w-full">Market Analysis</a>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="subscribe" data-mobile="1">Langganan</button>
     <button type="button" id="mobile-admin-btn" onclick="showDashboard(); toggleMobileMenu();" class="hidden w-full text-left nav-link py-2 flex items-center gap-2"><i class="fas fa-lock text-xs"></i> Dashboard Admin</button>
 </div>
@@ -429,7 +430,8 @@ main {
     </div>
 </div>
 </div>
-</section><!-- KALKULATOR KOPI SIDE BY SIDE -->
+</section>
+<!-- KALKULATOR KOPI SIDE BY SIDE -->
 <section id="articles" class="py-24 bg-cream">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
 <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
@@ -601,14 +603,15 @@ main {
         </div>
         <p class="text-sm text-coffee-400 leading-relaxed" data-editable="footer_desc">Jembatan pemahaman antara petani kopi Indonesia dan pasar Amerika Serikat.</p>
     </div>
+    <!-- FOOTER NAV: urutan harus SAMA PERSIS dengan main nav -->
     <div>
         <h4 class="font-serif font-bold text-white mb-4" data-editable="footer_nav_title">Navigasi</h4>
         <ul class="space-y-2 text-sm">
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_home" data-nav="hero">Beranda</button></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_about" data-nav="about">Tentang</button></li>
-            <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" onclick="openLatestArticle()">Artikel</button></li>
-            <li><a href="kalkulator.html" target="_blank" class="hover:text-white transition-colors">Kalkulator</a></li>
-            <li><a href="laporan-usda.html" target="_blank" class="hover:text-white transition-colors">Market Analysis</a></li>
+            <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" data-nav="articles">Artikel</button></li>
+            <li><a href="kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
+            <li><a href="laporan-usda.html" class="hover:text-white transition-colors">Market Analysis</a></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_subscribe" data-nav="subscribe">Langganan</button></li>
         </ul>
     </div>
@@ -1424,6 +1427,10 @@ function setLanguage(lang) {
     renderDashboardComments();
     renderNewsletterStats();
 }
+
+// ========== updateStaticContent — FIXED ==========
+// URUTAN ARRAY HARUS SAMA PERSIS dengan urutan elemen .nav-link di HTML!
+// HTML order: Beranda → Tentang → Artikel → Kalkulator → Market Analysis → Langganan
 function updateStaticContent() {
     // Helper to safely update element content
     const update = (selector, idText, enText) => {
@@ -1473,7 +1480,7 @@ function updateStaticContent() {
     update("[data-i18n=usda_psd_title]", "Pasokan & Distribusi (PSD)", "Supply & Distribution (PSD)");
     update("[data-i18n=usda_unit]", "Unit: 1,000 kantong 60-kg", "Unit: 1,000 60-kg bags");
     update("[data-i18n=usda_col_component]", "Komponen", "Component");
-    update("[data-i18n=usda_psd_note]", "Sumber: USDA PSD Online | Marketing Year Indonesia: April–Maret | 1 kantong = 60 kg", "Source: USDA PSD Online | Indonesia Marketing Year: April–March | 1 bag = 60 kg");
+    update("[data-i18n=usda_psd_note]", "Sumber: USDA PSD Online | Marketing Year Indonesia: April-Maret | 1 kantong = 60 kg", "Source: USDA PSD Online | Indonesia Marketing Year: April-March | 1 bag = 60 kg");
     update("[data-i18n=usda_chart_export]", "10 Negara Tujuan Utama Ekspor", "Top 10 Export Destinations");
     update("[data-i18n=usda_chart_price]", "Tren Harga Kopi Indonesia vs ICO", "Indonesia Coffee Price Trend vs ICO");
     update("[data-i18n=usda_factors_title]", "Faktor-Faktor Penentu", "Key Determining Factors");
@@ -1481,7 +1488,7 @@ function updateStaticContent() {
     update("[data-i18n=usda_factor_policy]", "Kebijakan Pemerintah", "Government Policy");
     update("[data-i18n=usda_factor_market]", "Dinamika Pasar Global", "Global Market Dynamics");
     update("[data-i18n=usda_factor_price]", "Harga Domestik", "Domestic Price");
-    update("[data-i18n=usda_source]", "Sumber: USDA FAS — PSD Online, GAIN Reports, Coffee: World Markets and Trade", "Source: USDA FAS — PSD Online, GAIN Reports, Coffee: World Markets and Trade");
+    update("[data-i18n=usda_source]", "Sumber: USDA FAS - PSD Online, GAIN Reports, Coffee: World Markets and Trade", "Source: USDA FAS - PSD Online, GAIN Reports, Coffee: World Markets and Trade");
     update("[data-i18n=usda_disclaimer]", "Data bersifat estimasi dan dapat berubah sesuai perkembangan pasar. Satuan mengikuti standar USDA: 1,000 kantong 60-kg (60 metrik ton).", "Data is estimated and subject to market changes. Units follow USDA standard: 1,000 60-kg bags (60 metric tons).");
 
     // ARTICLES SECTION
@@ -1551,16 +1558,19 @@ function updateStaticContent() {
     update("[data-i18n=stat_col_status]", "Status", "Status");
     update("[data-i18n=stat_col_engagement]", "Engagement", "Engagement");
 
-    // NAVBAR (public view)
+    // NAVBAR (public view) — URUTAN HARUS SAMA PERSIS DENGAN URUTAN ELEMEN HTML DI DOM
+    // HTML order: Beranda, Tentang, Artikel, Kalkulator, Market Analysis, Langganan
     const navLinks = document.querySelectorAll("#public-view .nav-link");
-    const navTextsID = ["Beranda", "Tentang", "Kalkulator", "Artikel", "Market Analysis", "Langganan"];
-    const navTextsEN = ["Home", "About", "Calculator", "Articles", "Market Analysis", "Subscribe"];
+    // SAMPAI SINI: navTextsID[0] = Beranda, [1] = Tentang, [2] = Artikel, [3] = Kalkulator, [4] = Market Analysis, [5] = Langganan
+    const navTextsID = ["Beranda", "Tentang", "Artikel", "Kalkulator", "Market Analysis", "Langganan"];
+    const navTextsEN = ["Home", "About", "Articles", "Calculator", "Market Analysis", "Subscribe"];
     navLinks.forEach((link, idx) => {
         if (idx < 6 && link.textContent.trim() && !link.querySelector("i")) {
             link.textContent = currentLang === "id" ? navTextsID[idx] : navTextsEN[idx];
         }
     });
 }
+
 // ========== ARTICLES (WITH SKELETON LOADING) ==========
 function renderArticles(filter) {
     const grid = document.getElementById("articles-grid");
@@ -1845,44 +1855,6 @@ function getCurrentArticleTitle() {
     return document.getElementById("modal-title").textContent || "Artikel Ganjar Satyanagara";
 }
 
-
-// ========== OPEN LATEST ARTICLE FROM NAVIGATION ==========
-function openLatestArticle() {
-    // Get published articles sorted by date (newest first)
-    var published = articlesData.filter(function(a) { return a.status === "Published"; });
-
-    // Sort by date descending
-    published.sort(function(a, b) {
-        var parseDate = function(dateStr) {
-            if (!dateStr) return 0;
-            var monthsID = ["januari","februari","maret","april","mei","juni","juli","agustus","september","oktober","november","desember"];
-            var monthsEN = ["january","february","march","april","may","june","july","august","september","october","november","december"];
-            var parts = dateStr.toLowerCase().split(/\s+/);
-            if (parts.length >= 3) {
-                var day = parseInt(parts[0]) || parseInt(parts[1]) || 1;
-                var monthStr = parts[1] || parts[0];
-                var year = parseInt(parts[parts.length - 1]) || 2026;
-                var month = monthsID.indexOf(monthStr);
-                if (month === -1) month = monthsEN.indexOf(monthStr);
-                if (month === -1) month = 0;
-                return new Date(year, month, day).getTime();
-            }
-            return new Date(dateStr).getTime() || 0;
-        };
-        return parseDate(b.date) - parseDate(a.date);
-    });
-
-    if (published.length === 0) {
-        showToast("Belum ada artikel yang dipublikasikan.", "error");
-        return;
-    }
-
-    // Open the most recent article
-    var latestArticle = published[0];
-    openArticle(latestArticle.id);
-}
-
-// ========== ORIGINAL openArticle FUNCTION ==========
 function openArticle(id) {
     const art = articlesData.find(a => a.id == id);
     if (!art) return;
@@ -2120,6 +2092,7 @@ window.addEventListener("message", function(event) {
 window.addEventListener("load", checkArticleHash);
 window.addEventListener("hashchange", checkArticleHash);
 window.addEventListener("popstate", checkArticleHash);
+
 function showAddArticleModal() {
     document.getElementById("add-article-modal").classList.remove("hidden");
     document.body.style.overflow = "hidden";
@@ -2275,6 +2248,7 @@ function toggleArticleStatus(id) {
         renderArticlesSidebar(); renderDashboardOverview();
     showToast("Status artikel diubah menjadi: " + art.status, "success");
 }
+
 // ========== DASHBOARD RENDER ==========
 function renderDashboardArticles() {
     const tbody = document.getElementById("dashboard-articles-table");
@@ -3742,7 +3716,7 @@ function coffeeCalculateAll() {
   if (pubSpec88) pubSpec88.textContent = coffeeFmtIdrShort(spec88Idr) + " / $" + coffeeFmt(spec88);
 
   var pubAq = document.getElementById("coffee-pub-a-quote");
-  if (pubAq) pubAq.textContent = aCents.toFixed(2) + " ¢/lb";
+  if (pubAq) pubAq.textContent = aCents.toFixed(2) + " c/lb";
   var pubRq = document.getElementById("coffee-pub-r-quote");
   if (pubRq) pubRq.textContent = "$" + rTon.toLocaleString() + "/t";
   var pubDr = document.getElementById("coffee-pub-diff-r-txt");
@@ -3936,7 +3910,7 @@ function setFobGradeType(type, updateUI) {
     }
     if (indicator) {
       indicator.className = "mb-3 px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 flex items-center gap-2";
-      indicator.innerHTML = '<i class="fas fa-info-circle"></i><span>Mode Komersial: Diff +$0.20–$1.20 | Premium $0.20–$1.20/kg | FOB $4.20–$8.50/kg</span>';
+      indicator.innerHTML = '<i class="fas fa-info-circle"></i><span>Mode Komersial: Diff +$0.20-$1.20 | Premium $0.20-$1.20/kg | FOB $4.20-$8.50/kg</span>';
     }
   } else {
     if (btnComm) {
@@ -3947,7 +3921,7 @@ function setFobGradeType(type, updateUI) {
     }
     if (indicator) {
       indicator.className = "mb-3 px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 flex items-center gap-2";
-      indicator.innerHTML = '<i class="fas fa-star"></i><span>Mode Specialty: Diff +$1.50–$6.00 | Premium $2.00–$12.00/kg | FOB $7.50–$25.00/kg</span>';
+      indicator.innerHTML = '<i class="fas fa-star"></i><span>Mode Specialty: Diff +$1.50-$6.00 | Premium $2.00-$12.00/kg | FOB $7.50-$25.00/kg</span>';
     }
   }
 
@@ -4038,8 +4012,8 @@ function calculateFOBv2() {
 
   if (marketCheck && fobMin > 0 && fobMax > 0) {
     marketCheck.classList.remove('hidden');
-    if (marketGrade) marketGrade.textContent = gradeOpt.text.split(' —')[0];
-    if (marketRange) marketRange.textContent = '$' + fobMin.toFixed(2) + ' – $' + fobMax.toFixed(2) + '/kg';
+    if (marketGrade) marketGrade.textContent = gradeOpt.text.split(' -')[0];
+    if (marketRange) marketRange.textContent = '$' + fobMin.toFixed(2) + ' - $' + fobMax.toFixed(2) + '/kg';
 
     if (fobFinal < fobMin * 0.85) {
       if (marketStatus) {
@@ -4076,7 +4050,7 @@ function addFobProduct() {
 
   const product = {
     id: fobProductIdCounter++,
-    nama: 'Produk ' + fobProductIdCounter + ' — ' + originSel.options[originSel.selectedIndex].text,
+    nama: 'Produk ' + fobProductIdCounter + ' - ' + originSel.options[originSel.selectedIndex].text,
     origin: originSel.options[originSel.selectedIndex].text,
     grade: gradeSel.options[gradeSel.selectedIndex].text,
     gradeType: gradeOpt.dataset.type || 'commercial',
@@ -4300,7 +4274,7 @@ function updateGradeCalculator() {
     labelEl.className = "text-sm font-bold " + colorClass;
   }
   if (premEl) {
-    premEl.textContent = "+$" + premiumMin.toFixed(2) + "–$" + premiumMax.toFixed(2) + "/kg";
+    premEl.textContent = "+$" + premiumMin.toFixed(2) + "-$" + premiumMax.toFixed(2) + "/kg";
     premEl.className = "text-sm font-bold " + colorClass;
   }
   if (baseEl) baseEl.textContent = "$" + cMarketKg.toFixed(2) + "/kg";
@@ -4308,7 +4282,7 @@ function updateGradeCalculator() {
     premUsdEl.innerHTML = "Premium: +$" + avgPremium.toFixed(2) + "/kg <span class='text-coffee-400'>|</span> Diff: +$" + avgDiff.toFixed(2) + '/kg';
     premUsdEl.className = "font-mono " + colorClass;
   }
-  if (fobRangeEl) fobRangeEl.textContent = "$" + fobMin.toFixed(2) + " – $" + fobMax.toFixed(2) + "/kg (termasuk diff)";
+  if (fobRangeEl) fobRangeEl.textContent = "$" + fobMin.toFixed(2) + " - $" + fobMax.toFixed(2) + "/kg (termasuk diff)";
   if (recEl) recEl.textContent = marketRec;
   if (barEl) barEl.style.width = Math.min(100, Math.max(0, progressPct)) + "%";
 }
