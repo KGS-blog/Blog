@@ -281,6 +281,7 @@ main {
 
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -338,9 +339,9 @@ main {
     <div class="hidden sm:flex items-center gap-6">
         <button type="button" class="nav-link nav-btn" data-nav="hero">Beranda</button>
         <button type="button" class="nav-link nav-btn" data-nav="about">Tentang</button>
-        <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
-        <a href="kalkulator.html" class="nav-link">Kalkulator</a>
-        <a href="laporan-usda.html" class="nav-link">Market Analysis</a>
+        <button type="button" class="nav-link nav-btn" onclick="openLatestArticle()">Artikel</button>
+        <a href="kalkulator.html" target="_blank" class="nav-link">Kalkulator</a>
+        <a href="laporan-usda.html" target="_blank" class="nav-link">Market Analysis</a>
         <button type="button" class="nav-link nav-btn" data-nav="subscribe">Langganan</button>
     </div>
     <div class="flex items-center gap-3">
@@ -358,9 +359,9 @@ main {
 <div class="px-6 py-4 space-y-3">
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="hero" data-mobile="1">Beranda</button>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="about" data-mobile="1">Tentang</button>
-    <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="articles" data-mobile="1">Artikel</button>
-    <a href="kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
-    <a href="laporan-usda.html" class="block nav-link py-2 text-left w-full">Market Analysis</a>
+    <button type="button" class="block nav-link nav-btn py-2 text-left w-full" onclick="openLatestArticle(); toggleMobileMenu();" data-mobile="1">Artikel</button>
+    <a href="kalkulator.html" target="_blank" class="block nav-link py-2 text-left w-full">Kalkulator</a>
+    <a href="laporan-usda.html" target="_blank" class="block nav-link py-2 text-left w-full">Market Analysis</a>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="subscribe" data-mobile="1">Langganan</button>
     <button type="button" id="mobile-admin-btn" onclick="showDashboard(); toggleMobileMenu();" class="hidden w-full text-left nav-link py-2 flex items-center gap-2"><i class="fas fa-lock text-xs"></i> Dashboard Admin</button>
 </div>
@@ -605,9 +606,9 @@ main {
         <ul class="space-y-2 text-sm">
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_home" data-nav="hero">Beranda</button></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_about" data-nav="about">Tentang</button></li>
-            <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" data-nav="articles">Artikel</button></li>
-            <li><a href="kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
-            <li><a href="laporan-usda.html" class="hover:text-white transition-colors">Market Analysis</a></li>
+            <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" onclick="openLatestArticle()">Artikel</button></li>
+            <li><a href="kalkulator.html" target="_blank" class="hover:text-white transition-colors">Kalkulator</a></li>
+            <li><a href="laporan-usda.html" target="_blank" class="hover:text-white transition-colors">Market Analysis</a></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_subscribe" data-nav="subscribe">Langganan</button></li>
         </ul>
     </div>
@@ -1844,6 +1845,44 @@ function getCurrentArticleTitle() {
     return document.getElementById("modal-title").textContent || "Artikel Ganjar Satyanagara";
 }
 
+
+// ========== OPEN LATEST ARTICLE FROM NAVIGATION ==========
+function openLatestArticle() {
+    // Get published articles sorted by date (newest first)
+    var published = articlesData.filter(function(a) { return a.status === "Published"; });
+
+    // Sort by date descending
+    published.sort(function(a, b) {
+        var parseDate = function(dateStr) {
+            if (!dateStr) return 0;
+            var monthsID = ["januari","februari","maret","april","mei","juni","juli","agustus","september","oktober","november","desember"];
+            var monthsEN = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+            var parts = dateStr.toLowerCase().split(/\s+/);
+            if (parts.length >= 3) {
+                var day = parseInt(parts[0]) || parseInt(parts[1]) || 1;
+                var monthStr = parts[1] || parts[0];
+                var year = parseInt(parts[parts.length - 1]) || 2026;
+                var month = monthsID.indexOf(monthStr);
+                if (month === -1) month = monthsEN.indexOf(monthStr);
+                if (month === -1) month = 0;
+                return new Date(year, month, day).getTime();
+            }
+            return new Date(dateStr).getTime() || 0;
+        };
+        return parseDate(b.date) - parseDate(a.date);
+    });
+
+    if (published.length === 0) {
+        showToast("Belum ada artikel yang dipublikasikan.", "error");
+        return;
+    }
+
+    // Open the most recent article
+    var latestArticle = published[0];
+    openArticle(latestArticle.id);
+}
+
+// ========== ORIGINAL openArticle FUNCTION ==========
 function openArticle(id) {
     const art = articlesData.find(a => a.id == id);
     if (!art) return;
