@@ -688,6 +688,49 @@ document.addEventListener("DOMContentLoaded", function() {
 }
 /* Override any legacy .header styles */
 .header { background: transparent !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+
+/* ===== SOCIAL SHARE BAR ===== */
+.share-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.share-label {
+    font-size: 0.75rem;
+    color: #9a7b56;
+    margin-right: 0.25rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+.share-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.share-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+.share-wa { background: #25D366; }
+.share-fb { background: #1877F2; }
+.share-tw { background: #000000; }
+.share-li { background: #0A66C2; }
+.share-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.share-copy { background: #7d5f3e; }
+.share-btn i { pointer-events: none; }
+
+/* Dark section variant */
+.dark-section .share-label { color: #c9b89e; }
+.dark-section .share-copy { background: #b09473; }
 </style>
 <script>
 tailwind.config = {
@@ -702,6 +745,7 @@ tailwind.config = {
     }
 }
 </script>
+<base target="_blank">
 <base target="_blank">
 </head>
 <body class="antialiased">
@@ -778,7 +822,19 @@ tailwind.config = {
         </p>
     </div>
 
-    <!-- Refresh Controls -->
+    
+    <!-- Social Share -->
+    <div class="share-bar">
+        <span class="share-label"><i class="fas fa-share-alt mr-1"></i>Bagikan</span>
+        <button type="button" onclick="shareToWhatsApp()" class="share-btn share-wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+        <button type="button" onclick="shareToInstagram()" class="share-btn share-ig" title="Instagram"><i class="fab fa-instagram"></i></button>
+        <button type="button" onclick="shareToFacebook()" class="share-btn share-fb" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+        <button type="button" onclick="shareToTwitter()" class="share-btn share-tw" title="X / Twitter"><i class="fab fa-x-twitter"></i></button>
+        <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+        <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
+    </div>
+
+<!-- Refresh Controls -->
     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 p-4 bg-white rounded-xl border border-coffee-100 shadow-sm">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
@@ -794,7 +850,7 @@ tailwind.config = {
                 <i class="fas fa-sync-alt" id="usda-btn-icon"></i>
                 <span id="usda-btn-text" data-i18n="usda_refresh">Refresh Data</span>
             </button>
-            <button type="button" onclick="toggleUSDAManualUpload()" class="px-4 py-2 rounded-lg bg-white text-coffee-700 text-sm font-medium hover:bg-coffee-50 transition-all border border-coffee-200 flex items-center gap-2">
+            <button type="button" onclick="toggleUSDAManualUpload()" class="px-4 py-2 rounded-lg bg-white text-coffee-700 text-sm font-medium hover:bg-coffee-50 transition-all border border-coffee-200 flex items-center gap-2 hidden">
                 <i class="fas fa-upload"></i>
                 <span data-i18n="usda_upload">Upload CSV</span>
             </button>
@@ -989,6 +1045,18 @@ tailwind.config = {
                 <span>Offline Mode — Baseline Data</span>
             </span>
         </div>
+
+    <!-- Social Share -->
+    <div class="share-bar">
+        <span class="share-label"><i class="fas fa-share-alt mr-1"></i>Bagikan</span>
+        <button type="button" onclick="shareToWhatsApp()" class="share-btn share-wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+        <button type="button" onclick="shareToInstagram()" class="share-btn share-ig" title="Instagram"><i class="fab fa-instagram"></i></button>
+        <button type="button" onclick="shareToFacebook()" class="share-btn share-fb" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+        <button type="button" onclick="shareToTwitter()" class="share-btn share-tw" title="X / Twitter"><i class="fab fa-x-twitter"></i></button>
+        <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+        <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
+    </div>
+
     </div>
 
     <div class="grid lg:grid-cols-3 gap-8 mb-8">
@@ -1189,6 +1257,18 @@ tailwind.config = {
         <span class="inline-block px-4 py-1.5 rounded-full bg-coffee-100 text-coffee-600 text-xs font-medium tracking-wider uppercase mb-4" data-i18n="upd_label">Update Terkini</span>
         <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-coffee-900 leading-tight mb-4" data-i18n="upd_title">Industri Kopi Indonesia 2023–2025</h1>
         <div class="w-24 h-1 bg-coffee-400 mx-auto rounded-full mb-4"></div>
+
+    <!-- Social Share -->
+    <div class="share-bar">
+        <span class="share-label"><i class="fas fa-share-alt mr-1"></i>Bagikan</span>
+        <button type="button" onclick="shareToWhatsApp()" class="share-btn share-wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+        <button type="button" onclick="shareToInstagram()" class="share-btn share-ig" title="Instagram"><i class="fab fa-instagram"></i></button>
+        <button type="button" onclick="shareToFacebook()" class="share-btn share-fb" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+        <button type="button" onclick="shareToTwitter()" class="share-btn share-tw" title="X / Twitter"><i class="fab fa-x-twitter"></i></button>
+        <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+        <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
+    </div>
+
         <p class="text-lg md:text-xl text-coffee-500 max-w-3xl mx-auto leading-relaxed font-light" data-i18n="upd_desc">Executive summary berdasarkan data BPS, USDA FAS, AEKI, Bappebti, Kementan, dan BMKG.</p>
     </div>
 
@@ -1570,5 +1650,74 @@ tailwind.config = {
 </div>
 </footer>
 
+<script>
+// ========== SOCIAL SHARE FUNCTIONS ==========
+function getShareText() {
+    return document.title || "Q.co Coffee";
+}
+function getShareUrl() {
+    return window.location.href;
+}
+function shareToWhatsApp() {
+    var text = encodeURIComponent(getShareText() + "\n\n" + getShareUrl());
+    window.open("https://wa.me/?text=" + text, "_blank");
+}
+function shareToFacebook() {
+    window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(getShareUrl()), "_blank", "width=600,height=400");
+}
+function shareToTwitter() {
+    window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(getShareText()) + "&url=" + encodeURIComponent(getShareUrl()), "_blank", "width=600,height=400");
+}
+function shareToLinkedIn() {
+    window.open("https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(getShareUrl()), "_blank", "width=600,height=400");
+}
+function shareToInstagram() {
+    if (navigator.share) {
+        navigator.share({
+            title: getShareText(),
+            text: getShareText(),
+            url: getShareUrl()
+        }).catch(function(){});
+    } else {
+        copyPageLink();
+        showShareToast("Link disalin! Buka Instagram untuk paste di story/bio.");
+    }
+}
+function copyPageLink() {
+    var url = getShareUrl();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            showShareToast("Link disalin ke clipboard!");
+        }).catch(function() { fallbackCopyLink(url); });
+    } else {
+        fallbackCopyLink(url);
+    }
+}
+function fallbackCopyLink(url) {
+    var ta = document.createElement("textarea");
+    ta.value = url;
+    ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    var ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    if (ok) showShareToast("Link disalin ke clipboard!");
+}
+function showShareToast(msg) {
+    // Try to use existing toast if available
+    var toast = document.getElementById("toast");
+    var toastMsg = document.getElementById("toast-message");
+    if (toast && toastMsg) {
+        toastMsg.textContent = msg;
+        toast.classList.remove("translate-y-20", "opacity-0");
+        setTimeout(function() {
+            toast.classList.add("translate-y-20", "opacity-0");
+        }, 2000);
+    } else {
+        alert(msg);
+    }
+}
+</script>
 </body>
 </html>
