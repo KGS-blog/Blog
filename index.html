@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- QFin Blog HTML — v2026.09.05-3 | totalPublishedViews fix + Meta Pixel + Disable auto-Sheets + Modal styling fix -->
+
 
 <html lang="id" class="scroll-smooth">
 <head>
@@ -1894,7 +1896,9 @@ function openArticle(id) {
     }
     document.getElementById("modal-title").textContent = title || "Untitled";
     document.getElementById("modal-title").setAttribute("data-article-id", id);
-    document.getElementById("article-body-content").innerHTML = content_html;
+    var modalBody = document.getElementById("article-body-content");
+    modalBody.className = "featured-article-content";
+    modalBody.innerHTML = content_html;
 
     // Update direct link display in share bar
     const directLinkInput = document.getElementById("article-direct-link");
@@ -2949,10 +2953,10 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(function() { checkArticleHash(); }, 5000);
         setTimeout(function() { checkArticleHash(); }, 10000);
 
-        // Step 6: Background Google Sheets sync with retry
-        setTimeout(function() { 
-            autoConnectSheetsWithRetry(); 
-        }, 500);
+        // Step 6: Google Sheets sync — DISABLED auto-connect.
+        // Sheets hanya aktif via manual trigger di Dashboard Admin (Test/Sync/Load).
+        // Tidak auto-fetch saat load halaman supaya tidak muncul toast error.
+        console.log("[Sheets] Auto-connect disabled. Use Dashboard > Google Sheets untuk manual sync.");
 
     } catch (e) {
         console.error("Initialization error:", e);
@@ -3305,7 +3309,8 @@ function autoConnectSheetsWithRetry() {
                     hideSkeletonLoading();
                     renderArticles();
         renderArticlesSidebar();
-                    showToast("Google Sheets tidak tersedia. Menggunakan data lokal.", "info");
+                    // Tidak tampilkan toast — data lokal sudah cukup, tidak ganggu user
+                    console.log("[Sheets] Offline. Using local data (" + articlesData.length + " articles).");
                 } else {
                     showDataStatus("error", "Gagal memuat data. Coba refresh halaman.");
                     hideSkeletonLoading();
