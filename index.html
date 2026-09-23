@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- QFin Blog HTML - v2026.09.23-1 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
+<!-- QFin Blog HTML - v2026.09.23-2 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
 <html lang="id" class="scroll-smooth">
 <head>
 <!-- Meta Pixel Code -->
@@ -1700,10 +1700,15 @@ function renderArticlesSidebar() {
     if (featuredEl && !featuredEl.classList.contains("hidden")) {
         const articleEl = featuredEl.querySelector("article");
         if (articleEl) {
-            const onclickAttr = articleEl.getAttribute("onclick");
-            if (onclickAttr) {
-                const match = onclickAttr.match(/openArticle\((\d+)\)/);
-                if (match) featuredId = parseInt(match[1]);
+            const dataId = articleEl.getAttribute("data-article-id");
+            if (dataId) {
+                featuredId = parseInt(dataId);
+            } else {
+                const onclickAttr = articleEl.getAttribute("onclick");
+                if (onclickAttr) {
+                    const match = onclickAttr.match(/openArticle\((\d+)\)/);
+                    if (match) featuredId = parseInt(match[1]);
+                }
             }
         }
     }
@@ -1781,7 +1786,7 @@ function renderFeaturedArticle(art) {
     const shareUrlEnc = encodeURIComponent(shareUrl);
 
     container.innerHTML = `
-        <article class="bg-white rounded-2xl shadow-sm border border-coffee-100 overflow-hidden">
+        <article data-article-id="${art.id}" class="bg-white rounded-2xl shadow-sm border border-coffee-100 overflow-hidden">
             ${art.image ? `<div class="w-full h-64 md:h-96 overflow-hidden"><img src="${art.image}" alt="${title}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div>` : ''}
             <div class="p-8 md:p-12">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
@@ -1906,8 +1911,11 @@ function openArticle(id) {
 
 // Refresh views count display across all UI components
 function refreshViewsDisplay() {
-    // Refresh main grid and sidebar
-    renderArticles();
+    // Refresh main grid and sidebar (skip when featured mode active - avoid overwriting opened article)
+    const featEl = document.getElementById("featured-article");
+    if (featEl && featEl.classList.contains("hidden")) {
+        renderArticles();
+    }
     renderArticlesSidebar();
     // Refresh dashboard if visible
     if (!document.getElementById("dashboard-view").classList.contains("hidden")) {
@@ -2909,7 +2917,7 @@ document.addEventListener("DOMContentLoaded", function() {
             initUSDACharts(); 
             loadUSDACache();
             scheduleUSDAAutoRefresh();
-            updateGradeCalculator();
+            try { updateGradeCalculator(); } catch (e) { console.warn("Grade calc dilewati:", e.message); }
         }, 600);
 
         checkArticleHash(); // Immediate check (for localStorage data)
@@ -4528,12 +4536,14 @@ function initUSDACharts() {
 
 // Init
 document.addEventListener("DOMContentLoaded", function() {
-  coffeeLoadParams();
-  coffeeSyncInputs();
-  coffeeCalculateAll();
-  syncCoffeeToFob();
-  updateFobDefaults();
-  calculateFOBv2();
+  try {
+    coffeeLoadParams();
+    coffeeSyncInputs();
+    coffeeCalculateAll();
+    syncCoffeeToFob();
+    updateFobDefaults();
+    calculateFOBv2();
+  } catch (e) { console.warn("Kalkulator kopi dilewati:", e.message); }
 });
 </script>
 
