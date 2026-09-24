@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- QFin Blog HTML - v2026.09.24-5 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
+<!-- QFin Blog HTML - v2026.09.24-9 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
 <html lang="id" class="scroll-smooth">
 <head>
 <!-- Meta Pixel Code -->
@@ -24,7 +24,7 @@ src="https://www.facebook.com/tr?id=1498535007132214&ev=PageView&noscript=1"
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Coffee Researcher</title>
 
-<!-- ===== SEO & SOCIAL META (v2026.09.24-5) ===== -->
+<!-- ===== SEO & SOCIAL META (v2026.09.24-9) ===== -->
 <meta name="description" content="Blog riset kopi Indonesia oleh Ganjar Satyanagara (Q Grader): analisis pasar kopi, laporan USDA, panduan sourcing & menilai supplier, kalkulator FOB, dan insight ekspor kopi Indonesia ke pasar dunia.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>">
 <meta property="og:type" content="website">
@@ -462,93 +462,340 @@ main {
 </div>
 </section>
 <!-- KALKULATOR KOPI SIDE BY SIDE -->
-<!-- ===== WIDGET "DARI KEBUN KE ICE" — v2026.09.24-5 =====
-     Sumber: repo KGS-blog/Update-Coffee-Data via GitHub Pages (data/market-data.json + data/ekspor.json)
-     Diperbarui otomatis oleh GitHub Actions tiap 6 jam. -->
-<div id="qco-market-widget" style="max-width:760px;margin:24px auto;background:#fff;border:1px solid #e5ddcf;border-radius:16px;padding:22px 24px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
-  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
-    <div style="font-size:0.8rem;letter-spacing:.12em;color:#8B6914;font-weight:700;">DARI KEBUN KE ICE</div>
-    <div id="qco-mw-updated" style="font-size:0.75rem;color:#999;"></div>
+<!-- ===== WIDGET "DARI KEBUN KE ICE" — v2026.09.24-9 =====
+     Sumber: KGS-blog/Update-Coffee-Data (data/market-data.json + data/ekspor.json)
+     Konversi mengikuti kalkulator.html; parameter diff/cherry dibaca dari qco_coffee_params
+     (localStorage yang sama dengan kalkulator) agar angka konsisten. -->
+<div id="qco-market-widget" style="background:linear-gradient(135deg,#1a120d,#2d2118 55%,#3E2723);border-radius:20px;padding:26px 26px 22px;margin:26px auto;max-width:900px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#e0d5c5;box-shadow:0 8px 30px rgba(0,0,0,.25);">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+    <div>
+      <div style="font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:.02em;">Dari Kebun ke ICE</div>
+      <div style="font-size:.72rem;color:#9a8b76;">C-Market Futures &rarr; USD/IDR per Kg &middot; update otomatis tiap 6 jam</div>
+    </div>
+    <div id="qco-mw-updated" style="font-size:.72rem;color:#8a7a66;"></div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
-    <div style="background:#fdfbf7;border:1px solid #efe7d8;border-radius:12px;padding:14px;">
-      <div style="font-size:0.72rem;color:#8a8175;margin-bottom:4px;">ARABIKA C-MARKET (&cent;/LB)</div>
-      <div id="qco-mw-arabica" style="font-size:1.45rem;font-weight:800;color:#6F4E37;">&mdash;</div>
-      <div id="qco-mw-arabica-chg" style="font-size:0.7rem;color:#999;"></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">
+    <!-- Arabika -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#60a5fa;"></span>
+        <span style="font-size:.85rem;font-weight:700;color:#fff;">Arabika C-Market</span>
+        <span id="qco-mw-a-quote" style="margin-left:auto;font-size:.75rem;font-family:monospace;color:#9a8b76;"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+          <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">World</div>
+          <div id="qco-mw-a1" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#93c5fd;">&mdash;</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+          <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">+Diff</div>
+          <div id="qco-mw-a2" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#93c5fd;">&mdash;</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+          <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Cherry</div>
+          <div id="qco-mw-a3" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#93c5fd;">&mdash;</div>
+        </div>
+      </div>
     </div>
-    <div style="background:#fdfbf7;border:1px solid #efe7d8;border-radius:12px;padding:14px;">
-      <div style="font-size:0.72rem;color:#8a8175;margin-bottom:4px;">ROBUSTA LONDON ($/TON)</div>
-      <div id="qco-mw-robusta" style="font-size:1.45rem;font-weight:800;color:#6F4E37;">&mdash;</div>
-      <div id="qco-mw-robusta-note" style="font-size:0.7rem;color:#999;"></div>
-    </div>
-    <div style="background:#fdfbf7;border:1px solid #efe7d8;border-radius:12px;padding:14px;">
-      <div style="font-size:0.72rem;color:#8a8175;margin-bottom:4px;">USD/IDR</div>
-      <div id="qco-mw-kurs" style="font-size:1.45rem;font-weight:800;color:#6F4E37;">&mdash;</div>
-      <div id="qco-mw-kurs-chg" style="font-size:0.7rem;color:#999;"></div>
-    </div>
-    <div style="background:#fdfbf7;border:1px solid #efe7d8;border-radius:12px;padding:14px;">
-      <div style="font-size:0.72rem;color:#8a8175;margin-bottom:4px;">EKSPOR KOPI RI (HS 0901)</div>
-      <div id="qco-mw-ekspor" style="font-size:0.95rem;font-weight:700;color:#6F4E37;line-height:1.4;">&mdash;</div>
-      <div id="qco-mw-ekspor-note" style="font-size:0.7rem;color:#999;"></div>
+    <!-- Robusta -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#34d399;"></span>
+        <span style="font-size:.85rem;font-weight:700;color:#fff;">Robusta London</span>
+        <span id="qco-mw-r-quote" style="margin-left:auto;font-size:.75rem;font-family:monospace;color:#9a8b76;"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+          <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">World</div>
+          <div id="qco-mw-r1" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#6ee7b7;">&mdash;</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+          <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">+Diff</div>
+          <div id="qco-mw-r2" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#6ee7b7;">&mdash;</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+          <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Cherry</div>
+          <div id="qco-mw-r3" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#6ee7b7;">&mdash;</div>
+        </div>
+      </div>
+      <div id="qco-mw-r-note" style="font-size:.65rem;color:#b08d57;margin-top:8px;"></div>
     </div>
   </div>
+
+  <!-- Specialty -->
+  <div style="margin-top:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:#c084fc;"></span>
+      <span style="font-size:.85rem;font-weight:700;color:#fff;">Estimasi Specialty Grade</span>
+      <span style="margin-left:auto;font-size:.68rem;color:#9a8b76;">C-Market + premium specialty</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+        <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Q-Grade 84&ndash;85</div>
+        <div id="qco-mw-s84" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#d8b4fe;">&mdash;</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+        <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Q-Grade 86+</div>
+        <div id="qco-mw-s86" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#d8b4fe;">&mdash;</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;">
+        <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Q-Grade 88+</div>
+        <div id="qco-mw-s88" style="font-size:.8rem;font-weight:700;font-family:monospace;color:#d8b4fe;">&mdash;</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BPS Ekspor -->
+  <div style="margin-top:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:#fbbf24;"></span>
+      <span style="font-size:.85rem;font-weight:700;color:#fff;">Ekspor Kopi RI (HS 0901)</span>
+      <span style="margin-left:auto;font-size:.68rem;color:#9a8b76;">BPS &middot; bulanan</span>
+    </div>
+    <div id="qco-mw-ekspor" style="font-size:.95rem;font-weight:700;color:#fcd34d;line-height:1.5;">&mdash;</div>
+    <div id="qco-mw-ekspor-note" style="font-size:.68rem;color:#9a8b76;margin-top:4px;"></div>
+  </div>
+
+  <div style="margin-top:14px;font-size:.68rem;color:#7a6a58;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;">
+    <span>Diff Arabika &amp; Robusta serta Cherry Ratio mengikuti pengaturan di <a href="kalkulator.html" style="color:#b09473;">kalkulator</a></span>
+    <span id="qco-mw-params" style="color:#9a8b76;"></span>
+  </div>
+
+  <!-- NARASI PEMAHAMAN -->
+  <details style="margin-top:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;">
+    <summary style="cursor:pointer;font-size:.78rem;font-weight:700;color:#b09473;list-style:none;outline:none;">
+      &#128214; <span id="qco-expl-title">Cara Membaca Angka Ini</span>
+      <span id="qco-expl-hint" style="color:#7a6a58;font-weight:400;">(klik untuk membuka)</span>
+      <button type="button" id="qco-expl-lang" onclick="event.preventDefault();event.stopPropagation();window.__qcoExplLang(window.__qcoExplCur==='id'?'en':'id');" style="float:right;background:none;border:1px solid rgba(255,255,255,.2);color:#b09473;font-size:.65rem;padding:2px 10px;border-radius:99px;cursor:pointer;">EN</button>
+    </summary>
+    <div id="qco-expl-id" style="margin-top:10px;font-size:.74rem;color:#c9b89e;line-height:1.75;">
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">World</strong> adalah harga acuan internasional (C-Market) yang dikonversi ke Rupiah per kg. Ini harga &ldquo;papan&rdquo; di New York &mdash; <strong style="color:#e0d5c5;">bukan</strong> harga di kebun Indonesia.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">+Diff (Diferensial)</strong> adalah tambahan (atau pengurangan, kalau negatif) di atas harga acuan, sesuai kualitas dan asal. Diff +20&cent; berarti kopi ini diperdagangkan 20 sen di atas C-Market. Nilainya mengikuti pengaturan Anda di kalkulator &mdash; sesuaikan dengan kesepakatan nyata.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Cherry</strong> adalah <strong style="color:#e0d5c5;">estimasi matematis</strong> harga di tingkat petani dalam bentuk cherry/gabah, memakai rasio konversi (5:1 = &plusmn;5 kg cherry menjadi 1 kg green bean). Bukan harga riil kebun &mdash; harga sebenarnya ditentukan pasar lokal, kadar air, dan negosiasi.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Specialty Grade</strong> = C-Market + premium berdasarkan skor cupping (Q-Grade).</p>
+      <p style="margin:0;">Semua angka adalah <strong style="color:#e0d5c5;">benchmark</strong> untuk menilai wajar atau tidaknya sebuah harga (over/under-value) &mdash; bukan pengganti quotation resmi.</p>
+    </div>
+    <div id="qco-expl-en" style="display:none;margin-top:10px;font-size:.74rem;color:#c9b89e;line-height:1.75;">
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">World</strong> is the international benchmark price (C-Market) converted to IDR per kg &mdash; the New York &ldquo;board&rdquo; price, <strong style="color:#e0d5c5;">not</strong> the farm-gate price in Indonesia.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">+Diff (Differential)</strong> is the premium (or discount, if negative) over the benchmark, reflecting quality and origin. +20&cent; means this coffee trades 20 cents above the C-Market. Values follow your calculator settings &mdash; adjust them to match real deals.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Cherry</strong> is a <strong style="color:#e0d5c5;">mathematical estimate</strong> of the farm-gate price in cherry/parchment form, using a conversion ratio (5:1 = &plusmn;5 kg cherry per 1 kg green bean). It is not the real farm price &mdash; actual prices are set by local markets, moisture content, and negotiation.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Specialty Grade</strong> = C-Market + premium by cupping score (Q-Grade).</p>
+      <p style="margin:0;">All figures are <strong style="color:#e0d5c5;">benchmarks</strong> for judging whether a price is fair (over/under-value) &mdash; not a substitute for an official quotation.</p>
+    </div>
+  </details>
+  <script>
+  window.__qcoExplCur = "id";
+  window.__qcoExplLang = function (lang) {
+    window.__qcoExplCur = lang;
+    var id = document.getElementById("qco-expl-id"), en = document.getElementById("qco-expl-en");
+    var ti = document.getElementById("qco-expl-title"), hi = document.getElementById("qco-expl-hint"), btn = document.getElementById("qco-expl-lang");
+    if (id) id.style.display = lang === "id" ? "" : "none";
+    if (en) en.style.display = lang === "en" ? "" : "none";
+    if (ti) ti.textContent = lang === "id" ? "Cara Membaca Angka Ini" : "How to Read These Numbers";
+    if (hi) hi.textContent = lang === "id" ? "(klik untuk membuka)" : "(click to expand)";
+    if (btn) btn.textContent = lang === "id" ? "EN" : "ID";
+  };
+  </script>
 </div>
 <script>
 (function () {
   var DATA_BASE = "https://KGS-blog.github.io/Update-Coffee-Data/data";
+  var LB_TO_KG = 0.45359237;
   function t(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
   function fetchJSON(p) { return fetch(DATA_BASE + "/" + p, { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).catch(function () { return null; }); }
   function fmtDate(iso) { try { return new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }); } catch (e) { return iso || ""; } }
+  function idrShort(n) {
+    n = Math.round(n);
+    if (n >= 1e9) return "Rp" + (n / 1e9).toFixed(2) + "M";
+    if (n >= 1e6) return "Rp" + (n / 1e6).toFixed(2) + "jt";
+    if (n >= 1e3) return "Rp" + (n / 1e3).toFixed(0) + "rb";
+    return "Rp" + n;
+  }
+  function pair(idrN, usdN) { return idrShort(idrN) + " / $" + usdN.toFixed(2); }
+
+  // parameter diff/cherry — samakan dengan kalkulator (localStorage yang sama)
+  var P = { diffA: 20, diffR: 150, ratio: 5 };
+  try {
+    var sp = JSON.parse(localStorage.getItem("qco_coffee_params") || "{}");
+    if (typeof sp.diffArabica === "number") P.diffA = sp.diffArabica;
+    if (typeof sp.diffRobusta === "number") P.diffR = sp.diffRobusta;
+    if (typeof sp.cherryRatio === "number") P.ratio = sp.cherryRatio;
+  } catch (e) {}
+  t("qco-mw-params", "Diff +" + P.diffA + "\u00a2 / +$" + P.diffR + "\u00a0/ton \u00b7 Cherry " + P.ratio + ":1");
+
   Promise.all([fetchJSON("market-data.json"), fetchJSON("ekspor.json")]).then(function (res) {
     var m = res[0], ek = res[1];
-    if (m) {
-      if (m.arabica && m.arabica.current) {
-        t("qco-mw-arabica", Number(m.arabica.current).toFixed(2));
-        var c = m.arabica.changePercent;
-        if (typeof c === "number") t("qco-mw-arabica-chg", (c >= 0 ? "\u25b2 +" : "\u25bc ") + c.toFixed(2) + "%");
-      }
+    if (m && m.arabica && m.idrUsd) {
+      var aC = Number(m.arabica.current), rT = Number(m.robusta && m.robusta.current), K = Number(m.idrUsd.current);
+      var aKg = (aC / 100) / LB_TO_KG;
+      var a2Kg = ((aC + P.diffA) / 100) / LB_TO_KG;
+      var a3Kg = a2Kg / P.ratio;
+      t("qco-mw-a-quote", aC.toFixed(2) + " \u00a2/lb");
+      t("qco-mw-a1", pair(aKg * K, aKg));
+      t("qco-mw-a2", pair(a2Kg * K, a2Kg));
+      t("qco-mw-a3", pair(a3Kg * K, a3Kg));
       if (m.robusta && m.robusta.current) {
-        t("qco-mw-robusta", Number(m.robusta.current).toLocaleString("id-ID"));
-        t("qco-mw-robusta-note", m.robusta.stale ? "estimasi \u2014 sumber live belum tersedia" : "");
+        var rKg = rT / 1000, r2Kg = (rT + P.diffR) / 1000, r3Kg = r2Kg / P.ratio;
+        t("qco-mw-r-quote", "$" + rT.toLocaleString("id-ID") + "/t");
+        t("qco-mw-r1", pair(rKg * K, rKg));
+        t("qco-mw-r2", pair(r2Kg * K, r2Kg));
+        t("qco-mw-r3", pair(r3Kg * K, r3Kg));
+        t("qco-mw-r-note", m.robusta.stale ? "estimasi \u2014 sumber live belum tersedia (RM=F tidak ada di Yahoo)" : "");
       }
-      if (m.idrUsd && m.idrUsd.current) {
-        t("qco-mw-kurs", Number(m.idrUsd.current).toLocaleString("id-ID"));
-        var kc = m.idrUsd.changePercent;
-        if (typeof kc === "number") t("qco-mw-kurs-chg", (kc >= 0 ? "\u25b2 +" : "\u25bc ") + kc.toFixed(2) + "%");
-      }
+      t("qco-mw-s84", pair((aKg + 2.50) * K, aKg + 2.50));
+      t("qco-mw-s86", pair((aKg + 6.00) * K, aKg + 6.00));
+      t("qco-mw-s88", pair((aKg + 11.50) * K, aKg + 11.50));
       t("qco-mw-updated", "Yahoo Finance via GitHub Actions \u00b7 " + fmtDate(m.meta && m.meta.lastUpdated));
+    } else {
+      t("qco-mw-updated", "Data pasar belum tersedia \u2014 jalankan workflow Update-Coffee-Data");
     }
     if (ek) {
-      var txt = "Data tersedia";
-      var note = "Sumber: BPS";
+      var txt = "Menunggu data", note = "BPS";
       try {
-        var arr = null;
-        if (Array.isArray(ek)) arr = ek;
-        else if (Array.isArray(ek.data)) arr = ek.data;
-        else if (Array.isArray(ek.entri)) arr = ek.entri;
-        if (arr && arr.length) {
-          var d = arr[arr.length - 1];
-          var val = d.nilai_usd || d.nilai || d.value || d.usd || d.nilai_usd_dalam_ribu;
-          var kg = d.netto_kg || d.netto || d.volume || d.berat;
-          var bln = d.bulan || d.periode || d.month || d.tanggal || "";
-          if (val) {
-            txt = (bln ? bln + ": " : "") + "USD " + Number(val).toLocaleString("id-ID");
-            if (kg) txt += " \u00b7 " + Number(kg).toLocaleString("id-ID") + " kg";
-            note = arr.length + " entri tersedia \u00b7 BPS";
-          } else {
-            txt = arr.length + " entri tersedia";
-          }
+        if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
+          var d = ek.bulanan[ek.bulanan.length - 1];
+          txt = d.bulan + " " + ek.tahun + ": USD " + Number(d.nilaiUSD).toLocaleString("id-ID");
+          if (d.nettoKg) txt += " \u00b7 " + Number(d.nettoKg).toLocaleString("id-ID") + " kg";
+          note = ek.bulanan.length + " bulan tersedia \u00b7 BPS";
         }
       } catch (e) {}
-      if (ek.status === "Error") txt = "Error: " + (ek.message || "").slice(0, 60);
+      if (ek.status === "Error") { txt = "Akses BPS sedang diperbaiki"; note = (ek.message || "").slice(0, 80); }
       t("qco-mw-ekspor", txt);
       t("qco-mw-ekspor-note", note + " \u00b7 " + fmtDate(ek.fetched));
+    } else {
+      t("qco-mw-ekspor", "Data BPS belum tersedia");
     }
-    if (!m && !ek) t("qco-mw-updated", "Data belum tersedia \u2014 jalankan workflow di repo Update-Coffee-Data");
   });
 })();
 </script>
 
+
+<!-- ===== ANALISIS PERGERAKAN C-MARKET — v2026.09.24-9 ===== -->
+<div id="qco-analysis-panel" style="background:linear-gradient(135deg,#1a120d,#2d2118 55%,#3E2723);border-radius:20px;padding:24px 26px;margin:0 auto 26px;max-width:900px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#e0d5c5;box-shadow:0 8px 30px rgba(0,0,0,.25);">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+    <div>
+      <div style="font-size:1.1rem;font-weight:800;color:#fff;">Analisis Pergerakan C-Market</div>
+      <div style="font-size:.72rem;color:#9a8b76;">Deskriptif harian &middot; seri 6 bulan dari Yahoo Finance</div>
+    </div>
+    <div id="qco-an-tren" style="font-size:.8rem;font-weight:700;padding:4px 12px;border-radius:999px;"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;">
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center;">
+      <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Perubahan 1 Hari</div>
+      <div id="qco-an-d1" style="font-size:1rem;font-weight:800;font-family:monospace;">&mdash;</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center;">
+      <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Perubahan 7 Hari</div>
+      <div id="qco-an-d7" style="font-size:1rem;font-weight:800;font-family:monospace;">&mdash;</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center;">
+      <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Perubahan 30 Hari</div>
+      <div id="qco-an-d30" style="font-size:1rem;font-weight:800;font-family:monospace;">&mdash;</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center;">
+      <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;">Volatilitas Harian (30D)</div>
+      <div id="qco-an-vol" style="font-size:1rem;font-weight:800;font-family:monospace;">&mdash;</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px;">
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;">
+      <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;margin-bottom:4px;">Rentang 30 Hari</div>
+      <div id="qco-an-rentang" style="font-size:.85rem;font-family:monospace;color:#e0d5c5;">&mdash;</div>
+      <div style="height:5px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:8px;position:relative;">
+        <div id="qco-an-posisi" style="position:absolute;top:-3px;width:11px;height:11px;border-radius:50%;background:#fbbf24;left:50%;"></div>
+      </div>
+      <div id="qco-an-posisi-txt" style="font-size:.62rem;color:#9a8b76;margin-top:6px;"></div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;">
+      <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;margin-bottom:4px;">vs Rata-rata 30 Hari</div>
+      <div id="qco-an-avg" style="font-size:.85rem;font-family:monospace;color:#e0d5c5;">&mdash;</div>
+      <div id="qco-an-avg-txt" style="font-size:.68rem;color:#9a8b76;margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;">
+    <div style="font-size:.62rem;color:#9a8b76;text-transform:uppercase;margin-bottom:8px;">Grafik 90 Hari (&cent;/lb)</div>
+    <div id="qco-an-spark"></div>
+  </div>
+</div>
+<script>
+(function () {
+  function t(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
+  function col(v) { return v >= 0 ? "#34d399" : "#f87171"; }
+  fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/harga-harian.json", { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+    .then(function (j) {
+      var closes = (j.seri || []).map(function (p) { return p[1]; });
+      if (closes.length < 31) { t("qco-an-d1", "data belum cukup"); return; }
+      var n = closes.length, last = closes[n - 1];
+      function delta(days) {
+        if (n - 1 - days < 0) return null;
+        var d = last - closes[n - 1 - days];
+        var p = closes[n - 1 - days] ? (d / closes[n - 1 - days] * 100) : 0;
+        return { d: d, p: p };
+      }
+      [[1, "qco-an-d1"], [7, "qco-an-d7"], [30, "qco-an-d30"]].forEach(function (x) {
+        var r2 = delta(x[0]);
+        if (!r2) return;
+        var el = document.getElementById(x[1]);
+        if (el) { el.textContent = (r2.d >= 0 ? "+" : "") + r2.d.toFixed(1) + " (" + (r2.p >= 0 ? "+" : "") + r2.p.toFixed(2) + "%)"; el.style.color = col(r2.d); }
+      });
+      // rentang & posisi 30D
+      var last30 = closes.slice(-30);
+      var mn = Math.min.apply(null, last30), mx = Math.max.apply(null, last30);
+      var pos = mx > mn ? (last - mn) / (mx - mn) * 100 : 50;
+      t("qco-an-rentang", mn.toFixed(1) + " \u2013 " + mx.toFixed(1));
+      var pd = document.getElementById("qco-an-posisi");
+      if (pd) pd.style.left = "calc(" + pos.toFixed(1) + "% - 5px)";
+      t("qco-an-posisi-txt", "harga berada di " + pos.toFixed(0) + "% rentang 30 hari");
+      // rata-rata 30D
+      var avg30 = last30.reduce(function (s, v) { return s + v; }, 0) / 30;
+      var dev = (last - avg30) / avg30 * 100;
+      t("qco-an-avg", "$" + avg30.toFixed(2) + " \u2192 " + (dev >= 0 ? "+" : "") + dev.toFixed(2) + "%");
+      var avgEl = document.getElementById("qco-an-avg");
+      if (avgEl) avgEl.style.color = col(dev);
+      t("qco-an-avg-txt", dev >= 0 ? "di atas rata-rata 30 hari" : "di bawah rata-rata 30 hari");
+      // volatilitas harian 30D (stdev return %)
+      var rets = [];
+      for (var i = last30.length - 1; i > 0; i--) rets.push((last30[i] - last30[i - 1]) / last30[i - 1] * 100);
+      var mR = rets.reduce(function (s, v) { return s + v; }, 0) / rets.length;
+      var sd = Math.sqrt(rets.reduce(function (s, v) { return s + (v - mR) * (v - mR); }, 0) / rets.length);
+      t("qco-an-vol", "\u00b1" + sd.toFixed(2) + "%");
+      // tren: rata-rata 7D vs 30D
+      var last7 = closes.slice(-7);
+      var avg7 = last7.reduce(function (s, v) { return s + v; }, 0) / last7.length;
+      var tr = document.getElementById("qco-an-tren");
+      if (tr) {
+        if (avg7 > avg30 * 1.005) { tr.textContent = "\u25b2 Tren Naik"; tr.style.background = "rgba(52,211,153,.15)"; tr.style.color = "#34d399"; }
+        else if (avg7 < avg30 * 0.995) { tr.textContent = "\u25bc Tren Turun"; tr.style.background = "rgba(248,113,113,.15)"; tr.style.color = "#f87171"; }
+        else { tr.textContent = "\u2194 Netral"; tr.style.background = "rgba(255,255,255,.08)"; tr.style.color = "#e0d5c5"; }
+      }
+      // sparkline 90 hari (SVG inline)
+      var s90 = closes.slice(-90);
+      var mn2 = Math.min.apply(null, s90), mx2 = Math.max.apply(null, s90), rg = mx2 - mn2 || 1;
+      var W = 800, H = 70;
+      var pts = s90.map(function (v, i) {
+        var x = (i / (s90.length - 1)) * W;
+        var y = H - 6 - ((v - mn2) / rg) * (H - 12);
+        return x.toFixed(1) + "," + y.toFixed(1);
+      }).join(" ");
+      var up = s90[s90.length - 1] >= s90[0];
+      var el2 = document.getElementById("qco-an-spark");
+      if (el2) {
+        el2.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:70px;display:block;">' +
+          '<polyline points="' + pts + '" fill="none" stroke="' + (up ? "#34d399" : "#f87171") + '" stroke-width="2"/>' +
+          '<text x="2" y="10" fill="#9a8b76" font-size="9">' + mx2.toFixed(1) + '</text>' +
+          '<text x="2" y="' + (H - 2) + '" fill="#9a8b76" font-size="9">' + mn2.toFixed(1) + '</text>' +
+          '<text x="' + (W - 70) + '" y="10" fill="#e0d5c5" font-size="10" font-weight="bold">' + last.toFixed(2) + '</text>' +
+          '</svg>';
+      }
+    })
+    .catch(function () { t("qco-an-d1", "data belum tersedia \u2014 jalankan workflow"); });
+})();
+</script>
 
 <section id="articles" class="py-24 bg-cream">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
