@@ -1,0 +1,31 @@
+# QCO Data Pipeline — v2026.09.24-1
+# Cron: tiap 00:30 WIB (harga ICE + kurs) & tanggal 15 tiap bulan (data BPS, mengikuti lag rilis BPS)
+name: Update Coffee Data
+
+on:
+  schedule:
+    - cron: "30 17 * * *"   # 00:30 WIB harian
+    - cron: "0 1 15 * *"    # 08:00 WIB tanggal 15 (data BPS)
+  workflow_dispatch:        # bisa jalan manual dari tab Actions
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch all data
+        env:
+          BPS_API_KEY: ${{ secrets.BPS_API_KEY }}
+        run: node scripts/fetch.js
+      - name: Commit & push data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet && echo "Tidak ada perubahan data" || { git commit -m "data: update $(date -u +%F)" && git push; }
