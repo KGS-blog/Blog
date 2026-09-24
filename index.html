@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- QFin Blog HTML - v2026.09.24-11 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
+<!-- QFin Blog HTML - v2026.09.24-12 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
 <html lang="id" class="scroll-smooth">
 <head>
 <!-- Meta Pixel Code -->
@@ -24,7 +24,7 @@ src="https://www.facebook.com/tr?id=1498535007132214&ev=PageView&noscript=1"
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Coffee Researcher</title>
 
-<!-- ===== SEO & SOCIAL META (v2026.09.24-11) ===== -->
+<!-- ===== SEO & SOCIAL META (v2026.09.24-12) ===== -->
 <meta name="description" content="Blog riset kopi Indonesia oleh Ganjar Satyanagara (Q Grader): analisis pasar kopi, laporan USDA, panduan sourcing & menilai supplier, kalkulator FOB, dan insight ekspor kopi Indonesia ke pasar dunia.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>">
 <meta property="og:type" content="website">
@@ -462,7 +462,7 @@ main {
 </div>
 </section>
 <!-- KALKULATOR KOPI SIDE BY SIDE -->
-<!-- ===== WIDGET "DARI KEBUN KE ICE" — v2026.09.24-11 =====
+<!-- ===== WIDGET "DARI KEBUN KE ICE" — v2026.09.24-12 =====
      Sumber: KGS-blog/Update-Coffee-Data (data/market-data.json + data/ekspor.json)
      Konversi mengikuti kalkulator.html; parameter diff/cherry dibaca dari qco_coffee_params
      (localStorage yang sama dengan kalkulator) agar angka konsisten. -->
@@ -675,7 +675,7 @@ main {
 </script>
 
 
-<!-- ===== ANALISIS PERGERAKAN C-MARKET — v2026.09.24-11 ===== -->
+<!-- ===== ANALISIS PERGERAKAN C-MARKET — v2026.09.24-12 ===== -->
 <div id="qco-analysis-panel" style="background:linear-gradient(135deg,#1a120d,#2d2118 55%,#3E2723);border-radius:20px;padding:24px 26px;margin:0 auto 26px;max-width:900px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#e0d5c5;box-shadow:0 8px 30px rgba(0,0,0,.25);">
   <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
     <div>
@@ -855,7 +855,7 @@ window.__qcoAnLang = function (lang) {
 </script>
 
 
-<!-- ===== BERITA KOPI TERKINI — v2026.09.24-11 =====
+<!-- ===== BERITA KOPI TERKINI — v2026.09.24-12 =====
      Sumber: NewsData.io / Google News RSS via data/berita.json (GitHub Actions)
      Hanya headline + tautan ke artikel aslinya. -->
 <div id="qco-news-panel" style="background:linear-gradient(135deg,#1a120d,#2d2118 55%,#3E2723);border-radius:20px;padding:22px 26px;margin:0 auto 26px;max-width:900px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#e0d5c5;box-shadow:0 8px 30px rgba(0,0,0,.25);">
@@ -1091,8 +1091,8 @@ window.__qcoAnLang = function (lang) {
     <div>
         <h4 class="font-serif font-bold text-white mb-4" data-editable="footer_contact_title">Kontak</h4>
         <ul class="space-y-3 text-sm">
-            <li class="flex items-center gap-2"><i class="fas fa-envelope text-coffee-500"></i><a href="mailto:hello@qcoid.com" class="hover:text-white transition-colors" data-editable="footer_email">ganjar@qco.my.id</a></li>
-            <li class="flex items-center gap-2"><i class="fas fa-globe text-coffee-500"></i><a href="https://blog.qcoid.com" class="hover:text-white transition-colors" data-editable="footer_web">www.qcoid.com</a></li>
+            <li class="flex items-center gap-2"><i class="fas fa-envelope text-coffee-500"></i><a href="mailto:ganjar@qco.my.id" class="hover:text-white transition-colors" data-editable="footer_email">ganjar@qco.my.id</a></li>
+            <li class="flex items-center gap-2"><i class="fas fa-globe text-coffee-500"></i><a href="https://qcoid.com" class="hover:text-white transition-colors" data-editable="footer_web">www.qcoid.com</a></li>
         </ul>
     </div>
 </div>
@@ -2014,7 +2014,7 @@ function updateStaticContent() {
     update("[data-editable=footer_topic_logistics]", "Shipping & Logistics", "Shipping & Logistics");
     update("[data-editable=footer_topic_sensory]", "Sensory Analysis", "Sensory Analysis");
     update("[data-editable=footer_contact_title]", "Kontak", "Contact");
-    update("[data-editable=footer_email]", "hello@qcoid.com", "hello@qcoid.com");
+    update("[data-editable=footer_email]", "ganjar@qco.my.id", "ganjar@qco.my.id");
     update("[data-editable=footer_web]", "www.qcoid.com", "www.qcoid.com");
     update("[data-editable=footer_copyright]", " 2026 Ganjar Satyanagara. Coffee Researcher", " 2026 Ganjar Satyanagara. Coffee Researcher");
 
@@ -2807,7 +2807,8 @@ function renderDashboardComments() {
             <div class="w-12 h-12 bg-coffee-200 rounded-full flex items-center justify-center flex-shrink-0"><span class="font-serif font-bold text-coffee-700">${comm.name.split(" ").map(n => n[0]).join("")}</span></div>
             <div class="flex-1"><div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2"><span class="font-medium text-coffee-900">${comm.name}</span><span class="text-xs text-coffee-400">${comm.email}</span><span class="tag">${comm.role}</span>${isPending ? "<span class='px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700'>Pending</span>" : ""}</div><span class="text-xs text-coffee-400">${comm.date}</span></div>
             <p class="text-coffee-600 text-sm mb-3">${comm.comment}</p>
-            <div class="flex items-center gap-2">${isPending ? `<button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors" onclick="approveComment(${comm.id})"><i class="fas fa-check mr-1"></i>Approve</button>` : ""}<button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors" onclick="deleteComment(${comm.id})"><i class="fas fa-trash mr-1"></i>Hapus</button></div></div>
+            <div class="flex items-center gap-2 flex-wrap">${isPending ? `<button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors" onclick="approveComment(${comm.id})"><i class="fas fa-check mr-1"></i>Approve</button>` : ""}<button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors" onclick="toggleReplyForm(${comm.id})"><i class="fas fa-reply mr-1"></i>Balas</button><button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors" onclick="deleteComment(${comm.id})"><i class="fas fa-trash mr-1"></i>Hapus</button></div>
+            <div id="reply-form-${comm.id}" class="hidden mt-3"><textarea id="reply-text-${comm.id}" rows="2" class="w-full px-3 py-2 text-sm rounded-lg border border-coffee-200 bg-white focus:outline-none focus:ring-2 focus:ring-coffee-400" placeholder="Tulis balasan sebagai Ganjar Satyanagara..."></textarea><div class="flex gap-2 mt-2"><button type="button" onclick="submitReply(${comm.id})" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-coffee-800 text-white hover:bg-coffee-700 transition-colors"><i class="fas fa-paper-plane mr-1"></i>Kirim Balasan</button><button type="button" onclick="toggleReplyForm(${comm.id})" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-coffee-100 text-coffee-600 hover:bg-coffee-200 transition-colors">Batal</button></div></div></div>
         </div>`;
     }).join("");
 }
@@ -2863,13 +2864,22 @@ function renderComments() {
         list.innerHTML = "<div class='text-center py-8 text-coffee-400'><i class='fas fa-inbox text-3xl mb-2'></i><p>Belum ada komentar</p></div>";
         return;
     }
-    list.innerHTML = approved.map(comm =>
-        `<div class="flex gap-4">
-            <div class="w-12 h-12 bg-coffee-200 rounded-full flex items-center justify-center flex-shrink-0"><span class="font-serif font-bold text-coffee-700">${comm.name.split(" ").map(n => n[0]).join("")}</span></div>
+    const topLevel = approved.filter(c => !c.parentId);
+    const repliesOf = pid => approved.filter(c => c.parentId === pid);
+    const avatar = (c, cls, txtCls) => `<div class="${cls} rounded-full flex items-center justify-center flex-shrink-0"><span class="font-serif font-bold ${txtCls}">${c.name.split(" ").map(n => n[0]).join("")}</span></div>`;
+    list.innerHTML = topLevel.map(comm => {
+        const replies = repliesOf(comm.id).map(r => `
+            <div class="flex gap-3 mt-4 ml-6 pl-4 border-l-2 border-coffee-200">
+                ${avatar(r, "w-9 h-9 bg-coffee-700", "text-white text-xs")}
+                <div class="flex-1"><div class="flex items-center gap-2 mb-1"><span class="font-medium text-coffee-900">${r.name}</span><span class="tag" style="background:#6F4E37;color:#fff;">Penulis</span><span class="text-xs text-coffee-400">- ${r.date}</span></div>
+                <p class="text-coffee-600 text-sm leading-relaxed">${r.comment}</p></div>
+            </div>`).join("");
+        return `<div class="flex gap-4">
+            ${avatar(comm, "w-12 h-12 bg-coffee-200", "text-coffee-700")}
             <div class="flex-1"><div class="flex items-center gap-2 mb-1"><span class="font-medium text-coffee-900">${comm.name}</span><span class="text-xs text-coffee-400">- ${comm.date}</span><span class="tag">${comm.role}</span></div>
-            <p class="text-coffee-600 text-sm leading-relaxed">${comm.comment}</p></div>
-        </div>`
-    ).join("");
+            <p class="text-coffee-600 text-sm leading-relaxed">${comm.comment}</p>${replies}</div>
+        </div>`;
+    }).join("");
 }
 // ========== EDIT CONTENT IN ADMIN ==========
 function toggleAdminEditMode() {
@@ -2983,9 +2993,28 @@ function approveComment(id) {
     if (comm) { comm.status = "approved"; saveToLocalStorage(); renderComments(); renderDashboardStatistics(); renderDashboardComments(); renderDashboardOverview(); showToast("Komentar diapprove!", "success"); }
 }
 function deleteComment(id) {
-    commentsData = commentsData.filter(c => c.id != id);
+    commentsData = commentsData.filter(c => c.id != id && c.parentId != id);
     saveToLocalStorage(); renderComments(); renderDashboardStatistics(); renderDashboardComments(); renderDashboardOverview();
     showToast("Komentar dihapus!", "success");
+}
+function toggleReplyForm(id) {
+    const f = document.getElementById("reply-form-" + id);
+    if (f) f.classList.toggle("hidden");
+}
+function submitReply(parentId) {
+    const ta = document.getElementById("reply-text-" + parentId);
+    if (!ta || !ta.value.trim()) { showToast("Balasan tidak boleh kosong!", "error"); return; }
+    const parent = commentsData.find(c => c.id == parentId);
+    const reply = {
+        id: Date.now(), parentId: parentId, name: "Ganjar Satyanagara", email: "",
+        topic: parent ? (parent.topic || "") : "", comment: ta.value.trim(),
+        articleID: parent ? (parent.articleID || "") : "", date: "Baru saja",
+        status: "approved", likes: 0, role: "Author"
+    };
+    commentsData.unshift(reply);
+    saveToLocalStorage();
+    renderComments(); renderDashboardComments(); renderDashboardStatistics(); renderDashboardOverview();
+    showToast("Balasan terkirim dan tampil di diskusi!", "success");
 }
 // ========== SUBSCRIBER FUNCTIONS ==========
 function subscribeNewsletter(e) {
