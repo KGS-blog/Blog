@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.25-1 | PSD live via GitHub Actions; tab Data Historis dihapus (overlap dengan widget blog) -->
+<!-- laporan-usda.html — v2026.09.25-2 | PSD live via GitHub Actions; tab Data Historis dihapus (overlap dengan widget blog) -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -695,6 +695,68 @@ tailwind.config = {
         <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
     </div>
 
+<!-- LIVE USDA PSD — v2026.09.25-2 (dipulihkan) -->
+<div class="card p-6 md:p-8 mb-12">
+    <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 flex items-center gap-2 flex-wrap">
+        <i class="fas fa-satellite-dish text-coffee-500"></i>
+        <span>Data Live USDA PSD &mdash; Kopi Indonesia</span>
+        <span id="psd-updated" class="text-xs font-normal text-coffee-400 ml-auto"></span>
+    </h3>
+    <p class="text-xs text-coffee-400 mb-4">Pasokan &amp; Distribusi resmi USDA FAS untuk kopi Indonesia (Marketing Year). Diperbarui otomatis oleh GitHub Actions.</p>
+    <div id="psd-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="col-span-full text-sm text-coffee-400"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat data PSD...</div>
+    </div>
+    <div id="psd-note" class="text-xs text-coffee-400 mt-4"></div>
+</div>
+<script>
+function loadLivePSD() {
+    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/psd.json", { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) {
+            var box = document.getElementById("psd-cards");
+            var note = document.getElementById("psd-note");
+            var upd = document.getElementById("psd-updated");
+            if (!box) return;
+            if (upd && j.fetched) upd.textContent = "Update: " + new Date(j.fetched).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+            if (j.status === "Error") {
+                box.innerHTML = '<div class="col-span-full text-sm text-coffee-500">' + String(j.message || "Gagal memuat PSD").replace(/</g, "&lt;").slice(0, 200) + '</div>';
+                return;
+            }
+            var data = (j.data || []).map(function (r) {
+                function amb() { for (var i = 0; i < arguments.length - 1; i++) { var v = arguments[i]; if (v !== undefined && v !== null && v !== "") return v; } return ""; }
+                return {
+                    tahun: amb(r.tahun, r.marketYear, r.MarketYear, r.year),
+                    atribut: amb(r.atribut, r.attributeName, r.attributeDescription, r.publicAttributeName, r.attribute, r.name),
+                    nilai: (r.nilai !== undefined ? r.nilai : amb(r.value, r.Value, r.val)),
+                    satuan: amb(r.satuan, r.unitDescription, r.unit, r.UnitDescription),
+                    negara: amb(r.negara, r.countryName, r.name, r.gencCode)
+                };
+            }).filter(function (d) { return String(d.atribut) !== ""; });
+            if (!data.length) { box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia.</div>'; return; }
+            var tahunMax = Math.max.apply(null, data.map(function (d) { return Number(d.tahun) || 0; }));
+            var prio = ["Production", "Exports", "Domestic Consumption", "Ending Stocks"];
+            var latest = data.filter(function (d) { return (Number(d.tahun) || 0) === tahunMax; });
+            var shown = [];
+            prio.forEach(function (p) {
+                var hit = latest.filter(function (d) { return d.atribut === p; })[0];
+                if (hit) shown.push(hit);
+            });
+            latest.forEach(function (d) { if (shown.length < 8 && shown.indexOf(d) === -1) shown.push(d); });
+            box.innerHTML = shown.map(function (d) {
+                return '<div class="stat-card text-center">' +
+                    '<div class="text-2xl font-serif font-bold text-coffee-900">' + (d.nilai === null || d.nilai === undefined ? "&mdash;" : Number(d.nilai).toLocaleString("id-ID")) + '</div>' +
+                    '<div class="text-xs text-coffee-500 mt-1">' + d.atribut + '</div>' +
+                    '<div class="text-[10px] text-coffee-400">' + (d.satuan || "") + ' &middot; MY ' + d.tahun + '</div>' +
+                    '</div>';
+            }).join("");
+            if (note && j.sumber) note.textContent = "Sumber: " + j.sumber;
+        })
+        .catch(function () {
+            var box = document.getElementById("psd-cards");
+            if (box) box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia &mdash; jalankan workflow Update-Coffee-Data.</div>';
+        });
+}
+</script>
 <!-- Source & Disclaimer -->
     <div class="text-center">
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-coffee-100 text-coffee-600 text-xs">
