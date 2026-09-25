@@ -1,156 +1,1643 @@
-{
-  "sumber": "USDA FAS PSD — /api/psd/commodity/0711100/country/ID/year/2026",
-  "percobaan": [
-    "countries:251 id=ID",
-    "commodities:63 kopi=[\"0711100:Coffee, Green\"]",
-    "/api/psd/commodity/0711100/country/ID/year/2026 -> 19",
-    "attributes:85",
-    "units:42"
-  ],
-  "contohBaris": {
-    "commodityCode": "0711100",
-    "countryCode": "ID",
-    "marketYear": "2026",
-    "calendarYear": "2026",
-    "month": "07",
-    "attributeId": 20,
-    "unitId": 2,
-    "value": 751
-  },
-  "data": [
-    {
-      "tahun": "2026",
-      "atribut": "Beginning Stocks",
-      "nilai": 751,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
+<!-- laporan-usda.html — v2026.09.24-2 | PSD live via GitHub Actions; tab Data Historis dihapus (overlap dengan widget blog) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// ========== BILINGUAL SYSTEM ==========
+let currentLang = "id";
+
+const translations = {
+    // Nav & Global
+    "nav_usda_report": { id: "Data Laporan USDA", en: "USDA Report Data" },
+    "nav_historical": { id: "Event & Early Warning", en: "Market Events & Early Warning" },
+    "nav_update": { id: "Report Kopi Terkini", en: "Latest Coffee Report" },
+    "nav_back": { id: "Kembali ke Blog", en: "Back to Blog" },
+    "nav_calc": { id: "Kalkulator", en: "Calculator" },
+
+    // USDA Section
+    "usda_label": { id: "Data Resmi", en: "Official Data" },
+    "usda_title": { id: "Laporan USDA Kopi Indonesia", en: "USDA Indonesia Coffee Report" },
+    "usda_desc": { 
+        id: "Perkembangan produksi, ekspor, dan pasar kopi Indonesia berdasarkan data resmi USDA Foreign Agricultural Service (FAS).", 
+        en: "Production, export, and market developments of Indonesian coffee based on official USDA Foreign Agricultural Service (FAS) data." 
     },
-    {
-      "tahun": "2026",
-      "atribut": "Arabica Production",
-      "nilai": 1380,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
+    "usda_production": { id: "Produksi (ribu kantong)", en: "Production (thousand bags)" },
+    "usda_export": { id: "Ekspor (ribu kantong)", en: "Export (thousand bags)" },
+    "usda_domestic": { id: "Konsumsi Domestik", en: "Domestic Consumption" },
+    "usda_ending": { id: "Stok Akhir", en: "Ending Stocks" },
+    "usda_chart_production": { id: "Tren Produksi (5 Tahun)", en: "Production Trend (5 Years)" },
+    "usda_chart_variety": { id: "Komposisi Arabika vs Robusta", en: "Arabica vs Robusta Composition" },
+    "usda_psd_title": { id: "Pasokan & Distribusi (PSD)", en: "Supply & Distribution (PSD)" },
+    "usda_unit": { id: "Unit: 1,000 kantong 60-kg", en: "Unit: 1,000 60-kg bags" },
+    "usda_col_component": { id: "Komponen", en: "Component" },
+    "usda_psd_note": { id: "Sumber: USDA PSD Online | Marketing Year Indonesia: April–Maret | 1 kantong = 60 kg", en: "Source: USDA PSD Online | Indonesia Marketing Year: April–March | 1 bag = 60 kg" },
+    "usda_chart_export": { id: "10 Negara Tujuan Utama Ekspor", en: "Top 10 Export Destinations" },
+    "usda_chart_price": { id: "Tren Harga Kopi Indonesia vs ICO", en: "Indonesia Coffee Price Trend vs ICO" },
+    "usda_factors_title": { id: "Faktor-Faktor Penentu", en: "Key Determining Factors" },
+    "usda_factor_weather": { id: "Cuaca & Iklim", en: "Weather & Climate" },
+    "usda_factor_policy": { id: "Kebijakan Pemerintah", en: "Government Policy" },
+    "usda_factor_market": { id: "Dinamika Pasar Global", en: "Global Market Dynamics" },
+    "usda_factor_price": { id: "Harga Domestik", en: "Domestic Price" },
+    "usda_source": { id: "Sumber: USDA FAS — PSD Online, GAIN Reports, Coffee: World Markets and Trade", en: "Source: USDA FAS — PSD Online, GAIN Reports, Coffee: World Markets and Trade" },
+    "usda_disclaimer": { id: "Data bersifat estimasi dan dapat berubah sesuai perkembangan pasar. Satuan mengikuti standar USDA: 1,000 kantong 60-kg (60 metrik ton).", en: "Data is estimated and subject to market changes. Units follow USDA standard: 1,000 60-kg bags (60 metric tons)." },
+    "usda_refresh": { id: "Refresh Data", en: "Refresh Data" },
+    "usda_upload": { id: "Upload CSV", en: "Upload CSV" },
+    "usda_ready": { id: "Ready", en: "Ready" },
+    "usda_updated": { id: "Updated", en: "Updated" },
+    "usda_last_updated": { id: "Terakhir update: loading...", en: "Last updated: loading..." },
+    "usda_yoy_up": { id: "+14.7% YoY", en: "+14.7% YoY" },
+    "usda_yoy_up2": { id: "+8.3% YoY", en: "+8.3% YoY" },
+    "usda_yoy_up3": { id: "+1.0% YoY", en: "+1.0% YoY" },
+    "usda_yoy_down": { id: "-8.1% YoY", en: "-8.1% YoY" },
+
+    // Historical Section
+    "hist_label": { id: "Data Historis", en: "Historical Data" },
+    "hist_title": { id: "Tren Historis Pasar Kopi", en: "Coffee Market Historical Trends" },
+    "hist_desc": { 
+        id: "Pergerakan harga Arabica C-Market, Robusta London, dan kurs IDR/USD dalam 5 tahun terakhir. Data live diperbarui otomatis via GitHub Actions setiap 6 jam.", 
+        en: "Movements of Arabica C-Market, Robusta London, and IDR/USD exchange rate over the last 5 years. Live data auto-updated via GitHub Actions every 6 hours." 
     },
-    {
-      "tahun": "2026",
-      "atribut": "Robusta Production",
-      "nilai": 10000,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
+    "hist_arabica": { id: "Arabica C-Market", en: "Arabica C-Market" },
+    "hist_robusta": { id: "Robusta London", en: "Robusta London" },
+    "hist_kurs": { id: "Kurs IDR/USD", en: "IDR/USD Rate" },
+    "hist_monthly": { id: "Harga Bulanan", en: "Monthly Price" },
+    "hist_rate": { id: "Kurs Bulanan", en: "Monthly Rate" },
+    "hist_event_title": { id: "Event Pasar Signifikan (5 Tahun Terakhir)", en: "Significant Market Events (Last 5 Years)" },
+    "hist_event_desc": { 
+        id: "Enam peristiwa besar yang mengguncang pasar kopi global dan dampak langsungnya terhadap FOB Indonesia.", 
+        en: "Six major events that shook the global coffee market and their direct impact on Indonesian FOB prices." 
     },
-    {
-      "tahun": "2026",
-      "atribut": "Other Production",
-      "nilai": 0,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
+    "hist_period": { id: "Periode", en: "Period" },
+    "hist_price_move": { id: "Pergerakan Harga", en: "Price Movement" },
+    "hist_cause": { id: "Penyebab Utama", en: "Primary Cause" },
+    "hist_impact": { id: "Dampak FOB Indonesia", en: "Impact on Indonesia FOB" },
+    "hist_insight": { id: "Insight", en: "Insight" },
+    "hist_insight_text": { 
+        id: "5 dari 6 event dipicu oleh cuaca ekstrem atau geopolitik. Hanya 1 event (Apr–Mei 2026) yang murni fundamental pasar. Volatilitas kopi >60% berasal dari supply shock.", 
+        en: "5 of 6 events were triggered by extreme weather or geopolitics. Only 1 event (Apr-May 2026) was pure market fundamentals. Coffee volatility >60% comes from supply shocks." 
     },
-    {
-      "tahun": "2026",
-      "atribut": "Production",
-      "nilai": 11380,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
+    "hist_warning_title": { id: "Early Warning System", en: "Early Warning System" },
+    "hist_warning_desc": { 
+        id: "Empat kategori sinyal yang harus dipantau 24/7 untuk mengantisipasi pergerakan pasar sebelum terjadi.", 
+        en: "Four categories of signals that must be monitored 24/7 to anticipate market movements before they happen." 
     },
-    {
-      "tahun": "2026",
-      "atribut": "Bean Imports",
-      "nilai": 400,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
+    "hist_weather_alert": { id: "Weather Alert", en: "Weather Alert" },
+    "hist_logistics": { id: "Logistics & Freight", en: "Logistics & Freight" },
+    "hist_policy": { id: "Policy & Currency", en: "Policy & Currency" },
+    "hist_crop": { id: "Crop Cycle Calendar", en: "Crop Cycle Calendar" },
+    "hist_trigger": { id: "Trigger Threshold", en: "Trigger Threshold" },
+
+    // Update Indonesia Section
+    "upd_label": { id: "Update Terkini", en: "Latest Update" },
+    "upd_title": { id: "Industri Kopi Indonesia 2023–2025", en: "Indonesian Coffee Industry 2023–2025" },
+    "upd_desc": { 
+        id: "Executive summary berdasarkan data BPS, USDA FAS, AEKI, Bappebti, Kementan, dan BMKG.", 
+        en: "Executive summary based on BPS, USDA FAS, AEKI, Bappebti, Ministry of Agriculture, and BMKG data." 
     },
-    {
-      "tahun": "2026",
-      "atribut": "Roast & Ground Imports",
-      "nilai": 20,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Soluble Imports",
-      "nilai": 1000,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Imports",
-      "nilai": 1420,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Total Supply",
-      "nilai": 13551,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Bean Exports",
-      "nilai": 7000,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Roast & Ground Exports",
-      "nilai": 50,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Soluble Exports",
-      "nilai": 1000,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Exports",
-      "nilai": 8050,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Rst,Ground Dom. Consum",
-      "nilai": 3280,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Soluble Dom. Cons.",
-      "nilai": 1550,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Domestic Consumption",
-      "nilai": 4830,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Ending Stocks",
-      "nilai": 671,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    },
-    {
-      "tahun": "2026",
-      "atribut": "Total Distribution",
-      "nilai": 13551,
-      "satuan": "(1000 60 KG BAGS)   ",
-      "negara": ""
-    }
-  ],
-  "fetched": "2026-09-25T07:23:13.080Z"
+    "upd_production_2024": { id: "Produksi 2024", en: "2024 Production" },
+    "upd_usda_my": { id: "USDA MY 2025/26", en: "USDA MY 2025/26" },
+    "upd_export_value": { id: "Nilai Ekspor 2024", en: "2024 Export Value" },
+    "upd_trade_surplus": { id: "Surplus Dagang", en: "Trade Surplus" },
+    "upd_consumption": { id: "Konsumsi Per Kapita", en: "Per Capita Consumption" },
+    "upd_global_rank": { id: "Peringkat Global", en: "Global Rank" },
+    "upd_ton": { id: "Ton", en: "Tons" },
+    "upd_million_kg": { id: "Juta Kg", en: "Million Kg" },
+    "upd_billion_usd": { id: "Miliar US$", en: "Billion US$" },
+    "upd_kg_year": { id: "Kg/tahun", en: "Kg/year" },
+    "upd_producer": { id: "Produsen Dunia", en: "World Producer" },
+    "upd_yoy": { id: "+6,4% YoY", en: "+6.4% YoY" },
+    "upd_yoy2": { id: "+18% vs MY lalu", en: "+18% vs last MY" },
+    "upd_yoy3": { id: "+76% YoY", en: "+76% YoY" },
+    "upd_yoy4": { id: "Jan–Okt 2025", en: "Jan–Oct 2025" },
+    "upd_yoy5": { id: "+80% dari 2013", en: "+80% from 2013" },
+    "upd_pangsa": { id: "7% pangsa global", en: "7% global share" },
+    "upd_prod_chart": { id: "Tren Produksi Kopi Indonesia (Juta Kg)", en: "Indonesian Coffee Production Trend (Million Kg)" },
+    "upd_composition": { id: "Komposisi: Robusta vs Arabika", en: "Composition: Robusta vs Arabica" },
+    "upd_spot_title": { id: "Harga Spot per Kg (IDR & USD)", en: "Spot Price per Kg (IDR & USD)" },
+    "upd_export_dest": { id: "5 Negara Tujuan Ekspor Utama 2024", en: "Top 5 Export Destinations 2024" },
+    "upd_price_trend": { id: "Harga Spot Kopi Indonesia 2025 (Jan–Mei)", en: "Indonesian Coffee Spot Price 2025 (Jan–May)" },
+    "upd_provinces": { id: "10 Provinsi Penghasil Kopi Terbesar 2024", en: "Top 10 Coffee Producing Provinces 2024" },
+    "upd_methods": { id: "Metode Pengolahan Pasca Panen", en: "Post-Harvest Processing Methods" },
+    "upd_umkm_title": { id: "UMKM Bisa Ekspor!", en: "MSMEs Can Export!" },
+    "upd_umkm_sub": { id: "Bukan Hanya Perusahaan Besar", en: "Not Just Big Companies" },
+    "upd_trade_title": { id: "Neraca Perdagangan (Juta US$)", en: "Trade Balance (Million US$)" },
+    "upd_world_title": { id: "10 Produsen Kopi Dunia (Juta Kg)", en: "Top 10 World Coffee Producers (Million Kg)" },
+    "upd_insights": { id: "Key Insights & Strategic Highlights", en: "Key Insights & Strategic Highlights" },
+    "upd_processor_title": { id: "Processor Kecil Bisa Ekspor", en: "Small Processors Can Export" },
+    "upd_gotong": { id: "Gotong Royong adalah Kunci", en: "Mutual Cooperation is Key" },
+    "upd_fob_title": { id: "Harga FOB Indonesia vs Harga Pasar Dunia", en: "Indonesian FOB Price vs World Market" },
+    "upd_exp_title": { id: "Experimental Process: Pasar Sudah Menunggu!", en: "Experimental Process: Market is Waiting!" },
+    "upd_method": { id: "Metode", en: "Method" },
+    "upd_share": { id: "Pangsa (%)", en: "Share (%)" },
+    "upd_region": { id: "Wilayah", en: "Region" },
+    "upd_profile": { id: "Profil Rasa", en: "Flavor Profile" },
+    "upd_fob": { id: "Harga FOB (USD/kg)", en: "FOB Price (USD/kg)" },
+    "upd_trend": { id: "Tren Global", en: "Global Trend" },
+    "upd_scale": { id: "Skala Pelaku", en: "Player Scale" },
+    "upd_volume": { id: "Volume", en: "Volume" },
+    "upd_legal": { id: "Bentuk Legal", en: "Legal Form" },
+    "upd_strategy": { id: "Strategi Utama", en: "Main Strategy" },
+    "upd_year": { id: "Tahun", en: "Year" },
+    "upd_export_short": { id: "Ekspor", en: "Export" },
+    "upd_import": { id: "Impor", en: "Import" },
+    "upd_surplus": { id: "Surplus", en: "Surplus" },
+    "upd_rank": { id: "#", en: "#" },
+    "upd_country": { id: "Negara", en: "Country" },
+    "upd_production": { id: "Produksi", en: "Production" },
+    "upd_share_global": { id: "Pangsa", en: "Share" },
+    "upd_metric": { id: "Metrik", en: "Metric" },
+    "upd_2023": { id: "2023", en: "2023" },
+    "upd_2024": { id: "2024", en: "2024" },
+    "upd_2025": { id: "Jan–Mei 2025", en: "Jan–May 2025" },
+    "upd_robusta_idr": { id: "Robusta IDR/kg", en: "Robusta IDR/kg" },
+    "upd_robusta_usd": { id: "Robusta USD/kg", en: "Robusta USD/kg" },
+    "upd_arabika_idr": { id: "Arabika IDR/kg", en: "Arabica IDR/kg" },
+    "upd_arabika_usd": { id: "Arabika USD/kg", en: "Arabica USD/kg" },
+    "upd_kurs": { id: "Kurs IDR/USD", en: "IDR/USD Rate" },
+    "upd_footer": { id: "Sumber Data: BPS · USDA FAS · AEKI · Bappebti · Kementan · BMKG · ICO | Mei 2026", en: "Data Sources: BPS · USDA FAS · AEKI · Bappebti · Ministry of Agriculture · BMKG · ICO | May 2026" },
+
+    // Footer
+    "footer_name": { id: "Ganjar Satyanagara", en: "Ganjar Satyanagara" },
+    "footer_role": { id: "Coffee Researcher", en: "Coffee Researcher" },
+    "footer_blog": { id: "Blog", en: "Blog" },
+    "footer_calc": { id: "Kalkulator", en: "Calculator" },
+    "footer_usda": { id: "Laporan USDA", en: "USDA Report" },
+    "footer_copyright": { id: "2026 Ganjar Satyanagara", en: "2026 Ganjar Satyanagara" }
+};
+
+function setLanguage(lang) {
+    currentLang = lang;
+    document.getElementById("btn-id").className = lang === "id" ? "lang-btn active" : "lang-btn inactive";
+    document.getElementById("btn-en").className = lang === "en" ? "lang-btn active" : "lang-btn inactive";
+
+    // Update all elements with data-i18n
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[key]) {
+            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+                el.placeholder = translations[key][lang];
+            } else {
+                el.textContent = translations[key][lang];
+            }
+        }
+    });
+
+    // Update tab labels
+    updateTabLabels();
+
+    // Re-render charts if needed (for labels)
+    renderUpdateCharts();
 }
+
+function updateTabLabels() {
+    const tabs = ["tab-usda", "tab-historical", "tab-update"];
+    const keys = ["nav_usda_report", "nav_historical", "nav_update"];
+    tabs.forEach((tabId, idx) => {
+        const el = document.getElementById(tabId);
+        if (el) el.querySelector("span").textContent = translations[keys[idx]][currentLang];
+    });
+}
+
+function switchTab(tabName) {
+    // Hide all sections
+    ["section-usda", "section-historical", "section-update"].forEach(function(id) {
+        var sec = document.getElementById(id);
+        if (sec) sec.classList.add("hidden");
+    });
+    // Show target section
+    var target = document.getElementById("section-" + tabName);
+    if (target) target.classList.remove("hidden");
+
+    // Reset ALL tab buttons to inactive
+    var allTabs = document.querySelectorAll(".tab-btn");
+    allTabs.forEach(function(el) {
+        el.classList.remove("active");
+        el.classList.add("inactive");
+    });
+
+    // Set active for both desktop and mobile versions
+    var activeIds = ["tab-" + tabName, "tab-" + tabName + "-mobile"];
+    activeIds.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+            el.classList.remove("inactive");
+            el.classList.add("active");
+        }
+    });
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ========== USDA CHARTS ==========
+let usdaProductionChart, usdaVarietyChart, usdaExportChart, usdaPriceChart;
+
+function initUSDACharts() {
+    if (typeof Chart === "undefined") return;
+    const colors = {
+        primary: '#4a3726', secondary: '#7d5f3e', accent: '#b09473',
+        arabika: '#6b8e6b', robusta: '#8b6914', grid: '#e0d5c5'
+    };
+
+    const prodCtx = document.getElementById("usdaProductionChart");
+    if (prodCtx) {
+        usdaProductionChart = new Chart(prodCtx, {
+            type: "line",
+            data: {
+                labels: ["2021/22", "2022/23", "2023/24", "2024/25", "2025/26"],
+                datasets: [{
+                    label: currentLang === "id" ? "Total Produksi" : "Total Production",
+                    data: [10700, 10580, 10700, 10900, 12500],
+                    borderColor: colors.primary,
+                    backgroundColor: "rgba(74,55,38,0.08)",
+                    fill: true, tension: 0.4, pointRadius: 5,
+                    pointBackgroundColor: colors.accent, pointBorderColor: "#fff", pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: false, min: 9000, grid: { color: colors.grid } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    const varCtx = document.getElementById("usdaVarietyChart");
+    if (varCtx) {
+        usdaVarietyChart = new Chart(varCtx, {
+            type: "doughnut",
+            data: {
+                labels: currentLang === "id" ? ["Robusta", "Arabika"] : ["Robusta", "Arabica"],
+                datasets: [{
+                    data: [11000, 1500],
+                    backgroundColor: [colors.robusta, colors.arabika],
+                    borderWidth: 0, hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: "65%",
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: { padding: 16, usePointStyle: true, font: { family: "Inter", size: 12 } }
+                    }
+                }
+            }
+        });
+    }
+
+    const expCtx = document.getElementById("usdaExportChart");
+    if (expCtx) {
+        usdaExportChart = new Chart(expCtx, {
+            type: "bar",
+            data: {
+                labels: currentLang === "id" 
+                    ? ["AS", "Jepang", "Jerman", "Malaysia", "Italia", "Belanda", "Lainnya"]
+                    : ["USA", "Japan", "Germany", "Malaysia", "Italy", "Netherlands", "Others"],
+                datasets: [{
+                    label: currentLang === "id" ? "Volume (ribu kantong)" : "Volume (thousand bags)",
+                    data: [2100, 1100, 820, 650, 560, 470, 2100],
+                    backgroundColor: [colors.primary, colors.secondary, colors.accent, "#74b9ff", "#00b894", "#fdcb6e", "#b2bec3"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { grid: { color: colors.grid } }, x: { grid: { display: false } } }
+            }
+        });
+    }
+
+    const priceCtx = document.getElementById("usdaPriceChart");
+    if (priceCtx) {
+        usdaPriceChart = new Chart(priceCtx, {
+            type: "line",
+            data: {
+                labels: ["Q1 2023", "Q2 2023", "Q3 2023", "Q4 2023", "Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024", "Q1 2025", "Q2 2025"],
+                datasets: [
+                    {
+                        label: "ICO Composite",
+                        data: [1.75, 1.80, 1.85, 1.90, 2.10, 2.30, 2.50, 2.60, 2.75, 2.85],
+                        borderColor: "#b2bec3", borderDash: [5, 5], tension: 0.4, pointRadius: 3
+                    },
+                    {
+                        label: currentLang === "id" ? "Indonesia Robusta" : "Indonesia Robusta",
+                        data: [1.55, 1.60, 1.65, 1.70, 1.90, 2.10, 2.30, 2.40, 2.50, 2.60],
+                        borderColor: colors.robusta, tension: 0.4, pointRadius: 4
+                    },
+                    {
+                        label: currentLang === "id" ? "Indonesia Arabika" : "Indonesia Arabica",
+                        data: [3.20, 3.30, 3.40, 3.50, 3.80, 4.00, 4.30, 4.50, 4.70, 4.90],
+                        borderColor: colors.arabika, tension: 0.4, pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "top", align: "end" },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) { return ctx.dataset.label + ": $" + ctx.parsed.y.toFixed(2) + "/kg"; }
+                        }
+                    }
+                },
+                scales: {
+                    y: { grid: { color: colors.grid }, ticks: { callback: function(val) { return "$" + val.toFixed(2); } } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+}
+
+// ========== HISTORICAL CHARTS ==========
+
+// ========== UPDATE INDONESIA CHARTS ==========
+let updateProdChart, updateCompChart, updateExportChart, updatePriceChart, updateProvinceChart;
+
+function renderUpdateCharts() {
+    if (typeof Chart === "undefined") return;
+    const colors = { primary: '#4a3726', secondary: '#7d5f3e', accent: '#b09473', robusta: '#8b6914', arabika: '#6b8e6b', grid: '#e0d5c5' };
+
+    // Production bar chart
+    var pCtx = document.getElementById("updateProdChart");
+    if (pCtx) {
+        if (updateProdChart) updateProdChart.destroy();
+        updateProdChart = new Chart(pCtx, {
+            type: "bar",
+            data: {
+                labels: ["2020", "2021", "2022", "2023", "2024", "2025f"],
+                datasets: [{
+                    label: currentLang === "id" ? "Produksi (Juta Kg)" : "Production (Million Kg)",
+                    data: [41.64, 45.36, 46.50, 45.52, 48.45, 45.0],
+                    backgroundColor: ["#A0522D", "#A0522D", "#CD853F", "#CD853F", "#D2691E", "#DEB887"],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: false, min: 30, grid: { color: colors.grid } }, x: { grid: { display: false } } }
+            }
+        });
+    }
+
+    // Composition doughnut
+    var cCtx = document.getElementById("updateCompChart");
+    if (cCtx) {
+        if (updateCompChart) updateCompChart.destroy();
+        updateCompChart = new Chart(cCtx, {
+            type: "doughnut",
+            data: {
+                labels: currentLang === "id" ? ["Robusta 87%", "Arabika 13%"] : ["Robusta 87%", "Arabica 13%"],
+                datasets: [{
+                    data: [87, 13],
+                    backgroundColor: [colors.robusta, colors.arabika],
+                    borderWidth: 0, hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: "60%",
+                plugins: {
+                    legend: { position: "bottom", labels: { usePointStyle: true, padding: 12, font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    // Export destinations horizontal bar
+    var eCtx = document.getElementById("updateExportChart");
+    if (eCtx) {
+        if (updateExportChart) updateExportChart.destroy();
+        updateExportChart = new Chart(eCtx, {
+            type: "bar",
+            data: {
+                labels: currentLang === "id" 
+                    ? ["Amerika Serikat", "Mesir", "Malaysia", "Belgia", "Rusia"] 
+                    : ["United States", "Egypt", "Malaysia", "Belgium", "Russia"],
+                datasets: [{
+                    label: "Million US$",
+                    data: [307.4, 142.5, 130.5, 115.7, 104.7],
+                    backgroundColor: [colors.primary, colors.secondary, colors.accent, "#CD853F", "#D2691E"],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { color: colors.grid } }, y: { grid: { display: false } } }
+            }
+        });
+    }
+
+    // Price trend line chart
+    var prCtx = document.getElementById("updatePriceChart");
+    if (prCtx) {
+        if (updatePriceChart) updatePriceChart.destroy();
+        var labels = currentLang === "id" ? ["Jan", "Feb", "Mar", "Apr", "Mei"] : ["Jan", "Feb", "Mar", "Apr", "May"];
+        updatePriceChart = new Chart(prCtx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: currentLang === "id" ? "Robusta Lampung (Rp/kg)" : "Robusta Lampung (IDR/kg)",
+                        data: [94700, 104400, 101000, 98000, 97000],
+                        borderColor: colors.robusta, backgroundColor: "rgba(139,105,20,0.08)",
+                        fill: false, tension: 0.3, pointRadius: 4, borderWidth: 2.5
+                    },
+                    {
+                        label: currentLang === "id" ? "Arabika Medan (Rp/kg)" : "Arabica Medan (IDR/kg)",
+                        data: [182000, 223000, 215000, 218000, 221000],
+                        borderColor: colors.primary, backgroundColor: "rgba(74,55,38,0.08)",
+                        fill: false, tension: 0.3, pointRadius: 4, borderWidth: 2.5
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: "top" } },
+                scales: { y: { grid: { color: colors.grid } }, x: { grid: { display: false } } }
+            }
+        });
+    }
+
+    // Provinces horizontal bar
+    var pvCtx = document.getElementById("updateProvinceChart");
+    if (pvCtx) {
+        if (updateProvinceChart) updateProvinceChart.destroy();
+        var provLabels = currentLang === "id" 
+            ? ["Sumatera Selatan", "Lampung", "Sumatera Utara", "Aceh", "Bengkulu", "Jawa Timur", "Sulawesi Selatan", "Jawa Tengah", "NTT", "Jambi"]
+            : ["South Sumatra", "Lampung", "North Sumatra", "Aceh", "Bengkulu", "East Java", "South Sulawesi", "Central Java", "NTT", "Jambi"];
+        updateProvinceChart = new Chart(pvCtx, {
+            type: "bar",
+            data: {
+                labels: provLabels,
+                datasets: [{
+                    label: currentLang === "id" ? "Ribu Ton" : "Thousand Tons",
+                    data: [212.4, 124.5, 87.0, 75.3, 60.1, 45.8, 29.4, 26.9, 26.6, 19.5],
+                    backgroundColor: ["#8B4513", "#A0522D", "#CD853F", "#CD853F", "#D2691E", "#D2691E", "#DEB887", "#DEB887", "#F4A460", "#F4A460"],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { color: colors.grid } }, y: { grid: { display: false }, ticks: { font: { size: 10 } } } }
+            }
+        });
+    }
+}
+
+// ========== REFRESH FUNCTIONS ==========
+function refreshUSDAData() {
+    var btn = document.getElementById("usda-btn-refresh");
+    var icon = document.getElementById("usda-btn-icon");
+    var text = document.getElementById("usda-btn-text");
+    var badge = document.getElementById("usda-status-badge");
+    var dot = document.getElementById("usda-status-dot");
+    var statusText = document.getElementById("usda-status-text");
+
+    if (btn) btn.disabled = true;
+    if (icon) icon.classList.add("fa-spin");
+    if (text) text.textContent = currentLang === "id" ? "Memperbarui..." : "Updating...";
+    if (badge) badge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-500/10 text-yellow-600 text-xs font-medium border border-yellow-500/20";
+    if (dot) dot.className = "w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse";
+    if (statusText) statusText.textContent = "Loading...";
+
+    setTimeout(function() {
+        var now = new Date();
+        var timeStr = now.toLocaleDateString(currentLang === "id" ? "id-ID" : "en-US", {day:"numeric", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit"});
+        document.getElementById("usda-last-updated").textContent = (currentLang === "id" ? "Terakhir update: " : "Last updated: ") + timeStr;
+
+        if (icon) icon.classList.remove("fa-spin");
+        if (text) text.textContent = currentLang === "id" ? "Refresh Data" : "Refresh Data";
+        if (btn) btn.disabled = false;
+        if (badge) badge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 text-green-600 text-xs font-medium border border-green-500/20";
+        if (dot) dot.className = "w-1.5 h-1.5 rounded-full bg-green-500";
+        if (statusText) statusText.textContent = currentLang === "id" ? "Diperbarui" : "Updated";
+
+        setTimeout(function() {
+            if (statusText) statusText.textContent = "Ready";
+            if (dot) dot.className = "w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse";
+        }, 3000);
+    }, 1500);
+}
+
+function toggleUSDAManualUpload() {
+    var panel = document.getElementById("usda-manual-upload");
+    if (panel) panel.classList.toggle("hidden");
+}
+
+function handleUSDAFileUpload(file) {
+    if (!file) return;
+    var statusEl = document.getElementById("usda-upload-status");
+    var fileNameEl = document.getElementById("usda-file-name");
+    if (fileNameEl) fileNameEl.textContent = file.name;
+    if (statusEl) {
+        statusEl.classList.remove("hidden");
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> ' + (currentLang === "id" ? "Memproses file..." : "Processing file...");
+    }
+    setTimeout(function() {
+        if (statusEl) statusEl.innerHTML = '<span class="text-green-700"><i class="fas fa-check-circle mr-1"></i> ' + (currentLang === "id" ? "Data berhasil diupload!" : "Data uploaded successfully!") + '</span>';
+    }, 1500);
+}
+
+// ========== INIT ==========
+document.addEventListener("DOMContentLoaded", function() {
+    setLanguage("id");
+    initUSDACharts();
+    loadLivePSD();
+    renderUpdateCharts();
+
+    // Set default active tab
+    switchTab('usda');
+
+    // Set last updated time
+    var now = new Date();
+    var timeStr = now.toLocaleDateString("id-ID", {day:"numeric", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit"});
+    var el = document.getElementById("usda-last-updated");
+    if (el) el.textContent = "Terakhir update: " + timeStr;
+});
+</script>
+<style type="text/tailwindcss">
+@layer base { body { @apply font-sans text-coffee-800 bg-cream; } h1,h2,h3,h4,h5,h6 { @apply font-serif; } }
+@layer components {
+    .btn-primary { @apply bg-coffee-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-coffee-700 transition-all duration-300 hover:shadow-lg; }
+    .btn-secondary { @apply border-2 border-coffee-800 text-coffee-800 px-6 py-3 rounded-lg font-medium hover:bg-coffee-800 hover:text-white transition-all duration-300; }
+    .card { @apply bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 border border-coffee-100; }
+    .stat-card { @apply bg-white rounded-2xl p-6 border border-coffee-100 shadow-sm; }
+    .input-field { @apply w-full px-4 py-3 rounded-xl border border-coffee-200 bg-white focus:outline-none focus:ring-2 focus:ring-coffee-400 focus:border-transparent transition-all; }
+    .nav-link { @apply text-coffee-600 hover:text-coffee-900 font-medium transition-colors duration-300; }
+    .section-title { @apply text-4xl md:text-5xl font-serif font-bold text-coffee-900 mb-4; }
+    .tag { @apply inline-block px-3 py-1 rounded-full text-xs font-medium bg-coffee-100 text-coffee-700; }
+    .lang-btn { @apply px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer; }
+    .lang-btn.active { @apply bg-coffee-800 text-white; }
+    .lang-btn.inactive { @apply bg-white text-coffee-600 hover:bg-coffee-50 border border-coffee-200; }
+    .tab-btn { @apply px-5 py-3 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2; }
+    .tab-btn.active { @apply bg-coffee-800 text-white shadow-lg; }
+    .tab-btn.inactive { @apply bg-white text-coffee-600 hover:bg-coffee-50 border border-coffee-200; }
+}
+@layer utilities {
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+}
+/* Override any legacy .header styles */
+.header { background: transparent !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+
+/* ===== SOCIAL SHARE BAR ===== */
+.share-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.share-label {
+    font-size: 0.75rem;
+    color: #9a7b56;
+    margin-right: 0.25rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+.share-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.share-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+.share-wa { background: #25D366; }
+.share-fb { background: #1877F2; }
+.share-tw { background: #000000; }
+.share-li { background: #0A66C2; }
+.share-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.share-copy { background: #7d5f3e; }
+.share-btn i { pointer-events: none; }
+
+/* Dark section variant */
+.dark-section .share-label { color: #c9b89e; }
+.dark-section .share-copy { background: #b09473; }
+</style>
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            fontFamily: { serif: ["Playfair Display","serif"], sans: ["Inter","sans-serif"] },
+            colors: {
+                coffee: { 50:"#f9f7f4",100:"#f0ebe3",200:"#e0d5c5",300:"#c9b89e",400:"#b09473",500:"#9a7b56",600:"#7d5f3e",700:"#634a31",800:"#4a3726",900:"#2d2118",950:"#1a120d" },
+                cream: "#faf8f5"
+            }
+        }
+    }
+}
+</script>
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
+</head>
+<body class="antialiased">
+
+<!-- ========== MAIN NAVBAR (External Links) ========== -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg shadow-sm border-b border-coffee-100">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+    <!-- Logo -->
+    <a href="index.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-coffee-800 rounded-lg flex items-center justify-center"><span class="text-white font-serif font-bold text-lg">KG</span></div>
+        <div class="hidden sm:block">
+            <h1 class="font-serif font-bold text-xl text-coffee-900 leading-tight">Ganjar Satyanagara</h1>
+            <p class="text-xs text-coffee-500 -mt-1">Coffee Researcher</p>
+        </div>
+    </a>
+    <!-- External Nav Links -->
+    <div class="flex items-center gap-5">
+        <a href="index.html" class="nav-link hidden md:flex items-center gap-2 text-sm">
+            <i class="fas fa-arrow-left text-xs"></i><span data-i18n="nav_back">Kembali ke Blog</span>
+        </a>
+        <a href="kalkulator.html" class="nav-link hidden md:flex items-center gap-2 text-sm" data-i18n="nav_calc">Kalkulator</a>
+        <div class="h-5 w-px bg-coffee-200 hidden md:block"></div>
+        <div class="flex items-center gap-1 bg-coffee-100 rounded-lg p-1">
+            <button type="button" id="btn-id" class="lang-btn active" onclick="setLanguage('id')">ID</button>
+            <button type="button" id="btn-en" class="lang-btn inactive" onclick="setLanguage('en')">EN</button>
+        </div>
+    </div>
+</div>
+</div>
+</nav>
+
+<!-- ========== SUB-NAVBAR (Internal Page Tabs) ========== -->
+<div class="fixed top-16 left-0 right-0 z-40 bg-cream/95 backdrop-blur-md border-b border-coffee-100 shadow-sm">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <!-- Desktop Tabs -->
+    <div class="hidden lg:flex items-center justify-center gap-2 py-3">
+        <button id="tab-usda" onclick="switchTab('usda')" class="tab-btn active">
+            <i class="fas fa-file-alt text-xs"></i><span data-i18n="nav_usda_report">Data Laporan USDA</span>
+        </button>
+        <button id="tab-historical" onclick="switchTab('historical')" class="tab-btn inactive">
+            <i class="fas fa-chart-line text-xs"></i><span data-i18n="nav_historical">Event &amp; Early Warning</span>
+        </button>
+        <button id="tab-update" onclick="switchTab('update')" class="tab-btn inactive">
+            <i class="fas fa-newspaper text-xs"></i><span data-i18n="nav_update">Report Kopi Terkini</span>
+        </button>
+    </div>
+    <!-- Mobile Tabs -->
+    <div class="lg:hidden flex items-center gap-2 py-3 overflow-x-auto">
+        <button id="tab-usda-mobile" onclick="switchTab('usda')" class="tab-btn active whitespace-nowrap">
+            <i class="fas fa-file-alt text-xs"></i><span data-i18n="nav_usda_report">Data Laporan USDA</span>
+        </button>
+        <button id="tab-historical-mobile" onclick="switchTab('historical')" class="tab-btn inactive whitespace-nowrap">
+            <i class="fas fa-chart-line text-xs"></i><span data-i18n="nav_historical">Event &amp; Warning</span>
+        </button>
+        <button id="tab-update-mobile" onclick="switchTab('update')" class="tab-btn inactive whitespace-nowrap">
+            <i class="fas fa-newspaper text-xs"></i><span data-i18n="nav_update">Report Kopi</span>
+        </button>
+    </div>
+</div>
+</div>
+
+<!-- Spacer for double navbar -->
+<div class="h-32 lg:h-36"></div>
+
+<!-- ==================== SECTION 1: USDA REPORT ==================== -->
+<section id="section-usda" class="py-12 bg-cream">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="text-center mb-12">
+        <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase" data-i18n="usda_label">Data Resmi</span>
+        <h2 class="section-title mt-2" data-i18n="usda_title">Laporan USDA Kopi Indonesia</h2>
+        <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-4" data-i18n="usda_desc">
+            Perkembangan produksi, ekspor, dan pasar kopi Indonesia berdasarkan data resmi USDA Foreign Agricultural Service (FAS).
+        </p>
+    </div>
+
+    
+    <!-- Social Share -->
+    <div class="share-bar">
+        <span class="share-label"><i class="fas fa-share-alt mr-1"></i>Bagikan</span>
+        <button type="button" onclick="shareToWhatsApp()" class="share-btn share-wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+        <button type="button" onclick="shareToInstagram()" class="share-btn share-ig" title="Instagram"><i class="fab fa-instagram"></i></button>
+        <button type="button" onclick="shareToFacebook()" class="share-btn share-fb" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+        <button type="button" onclick="shareToTwitter()" class="share-btn share-tw" title="X / Twitter"><i class="fab fa-x-twitter"></i></button>
+        <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+        <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
+    </div>
+
+<!-- Refresh Controls -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 p-4 bg-white rounded-xl border border-coffee-100 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
+                <i class="fas fa-sync-alt text-green-600" id="usda-refresh-icon"></i>
+            </div>
+            <div>
+                <div class="text-sm font-medium text-coffee-900">USDA FAS Data</div>
+                <div class="text-xs text-coffee-500" id="usda-last-updated">Terakhir update: loading...</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" onclick="refreshUSDAData()" id="usda-btn-refresh" class="px-4 py-2 rounded-lg bg-coffee-800 text-white text-sm font-medium hover:bg-coffee-700 transition-all flex items-center gap-2">
+                <i class="fas fa-sync-alt" id="usda-btn-icon"></i>
+                <span id="usda-btn-text" data-i18n="usda_refresh">Refresh Data</span>
+            </button>
+            <button type="button" onclick="toggleUSDAManualUpload()" class="px-4 py-2 rounded-lg bg-white text-coffee-700 text-sm font-medium hover:bg-coffee-50 transition-all border border-coffee-200 flex items-center gap-2 hidden">
+                <i class="fas fa-upload"></i>
+                <span data-i18n="usda_upload">Upload CSV</span>
+            </button>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 text-green-600 text-xs font-medium border border-green-500/20" id="usda-status-badge">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" id="usda-status-dot"></span>
+                <span id="usda-status-text" data-i18n="usda_ready">Ready</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- Manual Upload Panel -->
+    <div id="usda-manual-upload" class="hidden mb-8 p-6 bg-yellow-50 rounded-xl border border-yellow-200">
+        <h4 class="font-medium text-yellow-800 mb-2 flex items-center gap-2"><i class="fas fa-info-circle"></i> Upload Data Manual</h4>
+        <p class="text-sm text-yellow-700 mb-3">Download CSV dari <a href="https://apps.fas.usda.gov/psdonline/app/index.html#/app/downloads" target="_blank" class="underline font-medium">USDA PSD Online</a>, lalu upload di sini.</p>
+        <div class="flex items-center gap-3">
+            <label class="cursor-pointer">
+                <input type="file" id="usda-csv-input" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleUSDAFileUpload(this.files[0])">
+                <span class="px-4 py-2 rounded-lg bg-yellow-600 text-white text-sm font-medium hover:bg-yellow-700 transition-all inline-flex items-center gap-2">
+                    <i class="fas fa-file-csv"></i> Pilih File CSV/Excel
+                </span>
+            </label>
+            <span class="text-xs text-yellow-600" id="usda-file-name">Belum ada file dipilih</span>
+        </div>
+        <div id="usda-upload-status" class="hidden mt-3 text-sm"></div>
+    </div>
+
+    <!-- LIVE USDA PSD — v2026.09.24-1 -->
+<div class="card p-6 md:p-8 mb-12">
+    <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 flex items-center gap-2 flex-wrap">
+        <i class="fas fa-satellite-dish text-coffee-500"></i>
+        <span>Data Live USDA PSD &mdash; Kopi Indonesia</span>
+        <span id="psd-updated" class="text-xs font-normal text-coffee-400 ml-auto"></span>
+    </h3>
+    <p class="text-xs text-coffee-400 mb-4">Pasokan &amp; Distribusi resmi USDA FAS untuk kopi Indonesia (Marketing Year). Diperbarui otomatis oleh GitHub Actions.</p>
+    <div id="psd-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="col-span-full text-sm text-coffee-400"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat data PSD...</div>
+    </div>
+    <div id="psd-note" class="text-xs text-coffee-400 mt-4"></div>
+</div>
+<script>
+function loadLivePSD() {
+    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/psd.json", { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) {
+            var box = document.getElementById("psd-cards");
+            var note = document.getElementById("psd-note");
+            var upd = document.getElementById("psd-updated");
+            if (!box) return;
+            if (upd && j.fetched) upd.textContent = "Update: " + new Date(j.fetched).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+            if (j.status === "Error") {
+                box.innerHTML = '<div class="col-span-full text-sm text-coffee-500">' + String(j.message || "Gagal memuat PSD").replace(/</g, "&lt;").slice(0, 200) + '</div>';
+                return;
+            }
+            var data = (j.data || []).map(function (r) {
+                function amb() { for (var i = 0; i < arguments.length - 1; i++) { var v = arguments[i]; if (v !== undefined && v !== null && v !== "") return v; } return ""; }
+                return {
+                    tahun: amb(r.tahun, r.marketYear, r.MarketYear, r.year),
+                    atribut: amb(r.atribut, r.attributeName, r.attributeDescription, r.publicAttributeName, r.attribute, r.name),
+                    nilai: (r.nilai !== undefined ? r.nilai : amb(r.value, r.Value, r.val)),
+                    satuan: amb(r.satuan, r.unitDescription, r.unit, r.UnitDescription),
+                    negara: amb(r.negara, r.countryName, r.name, r.gencCode)
+                };
+            }).filter(function (d) { return String(d.atribut) !== ""; });
+            if (!data.length) { box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia.</div>'; return; }
+            var tahunMax = Math.max.apply(null, data.map(function (d) { return Number(d.tahun) || 0; }));
+            var prio = ["Production", "Exports", "Domestic Consumption", "Ending Stocks"];
+            var latest = data.filter(function (d) { return (Number(d.tahun) || 0) === tahunMax; });
+            var shown = [];
+            prio.forEach(function (p) {
+                var hit = latest.filter(function (d) { return d.atribut === p; })[0];
+                if (hit) shown.push(hit);
+            });
+            latest.forEach(function (d) { if (shown.length < 8 && shown.indexOf(d) === -1) shown.push(d); });
+            box.innerHTML = shown.map(function (d) {
+                return '<div class="stat-card text-center">' +
+                    '<div class="text-2xl font-serif font-bold text-coffee-900">' + (d.nilai === null || d.nilai === undefined ? "&mdash;" : Number(d.nilai).toLocaleString("id-ID")) + '</div>' +
+                    '<div class="text-xs text-coffee-500 mt-1">' + d.atribut + '</div>' +
+                    '<div class="text-[10px] text-coffee-400">' + (d.satuan || "") + ' &middot; MY ' + d.tahun + '</div>' +
+                    '</div>';
+            }).join("");
+            if (note && j.sumber) note.textContent = "Sumber: " + j.sumber;
+        })
+        .catch(function () {
+            var box = document.getElementById("psd-cards");
+            if (box) box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia &mdash; jalankan workflow Update-Coffee-Data.</div>';
+        });
+}
+</script>
+<!-- Executive Summary Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+        <div class="stat-card text-center">
+            <div class="w-12 h-12 bg-coffee-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-seedling text-coffee-600 text-xl"></i>
+            </div>
+            <div class="text-3xl font-serif font-bold text-coffee-900" id="usda-val-production">12,500</div>
+            <div class="text-sm text-coffee-500 mt-1" data-i18n="usda_production">Produksi (ribu kantong)</div>
+            <div class="text-xs text-green-600 mt-1 font-medium" data-i18n="usda_yoy_up"><i class="fas fa-arrow-up mr-1"></i>+14.7% YoY</div>
+        </div>
+        <div class="stat-card text-center">
+            <div class="w-12 h-12 bg-coffee-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-ship text-coffee-600 text-xl"></i>
+            </div>
+            <div class="text-3xl font-serif font-bold text-coffee-900" id="usda-val-export">7,800</div>
+            <div class="text-sm text-coffee-500 mt-1" data-i18n="usda_export">Ekspor (ribu kantong)</div>
+            <div class="text-xs text-green-600 mt-1 font-medium" data-i18n="usda_yoy_up2"><i class="fas fa-arrow-up mr-1"></i>+8.3% YoY</div>
+        </div>
+        <div class="stat-card text-center">
+            <div class="w-12 h-12 bg-coffee-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-mug-hot text-coffee-600 text-xl"></i>
+            </div>
+            <div class="text-3xl font-serif font-bold text-coffee-900" id="usda-val-domestic">4,850</div>
+            <div class="text-sm text-coffee-500 mt-1" data-i18n="usda_domestic">Konsumsi Domestik</div>
+            <div class="text-xs text-green-600 mt-1 font-medium" data-i18n="usda_yoy_up3"><i class="fas fa-arrow-up mr-1"></i>+1.0% YoY</div>
+        </div>
+        <div class="stat-card text-center">
+            <div class="w-12 h-12 bg-coffee-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-warehouse text-coffee-600 text-xl"></i>
+            </div>
+            <div class="text-3xl font-serif font-bold text-coffee-900" id="usda-val-ending">1,450</div>
+            <div class="text-sm text-coffee-500 mt-1" data-i18n="usda_ending">Stok Akhir</div>
+            <div class="text-xs text-red-500 mt-1 font-medium" data-i18n="usda_yoy_down"><i class="fas fa-arrow-down mr-1"></i>-8.1% YoY</div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid lg:grid-cols-2 gap-8 mb-12">
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-line text-coffee-500"></i>
+                <span data-i18n="usda_chart_production">Tren Produksi (5 Tahun)</span>
+            </h3>
+            <div class="h-64"><canvas id="usdaProductionChart"></canvas></div>
+        </div>
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-pie text-coffee-500"></i>
+                <span data-i18n="usda_chart_variety">Komposisi Arabika vs Robusta</span>
+            </h3>
+            <div class="h-64 flex items-center justify-center"><canvas id="usdaVarietyChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- PSD Table -->
+    <div class="card p-6 md:p-8 mb-12 overflow-hidden">
+        <h3 class="font-serif text-xl font-bold text-coffee-900 mb-6 flex items-center gap-2">
+            <i class="fas fa-table text-coffee-500"></i>
+            <span data-i18n="usda_psd_title">Pasokan & Distribusi (PSD)</span>
+            <span class="text-sm font-normal text-coffee-400 ml-auto" data-i18n="usda_unit">Unit: 1,000 kantong 60-kg</span>
+        </h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width: 700px;">
+                <thead>
+                    <tr class="bg-coffee-800 text-white">
+                        <th class="px-4 py-3 text-left rounded-tl-lg" data-i18n="usda_col_component">Komponen</th>
+                        <th class="px-4 py-3 text-right">2021/22</th>
+                        <th class="px-4 py-3 text-right">2022/23</th>
+                        <th class="px-4 py-3 text-right">2023/24</th>
+                        <th class="px-4 py-3 text-right">2024/25</th>
+                        <th class="px-4 py-3 text-right rounded-tr-lg">2025/26 (Est.)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-coffee-100">
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium text-coffee-900">Stok Awal / Beginning Stocks</td><td class="px-4 py-3 text-right font-mono">1,380</td><td class="px-4 py-3 text-right font-mono">1,480</td><td class="px-4 py-3 text-right font-mono">1,520</td><td class="px-4 py-3 text-right font-mono">1,400</td><td class="px-4 py-3 text-right font-mono font-bold text-coffee-800">1,550</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium text-coffee-900">Produksi / Production</td><td class="px-4 py-3 text-right font-mono">10,700</td><td class="px-4 py-3 text-right font-mono">10,580</td><td class="px-4 py-3 text-right font-mono">10,700</td><td class="px-4 py-3 text-right font-mono">10,900</td><td class="px-4 py-3 text-right font-mono font-bold text-coffee-800">12,500</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 text-coffee-600">Impor / Imports</td><td class="px-4 py-3 text-right font-mono text-coffee-500">50</td><td class="px-4 py-3 text-right font-mono text-coffee-500">45</td><td class="px-4 py-3 text-right font-mono text-coffee-500">60</td><td class="px-4 py-3 text-right font-mono text-coffee-500">55</td><td class="px-4 py-3 text-right font-mono text-coffee-500">50</td></tr>
+                    <tr class="bg-coffee-50/80"><td class="px-4 py-3 font-bold text-coffee-900">Total Pasokan / Total Supply</td><td class="px-4 py-3 text-right font-mono font-bold">12,130</td><td class="px-4 py-3 text-right font-mono font-bold">12,105</td><td class="px-4 py-3 text-right font-mono font-bold">12,280</td><td class="px-4 py-3 text-right font-mono font-bold">12,500</td><td class="px-4 py-3 text-right font-mono font-bold text-coffee-800">14,000</td></tr>
+                    <tr><td colspan="6" class="py-2"></td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium text-coffee-900">Ekspor / Exports</td><td class="px-4 py-3 text-right font-mono">6,466</td><td class="px-4 py-3 text-right font-mono">6,335</td><td class="px-4 py-3 text-right font-mono">6,735</td><td class="px-4 py-3 text-right font-mono">6,500</td><td class="px-4 py-3 text-right font-mono font-bold text-coffee-800">7,800</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium text-coffee-900">Konsumsi Domestik / Domestic Consumption</td><td class="px-4 py-3 text-right font-mono">3,850</td><td class="px-4 py-3 text-right font-mono">3,755</td><td class="px-4 py-3 text-right font-mono">3,980</td><td class="px-4 py-3 text-right font-mono">4,600</td><td class="px-4 py-3 text-right font-mono font-bold text-coffee-800">4,850</td></tr>
+                    <tr><td colspan="6" class="py-2"></td></tr>
+                    <tr class="bg-coffee-50/80"><td class="px-4 py-3 font-bold text-coffee-900">Stok Akhir / Ending Stocks</td><td class="px-4 py-3 text-right font-mono font-bold">1,480</td><td class="px-4 py-3 text-right font-mono font-bold">1,520</td><td class="px-4 py-3 text-right font-mono font-bold">1,400</td><td class="px-4 py-3 text-right font-mono font-bold">1,550</td><td class="px-4 py-3 text-right font-mono font-bold text-coffee-800">1,750</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4 text-xs text-coffee-400 flex items-center gap-2">
+            <i class="fas fa-info-circle"></i>
+            <span data-i18n="usda_psd_note">Sumber: USDA PSD Online | Marketing Year Indonesia: April–Maret | 1 kantong = 60 kg</span>
+        </div>
+    </div>
+
+    <!-- Trade & Price Row -->
+    <div class="grid lg:grid-cols-2 gap-8 mb-12">
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-globe-americas text-coffee-500"></i>
+                <span data-i18n="usda_chart_export">10 Negara Tujuan Utama Ekspor</span>
+            </h3>
+            <div class="h-64"><canvas id="usdaExportChart"></canvas></div>
+        </div>
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-dollar-sign text-coffee-500"></i>
+                <span data-i18n="usda_chart_price">Tren Harga Kopi Indonesia vs ICO</span>
+            </h3>
+            <div class="h-64"><canvas id="usdaPriceChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Key Factors -->
+    <div class="card p-6 md:p-8 mb-12">
+        <h3 class="font-serif text-xl font-bold text-coffee-900 mb-6 flex items-center gap-2">
+            <i class="fas fa-search text-coffee-500"></i>
+            <span data-i18n="usda_factors_title">Faktor-Faktor Penentu</span>
+        </h3>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-coffee-50 rounded-xl p-5 border border-coffee-100">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3"><span class="text-lg">🌦️</span></div>
+                <h4 class="font-medium text-coffee-900 mb-2 text-sm" data-i18n="usda_factor_weather">Cuaca & Iklim</h4>
+                <p class="text-xs text-coffee-600 leading-relaxed">Transisi El Niño ke La Niña mendukung curah hujan normal di wilayah produksi utama.</p>
+            </div>
+            <div class="bg-coffee-50 rounded-xl p-5 border border-coffee-100">
+                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3"><span class="text-lg">📜</span></div>
+                <h4 class="font-medium text-coffee-900 mb-2 text-sm" data-i18n="usda_factor_policy">Kebijakan Pemerintah</h4>
+                <p class="text-xs text-coffee-600 leading-relaxed">Program revitalisasi kebun kopi 50,000 ha/tahun dan insentif pupuk bersubsidi.</p>
+            </div>
+            <div class="bg-coffee-50 rounded-xl p-5 border border-coffee-100">
+                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mb-3"><span class="text-lg">🌍</span></div>
+                <h4 class="font-medium text-coffee-900 mb-2 text-sm" data-i18n="usda_factor_market">Dinamika Pasar Global</h4>
+                <p class="text-xs text-coffee-600 leading-relaxed">Defisit pasokan Robusta global akibat masalah cuaca di Vietnam.</p>
+            </div>
+            <div class="bg-coffee-50 rounded-xl p-5 border border-coffee-100">
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3"><span class="text-lg">📈</span></div>
+                <h4 class="font-medium text-coffee-900 mb-2 text-sm" data-i18n="usda_factor_price">Harga Domestik</h4>
+                <p class="text-xs text-coffee-600 leading-relaxed">Harga gabah kopi di tingkat petani naik 22% YoY, meningkatkan insentif panen.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Source & Disclaimer -->
+    <div class="text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-coffee-100 text-coffee-600 text-xs">
+            <i class="fas fa-database"></i>
+            <span data-i18n="usda_source">Sumber: USDA FAS — PSD Online, GAIN Reports, Coffee: World Markets and Trade</span>
+        </div>
+        <p class="text-xs text-coffee-400 mt-3 max-w-2xl mx-auto" data-i18n="usda_disclaimer">
+            Data bersifat estimasi dan dapat berubah sesuai perkembangan pasar. Satuan mengikuti standar USDA: 1,000 kantong 60-kg (60 metrik ton).
+        </p>
+    </div>
+</div>
+</section>
+
+<!-- ==================== SECTION 2: HISTORICAL DATA ==================== -->
+<section id="section-historical" class="hidden py-12 bg-white">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="text-center mb-10">
+        <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase" data-i18n="hist_label">Data Historis</span>
+        <h2 class="section-title mt-2" data-i18n="hist_title">Tren Historis Pasar Kopi</h2>
+        <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-2" data-i18n="hist_desc">
+            Pergerakan harga Arabica C-Market, Robusta London, dan kurs IDR/USD dalam 5 tahun terakhir.
+        </p>
+        
+
+    <!-- Social Share -->
+    <div class="share-bar">
+        <span class="share-label"><i class="fas fa-share-alt mr-1"></i>Bagikan</span>
+        <button type="button" onclick="shareToWhatsApp()" class="share-btn share-wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+        <button type="button" onclick="shareToInstagram()" class="share-btn share-ig" title="Instagram"><i class="fab fa-instagram"></i></button>
+        <button type="button" onclick="shareToFacebook()" class="share-btn share-fb" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+        <button type="button" onclick="shareToTwitter()" class="share-btn share-tw" title="X / Twitter"><i class="fab fa-x-twitter"></i></button>
+        <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+        <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
+    </div>
+
+    </div>
+
+    <!-- Event Table -->
+    <div class="text-center mb-10">
+        <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase">📋 Event Analysis</span>
+        <h2 class="section-title mt-2 text-3xl" data-i18n="hist_event_title">Event Pasar Signifikan (5 Tahun Terakhir)</h2>
+        <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-2" data-i18n="hist_event_desc">
+            Enam peristiwa besar yang mengguncang pasar kopi global dan dampak langsungnya terhadap FOB Indonesia.
+        </p>
+    </div>
+
+    <div class="card overflow-hidden mb-12">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width: 900px;">
+                <thead>
+                    <tr class="bg-coffee-800 text-white">
+                        <th class="px-5 py-4 text-left rounded-tl-lg w-40" data-i18n="hist_period">Periode</th>
+                        <th class="px-5 py-4 text-left w-48" data-i18n="hist_price_move">Pergerakan Harga</th>
+                        <th class="px-5 py-4 text-left" data-i18n="hist_cause">Penyebab Utama</th>
+                        <th class="px-5 py-4 text-left rounded-tr-lg" data-i18n="hist_impact">Dampak FOB Indonesia</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-coffee-100">
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap"><span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>Jul–Sep 2021</td>
+                        <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold"><i class="fas fa-arrow-up"></i> Arabica +35%</span></td>
+                        <td class="px-5 py-4 text-coffee-700"><strong class="text-coffee-900">Frost Brazil</strong> — Suhu ekstrem di Minas Gerais menghancurkan 10–15% potensi crop Arabica Brazil.</td>
+                        <td class="px-5 py-4 text-coffee-700">FOB naik <strong class="text-coffee-900">$0.80–1.20/kg</strong>. Petani Indonesia mendapat window harga terbaik dalam 7 tahun.</td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap"><span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>Feb–Mar 2022</td>
+                        <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold"><i class="fas fa-arrow-up"></i> Arabica +22%</span></td>
+                        <td class="px-5 py-4 text-coffee-700"><strong class="text-coffee-900">Perang Rusia–Ukraina</strong> — Disrupsi energi & grain → biaya pupuk naik 80%, shipping cost melonjak.</td>
+                        <td class="px-5 py-4 text-coffee-700">Shipping cost naik <strong class="text-coffee-900">40–60%</strong>. Margin prosesor menipis meski harga naik.</td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap"><span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>Nov 2022–Jan 2023</td>
+                        <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold"><i class="fas fa-arrow-down"></i> Arabica −18%</span></td>
+                        <td class="px-5 py-4 text-coffee-700"><strong class="text-coffee-900">Brazil Recovery Crop</strong> — Off-year Brazil 2022/23 lebih baik dari perkiraan, supply global longgar.</td>
+                        <td class="px-5 py-4 text-coffee-700">Harga cherry turun <strong class="text-coffee-900">15–20%</strong>. Petani menahan panen, kualitas menurun akibat delay picking.</td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap"><span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>Jun–Agu 2024</td>
+                        <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold"><i class="fas fa-arrow-up"></i> Arabica +25%</span></td>
+                        <td class="px-5 py-4 text-coffee-700"><strong class="text-coffee-900">El Niño Vietnam</strong> — Kekeringan parah di Central Highlands Vietnam, Robusta global defisit 4.2 juta kantong.</td>
+                        <td class="px-5 py-4 text-coffee-700">Differential Indonesia naik signifikan. Robusta Lampung jadi <strong class="text-coffee-900">"alternative premium"</strong> di pasar blending Eropa.</td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap"><span class="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>Jan–Mar 2025</td>
+                        <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold"><i class="fas fa-arrow-down"></i> Arabica −8%</span></td>
+                        <td class="px-5 py-4 text-coffee-700"><strong class="text-coffee-900">Brazil Outlook Positif</strong> — Cuaca normal + investasi irigasi → on-year crop 2025/26 diproyeksi 68+ juta kantong.</td>
+                        <td class="px-5 py-4 text-coffee-700">Window <strong class="text-coffee-900">lock price Q2–Q3</strong> direkomendasikan. Jangan spekulasi di bear market.</td>
+                    </tr>
+                    <tr class="hover:bg-coffee-50/50 transition-colors">
+                        <td class="px-5 py-4 font-medium text-coffee-900 whitespace-nowrap"><span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>Apr–Mei 2026</td>
+                        <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold"><i class="fas fa-minus"></i> Stabil</span></td>
+                        <td class="px-5 py-4 text-coffee-700"><strong class="text-coffee-900">Keseimbangan Supply</strong> — Brazil on-year, Vietnam recovery, Indonesia normal. Pasar sideways.</td>
+                        <td class="px-5 py-4 text-coffee-700">Fokus beralih ke <strong class="text-coffee-900">quality & consistency</strong>. Differential flat, premium cup jadi pembeda utama.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-5 py-4 bg-coffee-50 border-t border-coffee-100">
+            <p class="text-xs text-coffee-500 flex items-start gap-2">
+                <i class="fas fa-lightbulb text-yellow-500 mt-0.5"></i>
+                <span><strong data-i18n="hist_insight">Insight:</strong> <span data-i18n="hist_insight_text">5 dari 6 event dipicu oleh cuaca ekstrem atau geopolitik. Volatilitas kopi >60% berasal dari supply shock.</span></span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Early Warning System -->
+    <div class="text-center mb-10">
+        <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase">🚨 Risk Monitoring</span>
+        <h2 class="section-title mt-2 text-3xl" data-i18n="hist_warning_title">Early Warning System</h2>
+        <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-2" data-i18n="hist_warning_desc">
+            Empat kategori sinyal yang harus dipantau 24/7 untuk mengantisipasi pergerakan pasar sebelum terjadi.
+        </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="card p-6 hover:shadow-xl transition-all duration-300 border-t-4 border-t-blue-500">
+            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-4"><span class="text-2xl">🌦️</span></div>
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2" data-i18n="hist_weather_alert">Weather Alert</h3>
+            <p class="text-xs text-coffee-500 mb-4 leading-relaxed">Cuaca ekstrem adalah pemicu #1 volatilitas kopi. Pantau sinyal 3–6 bulan sebelum panen.</p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-satellite text-blue-500 mt-0.5"></i><span><strong>NOAA ENSO</strong> — El Niño / La Niña probability index</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-snowflake text-blue-500 mt-0.5"></i><span><strong>Frost Brazil</strong> — Minas Gerais temp forecast (Jun–Aug)</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-sun text-blue-500 mt-0.5"></i><span><strong>Drought Vietnam</strong> — Central Highlands rainfall tracker</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-cloud-rain text-blue-500 mt-0.5"></i><span><strong>BMKG Indonesia</strong> — Dry season length prediction</span></li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-coffee-100">
+                <span class="text-[10px] uppercase tracking-wider text-coffee-400 font-semibold" data-i18n="hist_trigger">Trigger Threshold</span>
+                <p class="text-xs text-coffee-600 mt-1">ENSO probability >65% atau frost risk >30% → aktifkan mode hedging.</p>
+            </div>
+        </div>
+        <div class="card p-6 hover:shadow-xl transition-all duration-300 border-t-4 border-t-amber-500">
+            <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-4"><span class="text-2xl">🚢</span></div>
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2" data-i18n="hist_logistics">Logistics & Freight</h3>
+            <p class="text-xs text-coffee-500 mb-4 leading-relaxed">Biaya logistik bisa memakan 15–25% margin FOB. Perubahan cepat, dampak langsung.</p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-ship text-amber-500 mt-0.5"></i><span><strong>Drewry WCI</strong> — Container freight index (Asia–US)</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-exclamation-triangle text-amber-500 mt-0.5"></i><span><strong>Red Sea Tension</strong> — Suez Canal disruption risk</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-anchor text-amber-500 mt-0.5"></i><span><strong>Port Congestion</strong> — Tanjung Priok & US East Coast</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-oil-can text-amber-500 mt-0.5"></i><span><strong>Bunker Fuel</strong> — VLSFO price trend</span></li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-coffee-100">
+                <span class="text-[10px] uppercase tracking-wider text-coffee-400 font-semibold" data-i18n="hist_trigger">Trigger Threshold</span>
+                <p class="text-xs text-coffee-600 mt-1">Freight naik >20% dalam 30 hari → renegotiate FOB term atau switch port.</p>
+            </div>
+        </div>
+        <div class="card p-6 hover:shadow-xl transition-all duration-300 border-t-4 border-t-purple-500">
+            <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mb-4"><span class="text-2xl">📜</span></div>
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2" data-i18n="hist_policy">Policy & Currency</h3>
+            <p class="text-xs text-coffee-500 mb-4 leading-relaxed">Regulasi dan kurs bisa mengubah economics ekspor dalam semalam. Butuh monitoring proaktif.</p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-university text-purple-500 mt-0.5"></i><span><strong>BI Rate</strong> — Suku bunga & intervensi rupiah</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-leaf text-purple-500 mt-0.5"></i><span><strong>EUDR</strong> — EU Deforestation Regulation compliance</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-flag-usa text-purple-500 mt-0.5"></i><span><strong>US Tariff</strong> — Coffee import duty & trade war risk</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-certificate text-purple-500 mt-0.5"></i><span><strong>Certification</strong> — Organic, Fair Trade, Rainforest update</span></li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-coffee-100">
+                <span class="text-[10px] uppercase tracking-wider text-coffee-400 font-semibold" data-i18n="hist_trigger">Trigger Threshold</span>
+                <p class="text-xs text-coffee-600 mt-1">IDR/USD volatilitas >5% dalam seminggu atau EUDR deadline <90 hari.</p>
+            </div>
+        </div>
+        <div class="card p-6 hover:shadow-xl transition-all duration-300 border-t-4 border-t-green-500">
+            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mb-4"><span class="text-2xl">📅</span></div>
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2" data-i18n="hist_crop">Crop Cycle Calendar</h3>
+            <p class="text-xs text-coffee-500 mb-4 leading-relaxed">Timing adalah segalanya. Ketahui kapan supply peak & trough di tiap origin utama.</p>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-globe-americas text-green-500 mt-0.5"></i><span><strong>Brazil</strong> — Flowering: Sep–Nov | Harvest: Apr–Sep</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-globe-asia text-green-500 mt-0.5"></i><span><strong>Vietnam</strong> — Flowering: Jan–Mar | Harvest: Oct–Jan</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-flag text-green-500 mt-0.5"></i><span><strong>Indonesia</strong> — Flowering: Jun–Aug | Harvest: Oct–Mar</span></li>
+                <li class="flex items-start gap-2 text-xs text-coffee-700"><i class="fas fa-globe-africa text-green-500 mt-0.5"></i><span><strong>Colombia</strong> — Mitaca: Apr–Jun | Principal: Oct–Jan</span></li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-coffee-100">
+                <span class="text-[10px] uppercase tracking-wider text-coffee-400 font-semibold" data-i18n="hist_trigger">Trigger Threshold</span>
+                <p class="text-xs text-coffee-600 mt-1">60 hari sebelum peak harvest major origin → update inventory & pricing strategy.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ==================== SECTION 3: UPDATE KOPI INDONESIA ==================== -->
+<section id="section-update" class="hidden py-12 bg-cream">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <!-- Elegant Header -->
+    <div class="text-center mb-12 pt-4">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-coffee-100 text-coffee-600 text-xs font-medium tracking-wider uppercase mb-4" data-i18n="upd_label">Update Terkini</span>
+        <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-coffee-900 leading-tight mb-4" data-i18n="upd_title">Industri Kopi Indonesia 2023–2025</h1>
+        <div class="w-24 h-1 bg-coffee-400 mx-auto rounded-full mb-4"></div>
+
+    <!-- Social Share -->
+    <div class="share-bar">
+        <span class="share-label"><i class="fas fa-share-alt mr-1"></i>Bagikan</span>
+        <button type="button" onclick="shareToWhatsApp()" class="share-btn share-wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+        <button type="button" onclick="shareToInstagram()" class="share-btn share-ig" title="Instagram"><i class="fab fa-instagram"></i></button>
+        <button type="button" onclick="shareToFacebook()" class="share-btn share-fb" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+        <button type="button" onclick="shareToTwitter()" class="share-btn share-tw" title="X / Twitter"><i class="fab fa-x-twitter"></i></button>
+        <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+        <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
+    </div>
+
+        <p class="text-lg md:text-xl text-coffee-500 max-w-3xl mx-auto leading-relaxed font-light" data-i18n="upd_desc">Executive summary berdasarkan data BPS, USDA FAS, AEKI, Bappebti, Kementan, dan BMKG.</p>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div class="stat-card text-center" style="border-left:4px solid #D2691E">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1" data-i18n="upd_production_2024">Produksi 2024</div>
+            <div class="text-2xl font-bold text-coffee-900">807.580</div>
+            <div class="text-xs text-gray-500" data-i18n="upd_ton">Ton</div>
+            <div class="text-xs text-green-600 font-medium mt-1" data-i18n="upd_yoy">+6,4% YoY</div>
+        </div>
+        <div class="stat-card text-center" style="border-left:4px solid #8B4513">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1" data-i18n="upd_usda_my">USDA MY 2025/26</div>
+            <div class="text-2xl font-bold text-coffee-900">750</div>
+            <div class="text-xs text-gray-500" data-i18n="upd_million_kg">Juta Kg</div>
+            <div class="text-xs text-green-600 font-medium mt-1" data-i18n="upd_yoy2">+18% vs MY lalu</div>
+        </div>
+        <div class="stat-card text-center" style="border-left:4px solid #CD853F">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1" data-i18n="upd_export_value">Nilai Ekspor 2024</div>
+            <div class="text-2xl font-bold text-coffee-900">1,64</div>
+            <div class="text-xs text-gray-500" data-i18n="upd_billion_usd">Miliar US$</div>
+            <div class="text-xs text-green-600 font-medium mt-1" data-i18n="upd_yoy3">+76% YoY</div>
+        </div>
+        <div class="stat-card text-center" style="border-left:4px solid #2E7D32">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1" data-i18n="upd_trade_surplus">Surplus Dagang</div>
+            <div class="text-2xl font-bold text-coffee-900">2,32</div>
+            <div class="text-xs text-gray-500" data-i18n="upd_billion_usd">Miliar US$</div>
+            <div class="text-xs text-green-600 font-medium mt-1" data-i18n="upd_yoy4">Jan–Okt 2025</div>
+        </div>
+        <div class="stat-card text-center" style="border-left:4px solid #6F4E37">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1" data-i18n="upd_consumption">Konsumsi Per Kapita</div>
+            <div class="text-2xl font-bold text-coffee-900">1,90</div>
+            <div class="text-xs text-gray-500" data-i18n="upd_kg_year">Kg/tahun</div>
+            <div class="text-xs text-green-600 font-medium mt-1" data-i18n="upd_yoy5">+80% dari 2013</div>
+        </div>
+        <div class="stat-card text-center" style="border-left:4px solid #A0522D">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1" data-i18n="upd_global_rank">Peringkat Global</div>
+            <div class="text-2xl font-bold text-coffee-900">#4</div>
+            <div class="text-xs text-gray-500" data-i18n="upd_producer">Produsen Dunia</div>
+            <div class="text-xs text-amber-600 font-medium mt-1" data-i18n="upd_pangsa">7% pangsa global</div>
+        </div>
+    </div>
+
+    <!-- Charts: Production & Composition -->
+    <div class="grid lg:grid-cols-2 gap-6 mb-8">
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-bar text-coffee-500"></i>
+                <span data-i18n="upd_prod_chart">Tren Produksi Kopi Indonesia (Juta Kg)</span>
+            </h3>
+            <div class="h-64"><canvas id="updateProdChart"></canvas></div>
+            <p class="text-xs text-coffee-400 mt-2">Sumber: BPS (Tahun Kalender), USDA FAS (MY Apr–Mar)</p>
+        </div>
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-pie text-coffee-500"></i>
+                <span data-i18n="upd_composition">Komposisi: Robusta vs Arabika</span>
+            </h3>
+            <div class="h-64 flex items-center justify-center"><canvas id="updateCompChart"></canvas></div>
+            <p class="text-xs text-coffee-400 mt-2 text-center">Sumber: USDA FAS MY 2025/26 (12,5 juta bags 60kg)</p>
+        </div>
+    </div>
+
+    <!-- Spot Price Table -->
+    <div class="card p-6 mb-8 overflow-hidden">
+        <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-dollar-sign text-coffee-500"></i>
+            <span data-i18n="upd_spot_title">Harga Spot per Kg (IDR & USD)</span>
+        </h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width: 600px;">
+                <thead>
+                    <tr class="bg-coffee-800 text-white">
+                        <th class="px-4 py-3 text-left rounded-tl-lg" data-i18n="upd_metric">Metrik</th>
+                        <th class="px-4 py-3 text-right" data-i18n="upd_2023">2023</th>
+                        <th class="px-4 py-3 text-right" data-i18n="upd_2024">2024</th>
+                        <th class="px-4 py-3 text-right rounded-tr-lg" data-i18n="upd_2025">Jan–Mei 2025</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-coffee-100">
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium"><b data-i18n="upd_robusta_idr">Robusta IDR/kg</b></td><td class="px-4 py-3 text-right">Rp 41.750</td><td class="px-4 py-3 text-right">Rp 75.911</td><td class="px-4 py-3 text-right font-bold text-coffee-800">Rp 99.355</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium"><b data-i18n="upd_robusta_usd">Robusta USD/kg</b></td><td class="px-4 py-3 text-right">$ 2,71</td><td class="px-4 py-3 text-right">$ 4,79</td><td class="px-4 py-3 text-right font-bold text-green-600">$ 6,04</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium"><b data-i18n="upd_arabika_idr">Arabika IDR/kg</b></td><td class="px-4 py-3 text-right">Rp 91.750</td><td class="px-4 py-3 text-right">Rp 132.683</td><td class="px-4 py-3 text-right font-bold text-coffee-800">Rp 211.592</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium"><b data-i18n="upd_arabika_usd">Arabika USD/kg</b></td><td class="px-4 py-3 text-right">$ 6,01</td><td class="px-4 py-3 text-right">$ 8,42</td><td class="px-4 py-3 text-right font-bold text-green-600">$ 12,93</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium"><b data-i18n="upd_kurs">Kurs IDR/USD</b></td><td class="px-4 py-3 text-right">15.167</td><td class="px-4 py-3 text-right">15.855</td><td class="px-4 py-3 text-right">16.477</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-xs text-coffee-400 mt-3">Sumber: Bappebti Spot | Kurs rata-rata BI</p>
+    </div>
+
+    <!-- Export Destinations & Price Trend -->
+    <div class="grid lg:grid-cols-2 gap-6 mb-8">
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-globe text-coffee-500"></i>
+                <span data-i18n="upd_export_dest">5 Negara Tujuan Ekspor Utama 2024</span>
+            </h3>
+            <div class="h-64"><canvas id="updateExportChart"></canvas></div>
+        </div>
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-line text-coffee-500"></i>
+                <span data-i18n="upd_price_trend">Harga Spot Kopi Indonesia 2025 (Jan–Mei)</span>
+            </h3>
+            <div class="h-64"><canvas id="updatePriceChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Provinces Chart -->
+    <div class="card p-6 mb-8">
+        <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-map text-coffee-500"></i>
+            <span data-i18n="upd_provinces">10 Provinsi Penghasil Kopi Terbesar 2024</span>
+        </h3>
+        <div class="h-80"><canvas id="updateProvinceChart"></canvas></div>
+        <p class="text-xs text-coffee-400 mt-2">Sumber: BPS 2024 | Sumatera mendominasi 75%+ produksi nasional</p>
+    </div>
+
+    <!-- Processing Methods -->
+    <div class="card p-6 mb-8 overflow-hidden">
+        <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-cogs text-coffee-500"></i>
+            <span data-i18n="upd_methods">Metode Pengolahan Pasca Panen</span>
+        </h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width: 800px;">
+                <thead>
+                    <tr class="bg-coffee-800 text-white">
+                        <th class="px-4 py-3 text-left rounded-tl-lg" data-i18n="upd_method">Metode</th>
+                        <th class="px-4 py-3 text-right" data-i18n="upd_share">Pangsa (%)</th>
+                        <th class="px-4 py-3 text-left" data-i18n="upd_region">Wilayah</th>
+                        <th class="px-4 py-3 text-left" data-i18n="upd_profile">Profil Rasa</th>
+                        <th class="px-4 py-3 text-right" data-i18n="upd_fob">Harga FOB (USD/kg)</th>
+                        <th class="px-4 py-3 text-left rounded-tr-lg" data-i18n="upd_trend">Tren Global</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-coffee-100">
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Wet-Hull (Giling Basah)</td><td class="px-4 py-3 text-right"><span class="inline-block px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 text-xs font-bold">70%</span></td><td class="px-4 py-3">Sumatera, Sulawesi, Flores</td><td class="px-4 py-3">Earthy, Herbal, Full Body</td><td class="px-4 py-3 text-right">$3,50–5,50</td><td class="px-4 py-3">Stabil</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Semi-Washed</td><td class="px-4 py-3 text-right">12%</td><td class="px-4 py-3">Gayo, Mandailing</td><td class="px-4 py-3">Clean, Medium Body</td><td class="px-4 py-3 text-right">$5,00–7,00</td><td class="px-4 py-3 text-green-600">↑ Moderate</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Natural (Dry)</td><td class="px-4 py-3 text-right">8%</td><td class="px-4 py-3">Bali, NTT, Papua</td><td class="px-4 py-3">Fruity, Sweet, Full Body</td><td class="px-4 py-3 text-right">$6,00–9,00</td><td class="px-4 py-3 text-green-600">↑ Kuat</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Washed (Full)</td><td class="px-4 py-3 text-right">5%</td><td class="px-4 py-3">Aceh, Toraja, Kintamani</td><td class="px-4 py-3">Bright, Citrus, Floral</td><td class="px-4 py-3 text-right">$6,50–10,00</td><td class="px-4 py-3 text-green-600">↑ Kuat</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Honey Process</td><td class="px-4 py-3 text-right">3%</td><td class="px-4 py-3">Bali, Flores</td><td class="px-4 py-3">Sweet, Caramel, Balanced</td><td class="px-4 py-3 text-right">$7,00–11,00</td><td class="px-4 py-3 text-green-600">↑ Kuat</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Anaerobic / Eksperimental</td><td class="px-4 py-3 text-right"><span class="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">2%</span></td><td class="px-4 py-3">Micro-lots specialty</td><td class="px-4 py-3">Winey, Funky, Complex</td><td class="px-4 py-3 text-right font-bold text-green-600">$10–25</td><td class="px-4 py-3 text-green-600 font-bold">↑ Sangat Kuat (+350%)</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+            <p class="text-xs text-yellow-800"><i class="fas fa-lightbulb mr-1"></i> <strong>Insight:</strong> Wet-hull 70% tapi harga komoditas. Anaerobic hanya 2% tapi premium 200–450% lebih tinggi. UMKM bisa fokus micro-lots specialty.</p>
+        </div>
+    </div>
+
+    <!-- UMKM Section -->
+    <div class="card p-6 mb-8" style="border-left:4px solid #D2691E">
+        <h3 class="font-serif text-xl font-bold text-coffee-900 mb-3 flex items-center gap-2">
+            <i class="fas fa-industry text-coffee-500"></i>
+            <span data-i18n="upd_umkm_title">UMKM Bisa Ekspor!</span>
+            <span class="text-sm font-normal text-coffee-500" data-i18n="upd_umkm_sub">Bukan Hanya Perusahaan Besar</span>
+        </h3>
+        <div class="bg-coffee-50 rounded-xl p-4 mb-4 border border-coffee-100">
+            <p class="text-sm text-coffee-700 leading-relaxed">
+                <strong>Di balik 800 eksportir terdaftar di AEKI, ada 1,8 juta petani rakyat sebagai supplier utama.</strong> 
+                96-99% perkebunan kopi dikelola petani rakyat. Bentuk legal ekspor bisa <strong>CV, Koperasi, bahkan Individu</strong>. 
+                NPWP, NIB, dan RIPH bisa didapatkan secara gratis.
+            </p>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width: 600px;">
+                <thead>
+                    <tr class="bg-coffee-800 text-white">
+                        <th class="px-4 py-3 text-left rounded-tl-lg" data-i18n="upd_scale">Skala Pelaku</th>
+                        <th class="px-4 py-3 text-right" data-i18n="upd_volume">Volume</th>
+                        <th class="px-4 py-3 text-left" data-i18n="upd_legal">Bentuk Legal</th>
+                        <th class="px-4 py-3 text-left rounded-tr-lg" data-i18n="upd_strategy">Strategi Utama</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-coffee-100">
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Petani Individu</td><td class="px-4 py-3 text-right">0,1–5 ton/thn</td><td class="px-4 py-3">Gabung koperasi / jual ke eksportir</td><td class="px-4 py-3">Supplier bahan baku</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">UMKM/Koperasi/CV</td><td class="px-4 py-3 text-right">5–50 ton/thn</td><td class="px-4 py-3">CV, Koperasi, PT</td><td class="px-4 py-3">Micro-lots, direct trade, konsolidasi</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">PT Menengah</td><td class="px-4 py-3 text-right">50–200 ton/thn</td><td class="px-4 py-3">PT</td><td class="px-4 py-3">Branding, diversifikasi pasar</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">PT Besar/Holding</td><td class="px-4 py-3 text-right">>200 ton/thn</td><td class="px-4 py-3">PT/Holding</td><td class="px-4 py-3">Scale, full compliance, EUDR</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-xs text-coffee-400 mt-3">Syarat minimal: NPWP + NIB (gratis via OSS Online) + RIPH (Kementan). Sertifikasi HACCP/ISO 22000 wajib untuk ekspor ke AS & Eropa.</p>
+    </div>
+
+    <!-- Trade Balance & World Producers -->
+    <div class="grid lg:grid-cols-2 gap-6 mb-8">
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-balance-scale text-coffee-500"></i>
+                <span data-i18n="upd_trade_title">Neraca Perdagangan (Juta US$)</span>
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-coffee-800 text-white">
+                            <th class="px-3 py-2 text-left rounded-tl-lg" data-i18n="upd_year">Tahun</th>
+                            <th class="px-3 py-2 text-right" data-i18n="upd_export_short">Ekspor</th>
+                            <th class="px-3 py-2 text-right" data-i18n="upd_import">Impor</th>
+                            <th class="px-3 py-2 text-right rounded-tr-lg" data-i18n="upd_surplus">Surplus</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-coffee-100">
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">2020</td><td class="px-3 py-2 text-right">1.349</td><td class="px-3 py-2 text-right">149</td><td class="px-3 py-2 text-right text-green-600 font-bold">1.200</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">2021</td><td class="px-3 py-2 text-right">1.461</td><td class="px-3 py-2 text-right">155</td><td class="px-3 py-2 text-right text-green-600 font-bold">1.306</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">2022</td><td class="px-3 py-2 text-right">1.736</td><td class="px-3 py-2 text-right">156</td><td class="px-3 py-2 text-right text-green-600 font-bold">1.580</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">2023</td><td class="px-3 py-2 text-right">1.556</td><td class="px-3 py-2 text-right">117</td><td class="px-3 py-2 text-right text-green-600 font-bold">1.439</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">2024</td><td class="px-3 py-2 text-right">1.638</td><td class="px-3 py-2 text-right">187</td><td class="px-3 py-2 text-right text-green-600 font-bold">2.106</td></tr>
+                        <tr class="hover:bg-coffee-50/50 bg-coffee-50"><td class="px-3 py-2 font-bold">Jan–Okt 2025</td><td class="px-3 py-2 text-right font-bold">2.682</td><td class="px-3 py-2 text-right">360</td><td class="px-3 py-2 text-right text-green-600 font-bold">2.322</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card p-6">
+            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-trophy text-coffee-500"></i>
+                <span data-i18n="upd_world_title">10 Produsen Kopi Dunia (Juta Kg)</span>
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-coffee-800 text-white">
+                            <th class="px-3 py-2 text-left rounded-tl-lg" data-i18n="upd_rank">#</th>
+                            <th class="px-3 py-2 text-left" data-i18n="upd_country">Negara</th>
+                            <th class="px-3 py-2 text-right" data-i18n="upd_production">Produksi</th>
+                            <th class="px-3 py-2 text-right rounded-tr-lg" data-i18n="upd_share_global">Pangsa</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-coffee-100">
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">1</td><td class="px-3 py-2">Brasil</td><td class="px-3 py-2 text-right">3.984</td><td class="px-3 py-2 text-right">38,0%</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">2</td><td class="px-3 py-2">Vietnam</td><td class="px-3 py-2 text-right">1.806</td><td class="px-3 py-2 text-right">17,2%</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">3</td><td class="px-3 py-2">Kolombia</td><td class="px-3 py-2 text-right">774</td><td class="px-3 py-2 text-right">7,4%</td></tr>
+                        <tr class="bg-coffee-50 font-bold"><td class="px-3 py-2">4</td><td class="px-3 py-2">Indonesia</td><td class="px-3 py-2 text-right">750</td><td class="px-3 py-2 text-right">7,0%</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">5</td><td class="px-3 py-2">Etiopia</td><td class="px-3 py-2 text-right">502</td><td class="px-3 py-2 text-right">4,8%</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">6</td><td class="px-3 py-2">Uganda</td><td class="px-3 py-2 text-right">384</td><td class="px-3 py-2 text-right">3,7%</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">7</td><td class="px-3 py-2">India</td><td class="px-3 py-2 text-right">372</td><td class="px-3 py-2 text-right">3,5%</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">8</td><td class="px-3 py-2">Honduras</td><td class="px-3 py-2 text-right">318</td><td class="px-3 py-2 text-right">3,0%</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">9</td><td class="px-3 py-2">Peru</td><td class="px-3 py-2 text-right">261</td><td class="px-3 py-2 text-right">2,5%</td></tr>
+                        <tr class="hover:bg-coffee-50/50"><td class="px-3 py-2">10</td><td class="px-3 py-2">Meksiko</td><td class="px-3 py-2 text-right">232</td><td class="px-3 py-2 text-right">2,2%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Insights -->
+    <div class="card p-6 mb-8">
+        <h3 class="font-serif text-xl font-bold text-coffee-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-lightbulb text-yellow-500"></i>
+            <span data-i18n="upd_insights">Key Insights & Strategic Highlights</span>
+        </h3>
+        <ul class="space-y-3">
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+                <span>Produksi 2024 <strong class="text-coffee-900">807.580 ton</strong> — tertinggi dalam 10 tahun. USDA proyeksikan <strong>750 juta Kg (12,5 jt bags)</strong> untuk MY 2025/26, naik 18%.</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+                <span>Ekspor 2024 melonjak <strong class="text-coffee-900">+76%</strong> menjadi USD 1,64 miliar, didorong harga robusta global yang mencapai puncak 13-tahun.</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                <span>Harga robusta Lampung meroket dari <strong class="text-coffee-900">Rp 41.750/kg (2023)</strong> ke <strong class="text-coffee-900">Rp 99.355/kg (2025)</strong> — naik 138% dalam 2 tahun.</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
+                <span><strong class="text-coffee-900">96-99% perkebunan kopi dikelola petani rakyat (1,8 juta petani)</strong> — potensi processor kecil sangat besar.</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</span>
+                <span>Wet-hull mendominasi <strong class="text-coffee-900">70% produksi</strong>, tapi metode eksperimental (anaerobic) menawarkan premium <strong class="text-coffee-900">200–450% lebih tinggi</strong>.</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">6</span>
+                <span>Permintaan global anaerobic fermentation naik <strong class="text-coffee-900">+350% dalam 5 tahun</strong> — peluang besar bagi UMKM micro-lots.</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">7</span>
+                <span>AS tetap pasar terbesar (<strong class="text-coffee-900">USD 307,4 juta</strong>) tapi tarif 32% mengancam. Diversifikasi ke Jepang & ASEAN perlu dipercepat.</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">8</span>
+                <span>Konsumsi domestik naik dari <strong class="text-coffee-900">1,0 kg → 1,90 kg/kapita</strong>, didorong ledakan kedai kopi (8.500 → 11.500 gerai).</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">9</span>
+                <span><strong class="text-coffee-900">1,86 juta KK petani</strong> | <strong>98,45% perkebunan rakyat</strong> | Luas areal <strong>1,27 juta ha</strong>.</span>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-coffee-700">
+                <span class="w-6 h-6 rounded-full bg-coffee-100 text-coffee-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">10</span>
+                <span>Target Kementan <strong class="text-coffee-900">1,2 juta ton (2030)</strong> — perlu intensifikasi + ekstensifikasi + hilirisasi.</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Processor Kecil -->
+    <div class="card p-6 mb-8" style="background:linear-gradient(135deg,#3E2723,#5D4037);color:#fff">
+        <h3 class="font-serif text-xl font-bold mb-3" style="color:#FFD700">💡 Processor Kecil Bisa Ekspor: Gotong Royong adalah Kunci</h3>
+        <p class="text-sm mb-4" style="color:#DEB887">Tiga faktor bersabung bahwa <strong style="color:#fff">sekarang adalah waktu terbaik</strong> bagi processor kecil:</p>
+        <ul class="space-y-2 text-sm" style="color:#DEB887">
+            <li class="flex items-start gap-2"><span class="text-white">●</span> <span>Harga kopi masih di atas rata-rata historis 10 tahun</span></li>
+            <li class="flex items-start gap-2"><span class="text-white">●</span> <span>Tren experimental process sedang di puncaknya (+350%)</span></li>
+            <li class="flex items-start gap-2"><span class="text-white">●</span> <span>Digital memungkinkan processor pedalaman terhubung ke roaster Brooklyn/Tokyo</span></li>
+        </ul>
+        <p class="text-sm font-bold mt-4" style="color:#FFD700">"Angka-angka di atas kertas memang banyak yang berbeda — BPS, USDA, Bappebti, Kementan, AEKI — tapi semua angka itu mengarah ke satu kesimpulan yang sama: ada peluang besar di sana."</p>
+    </div>
+
+    <!-- FOB vs World Price -->
+    <div class="card p-6 mb-8 overflow-hidden">
+        <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-money-bill-wave text-coffee-500"></i>
+            <span data-i18n="upd_fob_title">Harga FOB Indonesia vs Harga Pasar Dunia</span>
+        </h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm" style="min-width: 700px;">
+                <thead>
+                    <tr class="bg-coffee-800 text-white">
+                        <th class="px-4 py-3 text-left rounded-tl-lg">Jenis / Segmen</th>
+                        <th class="px-4 py-3 text-right">Harga Petani (Rp/kg)</th>
+                        <th class="px-4 py-3 text-right">Bappebti Spot (Rp/kg)</th>
+                        <th class="px-4 py-3 text-right">ICE Futures (USD/kg)</th>
+                        <th class="px-4 py-3 text-right rounded-tr-lg">FOB Indonesia Est. (USD/kg)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-coffee-100">
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Robusta Lampung (Komoditas GB)</td><td class="px-4 py-3 text-right">Rp 20.000–25.000</td><td class="px-4 py-3 text-right">Rp 99.355</td><td class="px-4 py-3 text-right">$ 5,00–5,30</td><td class="px-4 py-3 text-right font-bold text-amber-600">$ 4,50–5,50</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Arabika Medan (Spot)</td><td class="px-4 py-3 text-right">Rp 35.000–45.000</td><td class="px-4 py-3 text-right">Rp 211.592</td><td class="px-4 py-3 text-right">$ 7,70–8,80</td><td class="px-4 py-3 text-right font-bold text-amber-600">$ 6,50–9,00</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Arabika Specialty (Gayo Grade 1)</td><td class="px-4 py-3 text-right">Rp 50.000–65.000</td><td class="px-4 py-3 text-right">—</td><td class="px-4 py-3 text-right">—</td><td class="px-4 py-3 text-right font-bold text-green-600">$ 8,00–12,00</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Experimental (Anaerobic Micro-lot)</td><td class="px-4 py-3 text-right">Rp 40.000–55.000</td><td class="px-4 py-3 text-right">—</td><td class="px-4 py-3 text-right">—</td><td class="px-4 py-3 text-right font-bold text-green-600">$ 12,00–20,00</td></tr>
+                    <tr class="hover:bg-coffee-50/50"><td class="px-4 py-3 font-medium">Carbonic Maceration (Auction Grade)</td><td class="px-4 py-3 text-right">Rp 45.000–60.000</td><td class="px-4 py-3 text-right">—</td><td class="px-4 py-3 text-right">—</td><td class="px-4 py-3 text-right font-bold text-green-600">$ 15,00–25,00</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-xs text-coffee-400 mt-3">Harga petani = cherry/gabah basis. Bappebti = spot wholesale Medan/Lampung. ICE = London (Robusta) & NY (Arabika) futures. FOB = estimated export price free on board pelabuhan Indonesia.</p>
+    </div>
+
+    <!-- Experimental Process -->
+    <div class="card p-6 mb-8" style="background:linear-gradient(135deg,#3E2723,#5D4037);color:#fff">
+        <h3 class="font-serif text-xl font-bold mb-3" style="color:#FFD700">🚀 Experimental Process: Pasar Domestik & Ekspor Sudah Menunggu!</h3>
+        <p class="text-sm mb-3" style="color:#DEB887"><strong style="color:#fff">Processor sudah harus memulainya SEKARANG.</strong> Tiga sinyal kuat:</p>
+        <ul class="space-y-2 text-sm" style="color:#DEB887">
+            <li class="flex items-start gap-2"><span class="text-white">●</span> <span><strong style="color:#fff">Pasar Domestik:</strong> Kedai kopi di Indonesia naik dari 8.500 (2022) → 11.500 (2025). Single origin + experimental process jadi menu wajib.</span></li>
+            <li class="flex items-start gap-2"><span class="text-white">●</span> <span><strong style="color:#fff">Pasar Ekspor:</strong> Permintaan anaerobic naik +350% dalam 5 tahun. Roaster AS/Eropa/Jepang cari micro-lots dengan story.</span></li>
+            <li class="flex items-start gap-2"><span class="text-white">●</span> <span><strong style="color:#fff">Pemain Besar Tidak Bisa:</strong> Experimental memerlukan batch kecil (50–500 kg) & kontrol personal. Celah ini hanya bisa diisi processor kecil.</span></li>
+        </ul>
+        <p class="text-sm font-bold mt-4" style="color:#FFD700">Matematika sederhana: 1 ton anaerobic @ $15/kg = $15.000. Setara dengan menjual 3 ton wet-hull @ $5/kg. Volume 1/3, pendapatan SAMA.</p>
+    </div>
+
+    <!-- Footer Note -->
+    <div class="text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-coffee-100 text-coffee-600 text-xs">
+            <i class="fas fa-database"></i>
+            <span data-i18n="upd_footer">Sumber Data: BPS · USDA FAS · AEKI · Bappebti · Kementan · BMKG · ICO | Mei 2026</span>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-coffee-950 text-coffee-300 py-12 mt-12">
+<div class="max-w-7xl mx-auto px-6 lg:px-8">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-coffee-800 rounded-lg flex items-center justify-center"><span class="text-white font-serif font-bold text-lg">Q</span></div>
+        <div>
+            <h3 class="font-serif font-bold text-white" data-i18n="footer_name">Ganjar Satyanagara</h3>
+            <p class="text-xs text-coffee-500" data-i18n="footer_role">Coffee Researcher</p>
+        </div>
+    </div>
+    <div class="flex gap-6 text-sm">
+        <a href="index.html" class="hover:text-white transition-colors" data-i18n="footer_blog">Blog</a>
+        <a href="kalkulator.html" class="hover:text-white transition-colors" data-i18n="footer_calc">Kalkulator</a>
+        <a href="laporan-usda.html" class="hover:text-white transition-colors" data-i18n="footer_usda">Laporan USDA</a>
+    </div>
+    <p class="text-sm text-coffee-500" data-i18n="footer_copyright">2026 Ganjar Satyanagara</p>
+</div>
+</div>
+</footer>
+
+<script>
+// ========== SOCIAL SHARE FUNCTIONS ==========
+function getShareText() {
+    return document.title || "Q.co Coffee";
+}
+function getShareUrl() {
+    return window.location.href;
+}
+function shareToWhatsApp() {
+    var text = encodeURIComponent(getShareText() + "\n\n" + getShareUrl());
+    window.open("https://wa.me/?text=" + text, "_blank");
+}
+function shareToFacebook() {
+    window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(getShareUrl()), "_blank", "width=600,height=400");
+}
+function shareToTwitter() {
+    window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(getShareText()) + "&url=" + encodeURIComponent(getShareUrl()), "_blank", "width=600,height=400");
+}
+function shareToLinkedIn() {
+    window.open("https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(getShareUrl()), "_blank", "width=600,height=400");
+}
+function shareToInstagram() {
+    if (navigator.share) {
+        navigator.share({
+            title: getShareText(),
+            text: getShareText(),
+            url: getShareUrl()
+        }).catch(function(){});
+    } else {
+        copyPageLink();
+        showShareToast("Link disalin! Buka Instagram untuk paste di story/bio.");
+    }
+}
+function copyPageLink() {
+    var url = getShareUrl();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            showShareToast("Link disalin ke clipboard!");
+        }).catch(function() { fallbackCopyLink(url); });
+    } else {
+        fallbackCopyLink(url);
+    }
+}
+function fallbackCopyLink(url) {
+    var ta = document.createElement("textarea");
+    ta.value = url;
+    ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    var ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    if (ok) showShareToast("Link disalin ke clipboard!");
+}
+function showShareToast(msg) {
+    // Try to use existing toast if available
+    var toast = document.getElementById("toast");
+    var toastMsg = document.getElementById("toast-message");
+    if (toast && toastMsg) {
+        toastMsg.textContent = msg;
+        toast.classList.remove("translate-y-20", "opacity-0");
+        setTimeout(function() {
+            toast.classList.add("translate-y-20", "opacity-0");
+        }, 2000);
+    } else {
+        alert(msg);
+    }
+}
+</script>
+</body>
+</html>
