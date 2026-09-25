@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-2 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
+<!-- laporan-usda.html — v2026.09.26-3 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -298,9 +298,9 @@ function loadAnalisisDashboard() {
             var box = document.getElementById("klaster-ringkas");
             if (!box) return;
             var periode = document.getElementById("analisis-periode");
-            var perTerbaru = (j.batches && j.batches[0] && j.batches[0].periode) || j.periode;
-            if (periode && perTerbaru) periode.textContent = "Periode terbaru: " + perTerbaru + " · " + batches.length + " batch terarsip";
             var batches = Array.isArray(j.batches) ? j.batches : (j.grup ? [{ dibuat: j.dibuat, periode: j.periode, grup: j.grup }] : []);
+            var perTerbaru = (j.batches && j.batches[0] && j.batches[0].periode) || j.periode;
+            if (periode && perTerbaru) periode.textContent = "Periode terbaru: " + perTerbaru + " \u00b7 " + batches.length + " batch terarsip";
             if (!batches.length) { box.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Analisis belum tersedia.</div>'; return; }
             box.innerHTML = batches.slice(0, 6).map(function (bt) {
               return '<div class="mb-10"><div class="text-center mb-5"><span class="inline-block px-3 py-1 rounded-full bg-coffee-100 text-coffee-700 text-xs font-semibold">' + String(bt.periode || "") + '</span></div>' +
