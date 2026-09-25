@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.25-3 | PSD live via GitHub Actions; tab Data Historis dihapus (overlap dengan widget blog) -->
+<!-- laporan-usda.html — v2026.09.25-4 | PSD live via GitHub Actions; tab Data Historis dihapus (overlap dengan widget blog) -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -451,8 +451,8 @@ function loadBeritaAnalisis() {
             var mentah = (j && j.artikel) || [];
             // hanya berita yang benar-benar tentang kopi (judul mengandung kata kopi/coffee)
             var KOPI_RX = /kopi|coffee|arabica|robusta/i;
+            // TANPA fallback: hanya tampilkan yang benar-benar berkopi
             var artikel = mentah.filter(function (a) { return KOPI_RX.test(String(a.judul || "")); });
-            if (artikel.length < 5) artikel = mentah.slice(0, 12);
             var det2 = document.getElementById("berita-klaster");
             var det3 = document.getElementById("klaster-ringkas");
             if (!artikel.length) {
