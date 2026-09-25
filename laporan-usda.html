@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.25-2 | PSD live via GitHub Actions; tab Data Historis dihapus (overlap dengan widget blog) -->
+<!-- laporan-usda.html — v2026.09.25-3 | PSD live via GitHub Actions; tab Data Historis dihapus (overlap dengan widget blog) -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -59,9 +59,9 @@ const translations = {
 
     // Historical Section
     "hist_label": { id: "Data Historis", en: "Historical Data" },
-    "hist_title": { id: "Tren Historis Pasar Kopi", en: "Coffee Market Historical Trends" },
+    "hist_title": { id: "Analisis Berita & Peringatan Dini", en: "News Analysis & Early Warning" },
     "hist_desc": { 
-        id: "Pergerakan harga Arabica C-Market, Robusta London, dan kurs IDR/USD dalam 5 tahun terakhir. Data live diperbarui otomatis via GitHub Actions setiap 6 jam.", 
+        id: "Berita kopi terbaru dikelompokkan otomatis per topik, disusul tabel peristiwa pasar dan sistem peringatan dini.", 
         en: "Movements of Arabica C-Market, Robusta London, and IDR/USD exchange rate over the last 5 years. Live data auto-updated via GitHub Actions every 6 hours." 
     },
     "hist_arabica": { id: "Arabica C-Market", en: "Arabica C-Market" },
@@ -448,7 +448,11 @@ function loadBeritaAnalisis() {
     fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/berita.json", { cache: "no-store" })
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
         .then(function (j) {
-            var artikel = (j && j.artikel) || [];
+            var mentah = (j && j.artikel) || [];
+            // hanya berita yang benar-benar tentang kopi (judul mengandung kata kopi/coffee)
+            var KOPI_RX = /kopi|coffee|arabica|robusta/i;
+            var artikel = mentah.filter(function (a) { return KOPI_RX.test(String(a.judul || "")); });
+            if (artikel.length < 5) artikel = mentah.slice(0, 12);
             var det2 = document.getElementById("berita-klaster");
             var det3 = document.getElementById("klaster-ringkas");
             if (!artikel.length) {
@@ -775,7 +779,7 @@ function loadLivePSD() {
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
     <div class="text-center mb-10">
         <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase" data-i18n="hist_label">Data Historis</span>
-        <h2 class="section-title mt-2" data-i18n="hist_title">Tren Historis Pasar Kopi</h2>
+        <h2 class="section-title mt-2" data-i18n="hist_title">Analisis Berita &amp; Peringatan Dini</h2>
         <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-2" data-i18n="hist_desc">
             Pergerakan harga Arabica C-Market, Robusta London, dan kurs IDR/USD dalam 5 tahun terakhir.
         </p>
