@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-3 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
+<!-- laporan-usda.html — v2026.09.26-4 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -547,6 +547,44 @@ function loadLivePSD() {
         })
         .catch(function () { var box = document.getElementById("psd-cards"); if (box) box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia &mdash; jalankan workflow Update-Coffee-Data.</div>'; });
 }
+</script>
+<!-- PANEL BPS (dari engine) — v2026.09.26-4 -->
+<div class="card p-6 md:p-8 mb-12">
+    <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 flex items-center gap-2 flex-wrap">
+        <i class="fas fa-landmark text-coffee-500"></i>
+        <span>Data BPS &mdash; dari Engine KGS</span>
+        <span id="bps-updated" class="text-xs font-normal text-coffee-400 ml-auto"></span>
+    </h3>
+    <p class="text-xs text-coffee-400 mb-4">Sumber: engine Anda (bps.json). Ditampilkan apa adanya.</p>
+    <div id="bps-cards" class="text-sm text-coffee-700"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat data BPS...</div>
+</div>
+<script>
+function loadBPSPanel() {
+    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/ekspor.json", { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (ek) {
+            var box = document.getElementById("bps-cards");
+            var upd = document.getElementById("bps-updated");
+            if (!box) return;
+            if (upd && ek.fetched) upd.textContent = "Update: " + new Date(ek.fetched).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+            if (ek.status === "Error") { box.innerHTML = '<div class="text-coffee-500">' + String(ek.message || "").replace(/</g, "&lt;").slice(0, 150) + '</div>'; return; }
+            if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
+                var d = ek.bulanan[ek.bulanan.length - 1];
+                box.innerHTML = "<strong>" + d.bulan + " " + ek.tahun + ":</strong> USD " + Number(d.nilaiUSD).toLocaleString("id-ID") + (d.nettoKg ? " · " + Number(d.nettoKg).toLocaleString("id-ID") + " kg" : "");
+                return;
+            }
+            try {
+                var m = ek.mentah || {};
+                var lists = Object.keys(m).map(function (k) { return m[k]; }).filter(Array.isArray);
+                var names = [];
+                lists.forEach(function (L) { L.slice(0, 5).forEach(function (r2) { var n = r2 && (r2.turvar || r2.name || r2.nama || r2.title || r2.th); if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim()); }); });
+                var tahun = ""; lists.forEach(function (L) { L.forEach(function (r2) { if (r2 && r2.th && !tahun) tahun = String(r2.th); }); });
+                box.innerHTML = names.length ? "<strong>" + names.slice(0, 5).join(", ") + "</strong>" + (names.length > 5 ? " +" + (names.length - 5) : "") + (tahun ? " &middot; tahun " + tahun : "") : "Data tersedia (" + (ek.data || []).length + " entri).";
+            } catch (e) { box.textContent = "Data BPS tersedia."; }
+        })
+        .catch(function () { var b = document.getElementById("bps-cards"); if (b) b.innerHTML = '<div class="text-coffee-400">Data BPS belum tersedia.</div>'; });
+}
+loadBPSPanel();
 </script>
 <!-- Source & Disclaimer -->
     <div class="text-center">
