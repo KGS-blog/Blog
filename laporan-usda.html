@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-1 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
+<!-- laporan-usda.html — v2026.09.26-2 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -292,7 +292,7 @@ function loadBeritaAnalisis() {
         .catch(function () { det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + L.kosong + '</div>'; });
 }
 function loadAnalisisDashboard() {
-    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/analisis-berita.json", { cache: "no-store" })
+    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/analisis-arsip.json", { cache: "no-store" })
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
         .then(function (j) {
             var box = document.getElementById("klaster-ringkas");
