@@ -433,17 +433,27 @@ main {
             <i class="fas fa-flask mr-2"></i>Coffee Researcher
         </span>
     </div>
-    <h1 class="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-6 leading-tight" data-editable="hero_title">
+    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6 leading-tight" data-editable="hero_title">
         <span data-i18n="hero_title_1">Data &amp; Analisis</span><br><span class="text-coffee-300 italic" data-i18n="hero_title_2">Pasar Kopi Indonesia</span>
     </h1>
-    <p class="text-xl md:text-2xl text-coffee-200 max-w-3xl mx-auto mb-10 leading-relaxed" data-editable="hero_desc" data-i18n="hero_desc">
+    <p class="text-lg md:text-xl text-coffee-200 max-w-3xl mx-auto mb-8 leading-relaxed" data-editable="hero_desc" data-i18n="hero_desc">
         Perjalanan riset, pemasaran, dan pengalaman memahami pasar kopi Amerika Serikat.
     </p>
+
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <button type="button" class="btn-primary text-lg" data-nav="articles" data-editable="hero_cta1"><i class="fas fa-book-open mr-2"></i>Jelajahi Artikel</button>
         <a href="laporan-usda.html#berita" class="inline-block px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-editable="hero_cta2"><i class="fas fa-newspaper mr-2"></i>Berita Kopi Terkini</a>
     </div>
-    <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+
+    <!-- TENTANG PENULIS BOX -->
+    <div class="mt-8 max-w-lg mx-auto bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-2.5">
+        <div class="text-xs text-coffee-100 leading-snug text-center">
+            <span class="text-coffee-300 font-semibold uppercase block mb-0.5">Tentang Penulis</span>
+            <p class="text-xs">Seorang Coffee Researcher dengan <strong>25+ tahun di consumer research</strong> dan <strong>10+ tahun di industri kopi supply</strong>. Bersertifikasi <strong>Q Grader, Q Processing dari CQ</strong>.</p>
+        </div>
+    </div>
+
+    <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
         <div class="text-center"><div class="text-3xl font-serif font-bold text-white" id="stat-articles">0</div><div class="text-sm text-coffee-300" data-editable="stat_articles_label">Artikel</div></div>
         <div class="text-center"><div class="text-3xl font-serif font-bold text-white">25+</div><div class="text-sm text-coffee-300" data-editable="stat_research_label">Tahun Riset</div></div>
         <div class="text-center"><div class="text-3xl font-serif font-bold text-white">10+</div><div class="text-sm text-coffee-300" data-editable="stat_supply_label">Tahun Supply</div></div>
@@ -451,42 +461,11 @@ main {
     </div>
 </div>
 </section>
-<!-- ABOUT -->
-<section id="about" class="py-24 bg-cream">
-<div class="max-w-7xl mx-auto px-6 lg:px-8">
-<div class="grid lg:grid-cols-2 gap-16 items-center">
-    <div>
-        <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase" data-i18n="about_label" data-editable="about_label">Tentang Penulis</span>
-        <h2 class="section-title mt-2" data-editable="about_title">Coffee Researcher<br></h2>
-        <div class="w-20 h-1 bg-coffee-400 mt-4 mb-8"></div>
-        <div class="space-y-4 text-coffee-600 leading-relaxed">
-            <p data-editable="about_p1">Dengan pengalaman <strong>25+ tahun di consumer research</strong> dan <strong>10+ tahun di industri kopi supply</strong>.</p>
-            <p data-editable="about_p2">Bersertifikasi <strong>Q Grader, Q Processing dari CQI, dan Sensory dari SCA</strong>.</p>
-            <p data-editable="about_p3">Blog ini adalah dokumentasi perjalanan saya memahami pasar US.</p>
-        </div>
-        <div class="mt-8 flex flex-wrap gap-3">
-            <span class="tag" data-editable="tag_qgrader"><i class="fas fa-certificate mr-1"></i>CQI Q Grader</span>
-            <span class="tag" data-editable="tag_qprocessing"><i class="fas fa-certificate mr-1"></i>Q Processing</span>
-            <span class="tag" data-editable="tag_sensory"><i class="fas fa-certificate mr-1"></i>SCA Sensory</span>
-        </div>
-    </div>
-    <div class="relative">
-        <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-coffee-200">
-            <img src="https://i.imgur.com/0ChpOTT.jpeg?w=800&h=1000&fit=crop" alt="Coffee cupping" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
-        </div>
-        <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-6 shadow-xl max-w-xs">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 bg-coffee-800 rounded-full flex items-center justify-center"><i class="fas fa-quote-left text-white text-sm"></i></div>
-                <div><div class="font-serif font-bold text-coffee-900" data-editable="about_name">Ganjar Satyanagara</div><div class="text-xs text-coffee-500" data-editable="about_role">Indonesia Coffee Supply</div></div>
-            </div>
-            <p class="text-sm text-coffee-600 italic" data-editable="about_quote">Memahami pasar bukan hanya tentang data, tapi tentang cerita dan hubungan antar manusia.</p>
-        </div>
-    </div>
-</div>
-</div>
-</section>
+
+<!-- WHITE BACKGROUND SECTION -->
+<div class="bg-white">
 <!-- KALKULATOR KOPI SIDE BY SIDE -->
-<div class="max-w-7xl mx-auto px-6 lg:px-8">
+<div class="max-w-7xl mx-auto px-6 lg:px-8 py-24">
 <div class="grid md:grid-cols-2 gap-5 items-stretch">
 <div id="qco-market-widget" style="background:linear-gradient(135deg,#1a120d,#2d2118 60%,#3E2723);border-radius:16px;padding:16px 18px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#e0d5c5;box-shadow:0 6px 20px rgba(0,0,0,.2);height:100%;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;">
@@ -771,6 +750,7 @@ window.__qcoAnLang = function (lang) {
     .catch(function () { t("qco-an-d1", "data belum tersedia \u2014 jalankan workflow"); });
 })();
 </script>
+</div>
 </div>
 </div>
 </div>
@@ -1907,7 +1887,6 @@ function updateStaticContent() {
     update("[data-editable=footer_desc]", "Referensi data & analisis pasar kopi Indonesia untuk pasar global.", "Indonesian coffee market data & analysis for the global market.");
     update("[data-editable=footer_nav_title]", "Navigasi", "Navigation");
     update("[data-editable=footer_nav_home]", "Beranda", "Home");
-    update("[data-editable=footer_nav_about]", "Tentang", "About");
     update("[data-editable=footer_nav_articles]", "Artikel", "Articles");
     update("[data-editable=footer_nav_subscribe]", "Langganan", "Subscribe");
     update("[data-editable=footer_topic_title]", "Topik", "Topics");
@@ -1938,13 +1917,13 @@ function updateStaticContent() {
     update("[data-i18n=stat_col_engagement]", "Engagement", "Engagement");
 
     // NAVBAR (public view) — URUTAN HARUS SAMA PERSIS DENGAN URUTAN ELEMEN HTML DI DOM
-    // HTML order: Beranda, Tentang, Artikel, Kalkulator, Market Analysis, Langganan
+    // HTML order: Beranda, Artikel, Kalkulator, Market Analysis, Langganan
     const navLinks = document.querySelectorAll("#public-view .nav-link");
-    // SAMPAI SINI: navTextsID[0] = Beranda, [1] = Tentang, [2] = Artikel, [3] = Kalkulator, [4] = Market Analysis, [5] = Langganan
-    const navTextsID = ["Beranda", "Tentang", "Artikel", "Kalkulator", "Market Analysis", "Langganan"];
-    const navTextsEN = ["Home", "About", "Articles", "Calculator", "Market Analysis", "Subscribe"];
+    // SAMPAI SINI: navTextsID[0] = Beranda, [1] = Artikel, [2] = Kalkulator, [3] = Market Analysis, [4] = Langganan
+    const navTextsID = ["Beranda", "Artikel", "Kalkulator", "Market Analysis", "Langganan"];
+    const navTextsEN = ["Home", "Articles", "Calculator", "Market Analysis", "Subscribe"];
     navLinks.forEach((link, idx) => {
-        if (idx < 6 && link.textContent.trim() && !link.querySelector("i")) {
+        if (idx < 5 && link.textContent.trim() && !link.querySelector("i")) {
             link.textContent = currentLang === "id" ? navTextsID[idx] : navTextsEN[idx];
         }
     });
