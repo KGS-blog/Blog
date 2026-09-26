@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
+<!-- laporan-usda.html — v2026.09.26-8 | rebuilt dari deploy, dashboard edit + tabel BPS -->
 <!-- laporan-usda.html — v2026.09.26-6 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -269,35 +270,76 @@ function loadBeritaAnalisis() {
     fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/berita-all.json", { cache: "no-store" })
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
         .then(function (j) {
-            var mentah = (j && j.artikel) || [];
-            var KOPI_RX = /kopi|coffee|arabica|robusta/i;
-            var artikel = mentah.filter(function (a) { return KOPI_RX.test(String(a.judul || "")); });
-            if (!artikel.length) { var pesan = (j && j.message) ? String(j.message).slice(0, 140) : L.kosong; det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + pesan.replace(/</g, "&lt;") + '</div>'; return; }
-            var bersih = artikel.filter(function (a) { return !NOISE_RX.test(String(a.judul || "")) && !PROMO_RX.test(String(a.judul || "")); });
-            var kl = BERITA_KLASTER.map(function (k) { return { nama: k.nama, nama_en: k.nama_en, kunci: k.kunci, items: [] }; });
-            var lainnya = { nama: currentLang === "en" ? "Others" : "Lainnya", items: [] };
-            bersih.forEach(function (a) {
-                var t = String(a.judul || "").toLowerCase();
-                var hit = kl.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0];
-                (hit || lainnya).items.push(a);
-            });
-            var semua = kl.concat(lainnya.items.length ? [lainnya] : []);
-            var total = bersih.length;
+            var artikel = (j && j.artikel) || [];
             var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
-            var itemLink = function (a) {
-                return '<a href="' + esc(a.tautan) + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
-            };
-            det2.innerHTML = '<div class="grid md:grid-cols-2 gap-4">' + semua.filter(function (k) { return k.items.length; }).map(function (k) {
-                var pct = Math.round(k.items.length / total * 100);
-                var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
-                var tampil = k.items.slice(0, 30); var sisa = k.items.slice(30);
-                return '<div class="card p-4"><div class="flex items-center justify-between gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-sm leading-tight">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
-                    '<p class="text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div>' + tampil.map(itemLink).join("") + '</div>' +
-                    (sisa.length ? '<details class="mt-1"><summary class="cursor-pointer text-[10px] font-semibold text-coffee-400">+' + sisa.length + ' ' + L.lainnya + '</summary><div class="mt-1">' + sisa.map(itemLink).join("") + '</div></details>' : '') + '</div>';
-            }).join("") + '</div>';
+            window.__beritaAll = artikel;
+            var dash = document.getElementById("klaster-dashboard");
+            if (dash) {
+                var total = artikel.length;
+                dash.innerHTML = '<p class="text-xs text-coffee-500 mb-3">Total ' + total + ' artikel. Rekomendasi AI ditandai; gunakan kotak pilih untuk menimpa, lalu <strong>Terapkan &amp; Posting</strong>.</p>' +
+                    '<div style="max-height:420px;overflow-y:auto;">' + artikel.map(function (a, idx) {
+                        var t = String(a.judul || "").toLowerCase();
+                        var rec = BERITA_KLASTER.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0];
+                        var cur = a.klaster_user || (rec ? (currentLang === "en" && rec.nama_en ? rec.nama_en : rec.nama) : "Lainnya");
+                        var opt = BERITA_KLASTER.map(function (k) { var n = currentLang === "en" && k.nama_en ? k.nama_en : k.nama; return '<option value="' + n + '"' + (n === cur ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '<option value="Lainnya"' + (cur === "Lainnya" ? ' selected' : '') + '>Lainnya</option>';
+                        return '<div class="flex items-center gap-2 py-2 border-b border-coffee-50">' +
+                            '<span class="text-xs text-coffee-400 w-6">' + (idx + 1) + '</span>' +
+                            '<a href="' + esc(a.tautan) + '" target="_blank" class="flex-1 text-xs text-coffee-800 hover:underline" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">' + esc(a.judul) + '</a>' +
+                            '<select data-idx="' + idx + '" class="klaster-select text-[11px] border border-coffee-200 rounded px-1 py-0.5">' + opt + '</select>' +
+                            (a.klaster_user ? '' : ' <span class="text-[9px] px-1 rounded bg-coffee-100 text-coffee-500">AI</span>') +
+                            '</div>';
+                    }).join('') + '</div>' +
+                    '<button type="button" onclick="aplikasiKlaster()" class="mt-3 px-4 py-2 bg-coffee-800 text-white text-xs font-semibold rounded-lg hover:bg-coffee-700">Terapkan &amp; Posting</button>';
+                return;
+            }
+            fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/klaster-final.json", { cache: "no-store" })
+                .then(function (r2) { return r2.ok ? r2.json() : []; })
+                .then(function (ov) {
+                    if (Array.isArray(ov)) {
+                        var map = {};
+                        ov.forEach(function (o) { map[String(o.tautan)] = o.klaster; });
+                        artikel = artikel.map(function (a) { var k = String(a.tautan || a.judul); return map[k] ? Object.assign({}, a, { klaster_user: map[k] }) : a; });
+                    }
+                    var bersih = artikel.filter(function (a) { return !NOISE_RX.test(String(a.judul || "")) && !PROMO_RX.test(String(a.judul || "")); });
+                    var kl = BERITA_KLASTER.map(function (k) { return { nama: currentLang === "en" && k.nama_en ? k.nama_en : k.nama, kunci: k.kunci, items: [] }; });
+                    var lainnya = { nama: currentLang === "en" ? "Others" : "Lainnya", items: [] };
+                    bersih.forEach(function (a) {
+                        var hitName = a.klaster_user;
+                        if (!hitName) { var t = String(a.judul || "").toLowerCase(); var hit = BERITA_KLASTER.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0]; hitName = hit ? (currentLang === "en" && hit.nama_en ? hit.nama_en : hit.nama) : null; }
+                        var kartu = kl.filter(function (k) { return k.nama === hitName; })[0];
+                        (kartu || lainnya).items.push(a);
+                    });
+                    var semua2 = kl.concat(lainnya).filter(function (k) { return k.items.length; });
+                    var total2 = bersih.length;
+                    var itemLink = function (a) { return '<a href="' + esc(a.tautan) + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>'; };
+                    det2.innerHTML = '<div class="grid md:grid-cols-2 gap-4">' + semua2.map(function (k) {
+                        var pct = Math.round(k.items.length / total2 * 100);
+                        var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
+                        var tampil = k.items.slice(0, 30); var sisa = k.items.slice(30);
+                        return '<div class="card p-4"><div class="flex items-center justify-between gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-sm leading-tight">' + k.nama + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
+                            '<p class="text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div>' + tampil.map(itemLink).join("") + '</div>' +
+                            (sisa.length ? '<details class="mt-1"><summary class="cursor-pointer text-[10px] font-semibold text-coffee-400">+' + sisa.length + ' ' + L.lainnya + '</summary><div class="mt-1">' + sisa.map(itemLink).join("") + '</div></details>' : '') + '</div>';
+                    }).join("") + '</div>';
+                })
+                .catch(function () { det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + L.kosong + '</div>'; });
         })
         .catch(function () { det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + L.kosong + '</div>'; });
 }
+window.aplikasiKlaster = function () {
+    var sel = document.querySelectorAll(".klaster-select");
+    var out = [];
+    sel.forEach(function (s) {
+        var a = (window.__beritaAll || [])[parseInt(s.getAttribute("data-idx"), 10)];
+        if (a) out.push({ tautan: a.tautan, klaster: s.value });
+    });
+    var blob = new Blob([JSON.stringify(out, null, 1)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "klaster-final.json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    alert("klaster-final.json terdownload. Upload ke folder data/ di repo Update-Coffee-Data, lalu Run workflow.");
+};
 function loadAnalisisDashboard() {
     fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/analisis-arsip.json", { cache: "no-store" })
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
@@ -326,6 +368,21 @@ function loadAnalisisDashboard() {
             }).join("");
         })
         .catch(function () { var box = document.getElementById("klaster-ringkas"); if (box) box.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Analisis belum tersedia &mdash; upload data/analisis-berita.json ke repo.</div>'; });
+}
+
+function klasterisasi(artikel, lang) {
+    var bersih = (artikel || []).filter(function (a) { return !NOISE_RX.test(String(a.judul || "")) && !PROMO_RX.test(String(a.judul || "")); });
+    var kl = BERITA_KLASTER.map(function (k) { return { nama: lang === "en" && k.nama_en ? k.nama_en : k.nama, kunci: k.kunci, items: [] }; });
+    var lainnya = { nama: lang === "en" ? "Others" : "Lainnya", items: [] };
+    bersih.forEach(function (a) {
+        var t = String(a.judul || "").toLowerCase();
+        var key = String(a.tautan || a.judul);
+        var hitName = a.klaster_user;
+        if (!hitName) { var hit = BERITA_KLASTER.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0]; hitName = hit ? (lang === "en" && hit.nama_en ? hit.nama_en : hit.nama) : null; }
+        var kartu = kl.filter(function (k) { return k.nama === hitName; })[0];
+        (kartu || lainnya).items.push(a);
+    });
+    return kl.concat(lainnya).filter(function (k) { return k.items.length; });
 }
 
 // ========== INIT ==========
@@ -422,6 +479,7 @@ tailwind.config = {
     }
 }
 </script>
+<base target="_blank">
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
@@ -575,25 +633,21 @@ function loadBPSPanel() {
             if (!box) return;
             if (upd && ek.fetched) upd.textContent = "Update: " + new Date(ek.fetched).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
             if (ek.status === "Error") { box.innerHTML = '<div class="text-coffee-500">' + String(ek.message || "").replace(/</g, "&lt;").slice(0, 150) + '</div>'; return; }
-            if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
-                var d = ek.bulanan[ek.bulanan.length - 1];
-                box.innerHTML = "<strong>" + d.bulan + " " + ek.tahun + ":</strong> USD " + Number(d.nilaiUSD).toLocaleString("id-ID") + (d.nettoKg ? " · " + Number(d.nettoKg).toLocaleString("id-ID") + " kg" : "");
-                return;
-            }
             try {
                 var m = ek.mentah || {};
-                var lists = Object.keys(m).map(function (k) { return m[k]; }).filter(Array.isArray);
-                var names = [];
-                lists.forEach(function (L) { L.slice(0, 5).forEach(function (r2) { var n = r2 && (r2.turvar || r2.name || r2.nama || r2.title || r2.th); if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim()); }); });
-                var tahun = ""; lists.forEach(function (L) { L.forEach(function (r2) { if (r2 && r2.th && !tahun) tahun = String(r2.th); }); });
-                box.innerHTML = names.length
-                    ? '<ul class="list-disc pl-5 space-y-1">' + names.slice(0, 8).map(function (n2) { return "<li>" + n2 + "</li>"; }).join("") + '</ul>' + (names.length > 8 ? '<div class="text-xs text-coffee-400 mt-1">+' + (names.length - 8) + ' lainnya</div>' : "") + (tahun ? '<div class="text-xs text-coffee-400 mt-1">Tahun tersedia: ' + tahun + '</div>' : "")
-                    : "Data tersedia (" + (ek.data || []).length + " entri).";
+                var keys = Object.keys(m).filter(function (k) { return Array.isArray(m[k]) && m[k].length; });
+                if (keys.length) {
+                    box.innerHTML = '<table class="w-full text-sm"><thead><tr class="bg-coffee-50 text-coffee-700"><th class="px-3 py-2 text-left">Dataset</th><th class="px-3 py-2 text-right">Baris</th><th class="px-3 py-2 text-left">Kolom</th></tr></thead><tbody>' +
+                        keys.slice(0, 6).map(function (k) {
+                            var rows = m[k];
+                            var cols = rows[0] ? Object.keys(rows[0]).slice(0, 4).join(", ") : "-";
+                            return '<tr class="border-t border-coffee-100"><td class="px-3 py-2">' + k + '</td><td class="px-3 py-2 text-right">' + rows.length + '</td><td class="px-3 py-2 text-coffee-500 text-xs">' + cols + '</td></tr>';
+                        }).join("") + '</tbody></table>';
+                } else { box.textContent = "Data tersedia (" + ((ek.data || []).length) + " entri)."; }
             } catch (e) { box.textContent = "Data BPS tersedia."; }
         })
         .catch(function () { var b = document.getElementById("bps-cards"); if (b) b.innerHTML = '<div class="text-coffee-400">Data BPS belum tersedia.</div>'; });
 }
-loadBPSPanel();
 </script>
 <!-- Source & Disclaimer -->
     <div class="text-center">
@@ -618,7 +672,9 @@ loadBPSPanel();
             <h2 class="section-title mt-2 text-3xl md:text-4xl" data-i18n="an_title">Berita Kopi Dikelompokkan per Topik</h2>
             <p class="text-coffee-500 max-w-2xl mx-auto text-sm" data-i18n="hist_desc">Berita kopi terbaru dikelompokkan otomatis per topik. Klik judul untuk membaca sumbernya.</p>
         </div>
-        <div id="berita-klaster"><div class="text-center py-8 text-coffee-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Menganalisis berita...</div></div>
+        <div class="mb-4 text-center"><button type="button" onclick="var d=document.getElementById('klaster-dashboard-wrap'); if(d){d.classList.toggle('hidden'); if(!d.classList.contains('hidden')) loadBeritaAnalisis();}}" class="px-4 py-2 bg-coffee-100 text-coffee-700 text-xs font-semibold rounded-lg hover:bg-coffee-200">Mode Edit Klaster</button></div>
+    <div id="klaster-dashboard-wrap" class="hidden card p-4 mb-6"><div id="klaster-dashboard"></div></div>
+    <div id="berita-klaster"><div class="text-center py-8 text-coffee-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Menganalisis berita...</div></div>
     </div>
 
     <div class="text-center mb-10">
