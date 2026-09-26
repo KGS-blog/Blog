@@ -333,6 +333,12 @@ main {
   .featured-article-content table, #article-body-content table { font-size: 0.8rem !important; display: block; overflow-x: auto; }
   .featured-article-content ol, .featured-article-content ul,
   #article-body-content ol, #article-body-content ul { padding-left: 18px !important; }
+
+  /* Sidebar responsive padding on mobile */
+  #articles-sidebar > div { padding: 8px !important; }
+  #articles-sidebar h4 { font-size: 0.75rem !important; }
+  #qco-news-side > a { padding: 8px !important; }
+  #qco-news-side h4 { font-size: 0.75rem !important; }
 }
 </style>
 <base target="_blank">
@@ -773,10 +779,10 @@ window.__qcoAnLang = function (lang) {
 </div>
 
 <!-- TWO COLUMN LAYOUT: 75% Main + 25% Sidebar -->
-<div class="flex flex-col lg:flex-row gap-8">
+<div class="flex flex-row gap-8">
 
     <!-- LEFT COLUMN: Main Content (75%) -->
-    <div class="lg:w-3/4 w-full">
+    <div class="w-3/4">
         <!-- FEATURED ARTICLE (Latest - No Iframe, Direct Content) -->
         <div id="featured-article" class="hidden mb-12"></div>
 
@@ -838,11 +844,11 @@ window.__qcoAnLang = function (lang) {
     </div>
 
     <!-- RIGHT COLUMN: Sidebar - Previous Articles (25%) -->
-    <div class="lg:w-1/4 w-full">
+    <div class="w-1/4">
         <div>
             <!-- Sidebar Header -->
-            <div class="bg-coffee-800 text-white rounded-t-xl p-4">
-                <h3 class="font-serif text-lg font-bold flex items-center gap-2">
+            <div class="bg-coffee-800 text-white rounded-t-xl p-2 md:p-4">
+                <h3 class="font-serif text-xs md:text-sm lg:text-lg font-bold flex items-center gap-2">
                     <i class="fas fa-history"></i>
                     <span data-i18n="sidebar_title">Artikel Sebelumnya</span>
                 </h3>
@@ -851,15 +857,15 @@ window.__qcoAnLang = function (lang) {
             <!-- Sidebar Content -->
             <div id="articles-sidebar" class="bg-white rounded-b-xl border border-coffee-100 border-t-0 shadow-sm ">
                 <!-- Will be populated by JS -->
-                <div class="p-6 text-center text-coffee-400">
+                <div class="p-3 md:p-6 text-center text-coffee-400">
                     <i class="fas fa-spinner fa-spin mr-2"></i>
                     <span data-i18n="sidebar_loading">Memuat artikel...</span>
                 </div>
             </div>
             <!-- Berita Kopi Terkini (sidebar widget) — v2026.09.26-5 -->
             <div class="mt-6">
-                <div class="bg-coffee-800 text-white rounded-t-xl p-4">
-                    <h3 class="font-serif text-lg font-bold flex items-center gap-2">
+                <div class="bg-coffee-800 text-white rounded-t-xl p-2 md:p-4">
+                    <h3 class="font-serif text-xs md:text-sm lg:text-lg font-bold flex items-center gap-2">
                         <i class="fas fa-newspaper"></i>
                         <span>Berita Kopi Terkini</span>
                     </h3>
@@ -2074,16 +2080,12 @@ function renderArticlesSidebar() {
 
     const shownArticles = sidebarExpanded ? sidebarArticles : sidebarArticles.slice(0, 5);
     sidebar.innerHTML = shownArticles.map(art => {
-        const catLabel = catLabels[art.category] || art.category;
         const title = currentLang === "id" ? art.title_id : art.title_en;
         const isActive = featuredId === art.id;
         return `<div class="p-4 border-b border-coffee-50 last:border-0 hover:bg-coffee-50 transition-colors cursor-pointer ${isActive ? 'bg-coffee-50 border-l-4 border-l-coffee-600' : ''}" onclick="showFeaturedArticle(${art.id})">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700">${catLabel}</span>
-                <span class="text-xs text-coffee-400">${art.date}</span>
-            </div>
-            <h4 class="font-serif text-sm font-bold text-coffee-900 line-clamp-2 ${isActive ? 'text-coffee-600' : ''}">${title}</h4>
-            <div class="flex items-center gap-3 mt-2 text-xs text-coffee-400">
+            <h4 class="font-serif text-sm font-bold text-coffee-900 line-clamp-2 ${isActive ? 'text-coffee-600' : ''} mb-2">${title}</h4>
+            <div class="flex items-center gap-3 text-xs text-coffee-400">
+                <span><i class="far fa-calendar mr-1"></i>${art.date}</span>
                 <span><i class="far fa-clock mr-1"></i>${art.readTime} min</span>
                 <span><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span>
             </div>
