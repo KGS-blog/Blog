@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-9 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
+<!-- laporan-usda.html — v2026.09.26-11 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -246,15 +246,15 @@ function switchTab(tabName) {
 
 
 
-// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.26-9 =====
+// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.26-11 =====
 const BERITA_KLASTER = [
-            { nama: "Harga & Pasar", nama_en: "Prices & Market", kunci: ["harga","ekspor","impor","fob","kurs","dolar","lelang","nilai ekspor","penurunan harga","kenaikan harga","vietnam","brazil","brasil","kolombia","stok","c-market","eropa","amerika","jepang","mahal","murah"] },
-            { nama: "Produksi & Panen", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","cuaca","kemarau","hujan","la nina","el nino","gagal panen","bibit","tanam","areal","luas areal"] },
-            { nama: "Kebijakan & Regulasi", nama_en: "Policy & Regulation", kunci: ["eudr","tarif","regulasi","pemerintah","kementan","bea cukai","subsidi","peraturan","izin","kemendag","sertifikasi","standar"] },
-            { nama: "Barista & Teknik Seduh", nama_en: "Barista & Brewing", kunci: ["barista","brewing","seduh","latte","manual brew","v60","grinder","espresso","pour over","teknik seduh","tata cara","latte art","drip"] },
-            { nama: "Event & Kompetisi", nama_en: "Events & Competitions", kunci: ["event","festival","pameran","gjaw","kompetisi","cupping","workshop","lomba","expo"] },
-            { nama: "Riset & Tren Konsumen", nama_en: "Consumer Research & Trends", kunci: ["jakpat","survei","riset","tren","preferensi","survey","konsumen"] },
-            { nama: "Kedai, Konsumsi & Gaya Hidup", nama_en: "Cafes, Consumption & Lifestyle", kunci: ["kedai","kafe","konsumsi","gerai","ritel","gaya hidup","cold brew","menu","franchise","coffee shop","cafe"] }
+            { nama: "Harga & Pasar", slug: "harga-pasar", nama_en: "Prices & Market", kunci: ["harga","ekspor","impor","fob","kurs","dolar","lelang","nilai ekspor","penurunan harga","kenaikan harga","vietnam","brazil","brasil","kolombia","stok","c-market","eropa","amerika","jepang","mahal","murah"] },
+            { nama: "Produksi & Panen", slug: "produksi-panen", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","cuaca","kemarau","hujan","la nina","el nino","gagal panen","bibit","tanam","areal","luas areal"] },
+            { nama: "Kebijakan & Regulasi", slug: "kebijakan-regulasi", nama_en: "Policy & Regulation", kunci: ["eudr","tarif","regulasi","pemerintah","kementan","bea cukai","subsidi","peraturan","izin","kemendag","sertifikasi","standar"] },
+            { nama: "Event & Kompetisi", slug: "event-kompetisi", nama_en: "Events & Competitions", kunci: ["event","festival","pameran","gjaw","kompetisi","cupping","workshop","lomba","expo","juara","championship","champion"] },
+            { nama: "Barista & Teknik Seduh", slug: "barista-teknik-seduh", nama_en: "Barista & Brewing", kunci: ["barista","brewing","seduh","latte","manual brew","v60","grinder","espresso","pour over","teknik seduh","tata cara","latte art","drip"] },
+            { nama: "Riset & Tren Konsumen", slug: "riset-tren-konsumen", nama_en: "Consumer Research & Trends", kunci: ["jakpat","survei","riset","tren","preferensi","survey","konsumen"] },
+            { nama: "Kedai, Konsumsi & Gaya Hidup", slug: "kedai-konsumsi-gaya-hidup", nama_en: "Cafes, Consumption & Lifestyle", kunci: ["kedai","kafe","konsumsi","gerai","ritel","gaya hidup","cold brew","menu","franchise","coffee shop","cafe"] }
         ];
 function loadBeritaAnalisis() {
     var L = currentLang === "en" ? { kosong: "No news yet.", lainnya: "more in this cluster", arsip: "oldest archived (see berita-all)", kuat: "Strong dominance — market attention concentrated here.", signif: "Significant topic — worth monitoring.", pendukung: "Supporting topic — secondary context." }
@@ -331,20 +331,37 @@ function loadAnalisisDashboard() {
             var perTerbaru = (j.batches && j.batches[0] && j.batches[0].periode) || j.periode;
             if (periode && perTerbaru) periode.textContent = "Periode terbaru: " + perTerbaru + " \u00b7 " + batches.length + " batch terarsip";
             if (!batches.length) { box.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Analisis belum tersedia.</div>'; return; }
-            box.innerHTML = batches.slice(0, 6).map(function (bt) {
-              return '<div class="mb-10"><div class="text-center mb-5"><span class="inline-block px-3 py-1 rounded-full bg-coffee-100 text-coffee-700 text-xs font-semibold">' + String(bt.periode || "") + '</span></div>' +
-                bt.grup.map(function (g) {
+            // v2026.09.26-11: wadah 7 grup mengekor Tab 2; grup berisi pakai field "klaster" (slug)
+            var esc = function (s) { return String(s == null ? "" : s).replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
+            var renderGrup = function (g, heading, periodeStr) {
                 var sumber = (g.sumber || []).map(function (s) {
-                    return '<li class="mb-1"><span class="text-coffee-600 font-medium">' + String(s.media || "") + '</span> &mdash; ' +
-                        (s.tautan ? '<a href="' + String(s.tautan).replace(/"/g, "&quot;") + '" target="_blank" rel="noopener noreferrer" class="text-coffee-700 underline">' : '<span>') +
-                        String(s.judul || "").replace(/</g, "&lt;") + (s.tautan ? '</a>' : '</span>') +
-                        (s.tanggal ? ' <span class="text-coffee-400 text-xs">(' + s.tanggal + ')</span>' : '') + '</li>';
+                    return '<li class="mb-1"><span class="text-coffee-600 font-medium">' + esc(s.media || "") + '</span> &mdash; ' +
+                        (s.tautan ? '<a href="' + esc(s.tautan) + '" target="_blank" rel="noopener noreferrer" class="text-coffee-700 underline">' : '<span>') +
+                        esc(s.judul || "") + (s.tautan ? '</a>' : '</span>') +
+                        (s.tanggal ? ' <span class="text-coffee-400 text-xs">(' + esc(s.tanggal) + ')</span>' : '') + '</li>';
                 }).join("");
-                return '<article class="card p-6 md:p-8 mb-8"><div class="flex items-center gap-3 flex-wrap mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-700">' + g.jumlah_sumber + ' berita digabungkan</span></div>' +
-                    '<h3 class="font-serif text-xl md:text-2xl font-bold text-coffee-900 mb-3">' + String((currentLang === "en" && g.judul_en) ? g.judul_en : (g.judul_id || g.judul) || "").replace(/</g, "&lt;") + '</h3>' + '<p class="text-xs text-coffee-500 mb-3 italic">' + String((currentLang === "en" && g.ringkasan_en) ? g.ringkasan_en : (g.ringkasan_id || g.ringkasan) || "") + '</p>'  +
-                    '<div class="text-sm text-coffee-700 leading-relaxed" style="text-align:left;">' + ((currentLang === "en" && g.isi_en) ? g.isi_en : (g.isi_id || g.isi) || "") + '</div>' + '<p class="text-xs text-coffee-400 mt-4">Oleh: Ganjar Satyanagara &middot; ' + (j.periode || "") + '</p>'  +
-                    '<details class="mt-5 pt-4 border-t border-coffee-100"><summary class="cursor-pointer text-xs font-semibold text-coffee-500 uppercase tracking-wide">Sumber berita (' + g.jumlah_sumber + ')</summary><ul class="mt-3 text-sm text-coffee-600 list-none pl-0">' + sumber + '</ul></details></article>';
-                }).join("") + '</div>';
+                return '<article class="card p-6 md:p-8 mb-8">' +
+                    (heading ? '<div class="mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-800 text-white">' + esc(heading) + '</span></div>' : '') +
+                    '<div class="flex items-center gap-3 flex-wrap mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-700">' + esc(g.jumlah_sumber) + ' berita digabungkan</span></div>' +
+                    '<h3 class="font-serif text-xl md:text-2xl font-bold text-coffee-900 mb-3">' + esc((currentLang === "en" && g.judul_en) ? g.judul_en : (g.judul_id || g.judul) || "") + '</h3>' +
+                    '<p class="text-xs text-coffee-500 mb-3 italic">' + esc((currentLang === "en" && g.ringkasan_en) ? g.ringkasan_en : (g.ringkasan_id || g.ringkasan) || "") + '</p>' +
+                    '<div class="text-sm text-coffee-700 leading-relaxed" style="text-align:left;">' + ((currentLang === "en" && g.isi_en) ? g.isi_en : (g.isi_id || g.isi) || "") + '</div>' +
+                    '<p class="text-xs text-coffee-400 mt-4">Oleh: Ganjar Satyanagara &middot; ' + esc(periodeStr || "") + '</p>' +
+                    '<details class="mt-5 pt-4 border-t border-coffee-100"><summary class="cursor-pointer text-xs font-semibold text-coffee-500 uppercase tracking-wide">Sumber berita (' + esc(g.jumlah_sumber) + ')</summary><ul class="mt-3 text-sm text-coffee-600 list-none pl-0">' + sumber + '</ul></details></article>';
+            };
+            box.innerHTML = batches.slice(0, 6).map(function (bt) {
+                var bySlug = {}, legacy = [];
+                (bt.grup || []).forEach(function (g) {
+                    if (g && g.klaster && bySlug[g.klaster] === undefined && BERITA_KLASTER.some(function (k) { return k.slug === g.klaster; })) bySlug[g.klaster] = g;
+                    else legacy.push(g);
+                });
+                var slotHtml = BERITA_KLASTER.map(function (k) {
+                    var g = bySlug[k.slug];
+                    if (!g) return '<article class="card p-6 md:p-8 mb-8" style="border-style:dashed"><div class="mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-500">' + esc((currentLang === "en" && k.nama_en) ? k.nama_en : k.nama) + '</span></div><p class="text-sm text-coffee-400 italic">' + (currentLang === "en" ? "Analysis for this group is being prepared." : "Analisis grup ini sedang disiapkan.") + '</p></article>';
+                    return renderGrup(g, (currentLang === "en" && k.nama_en) ? k.nama_en : k.nama, bt.periode || "");
+                }).join("");
+                var legacyHtml = legacy.map(function (g) { return renderGrup(g, "", bt.periode || ""); }).join("");
+                return '<div class="mb-10"><div class="text-center mb-5"><span class="inline-block px-3 py-1 rounded-full bg-coffee-100 text-coffee-700 text-xs font-semibold">' + esc(String(bt.periode || "")) + '</span></div>' + slotHtml + legacyHtml + '</div>';
             }).join("");
         })
         .catch(function () { var box = document.getElementById("klaster-ringkas"); if (box) box.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Analisis belum tersedia &mdash; upload data/analisis-berita.json ke repo.</div>'; });
@@ -578,7 +595,7 @@ function loadLivePSD() {
         .catch(function () { var box = document.getElementById("psd-cards"); if (box) box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia &mdash; jalankan workflow Update-Coffee-Data.</div>'; });
 }
 </script>
-<!-- PANEL BPS (dari engine) — v2026.09.26-9 -->
+<!-- PANEL BPS (dari engine) — v2026.09.26-11 -->
 <div class="card p-6 md:p-8 mb-12">
     <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 flex items-center gap-2 flex-wrap">
         <i class="fas fa-landmark text-coffee-500"></i>
