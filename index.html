@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- QFin Blog HTML - v2026.09.26-4 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
+<!-- QFin Blog HTML - v2026.09.26-5 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
 <html lang="id" class="scroll-smooth">
 <head>
 <!-- Meta Pixel Code -->
@@ -24,7 +24,7 @@ src="https://www.facebook.com/tr?id=1498535007132214&ev=PageView&noscript=1"
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Coffee Researcher</title>
 
-<!-- ===== SEO & SOCIAL META (v2026.09.26-4) ===== -->
+<!-- ===== SEO & SOCIAL META (v2026.09.26-5) ===== -->
 <meta name="description" content="Referensi data & analisis pasar kopi Indonesia oleh Ganjar Satyanagara (Q Grader): data live USDA & Yahoo, analisis berita, pangsa pasar dan produk kopi Indonesia untuk pembeli global.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>">
 <meta property="og:type" content="website">
@@ -311,7 +311,7 @@ main {
 <base target="_blank">
 <base target="_blank">
 <style>
-/* ===== MOBILE READABILITY — v2026.09.26-4 ===== */
+/* ===== MOBILE READABILITY — v2026.09.26-5 ===== */
 @media (max-width: 767px) {
   .featured-article-content, #article-body-content {
     font-size: 1rem !important;
@@ -523,7 +523,7 @@ main {
   </div>
   <div style="margin-top:8px;font-size:.6rem;color:#7a6a58;"><span id="qco-mw-params"></span> &middot; <a href="kalkulator.html" style="color:#b09473;">sesuaikan di kalkulator</a></div>
   <script>
-// ===== WIDGET "DARI KEBUN KE ICE" — fetch — v2026.09.26-4 =====
+// ===== WIDGET "DARI KEBUN KE ICE" — fetch — v2026.09.26-5 =====
 (function () {
   var DATA_BASE = "https://KGS-blog.github.io/Update-Coffee-Data/data";
   var LB_TO_KG = 0.45359237;
@@ -877,7 +877,7 @@ window.__qcoAnLang = function (lang) {
                     <span data-i18n="sidebar_loading">Memuat artikel...</span>
                 </div>
             </div>
-            <!-- Berita Kopi Terkini (sidebar widget) — v2026.09.26-4 -->
+            <!-- Berita Kopi Terkini (sidebar widget) — v2026.09.26-5 -->
             <div class="mt-6">
                 <div class="bg-coffee-800 text-white rounded-t-xl p-4">
                     <h3 class="font-serif text-lg font-bold flex items-center gap-2">
@@ -1024,7 +1024,15 @@ window.__qcoAnLang = function (lang) {
 <nav class="p-4 space-y-1">
     <div onclick="showDashboardSection('overview')" id="nav-overview" class="sidebar-item active"><i class="fas fa-chart-pie w-5"></i><span>Overview</span></div>
     <div onclick="showDashboardSection('statistics')" id="nav-statistics" class="sidebar-item"><i class="fas fa-chart-bar w-5"></i><span>Statistik</span></div>
-    <div onclick="showDashboardSection('content')" id="nav-content" class="sidebar-item"><i class="fas fa-file-alt w-5"></i><span>Konten & Artikel</span></div>
+    <div onclick="showDashboardSection('klaster')" id="nav-klaster" class="sidebar-item">
+                <i class="fas fa-layer-group"></i>
+                <span>Klaster Berita</span>
+            </div>
+            <div onclick="showDashboardSection('klaster')" id="nav-klaster" class="sidebar-item">
+                <i class="fas fa-layer-group"></i>
+                <span>Klaster Berita</span>
+            </div>
+            <div onclick="showDashboardSection('content')" id="nav-content" class="sidebar-item"><i class="fas fa-file-alt w-5"></i><span>Konten & Artikel</span></div>
     <div onclick="showDashboardSection('editcontent')" id="nav-editcontent" class="sidebar-item"><i class="fas fa-pen w-5"></i><span>Edit Konten Blog</span></div>
     
     <div onclick="showDashboardSection('subscribers')" id="nav-subscribers" class="sidebar-item"><i class="fas fa-users w-5"></i><span>Subscriber</span><span id="subscriber-badge" class="ml-auto bg-coffee-100 text-coffee-700 text-xs px-2 py-0.5 rounded-full">0</span></div>
@@ -1200,6 +1208,14 @@ window.__qcoAnLang = function (lang) {
     </div>
 
     <!-- CONTENT -->
+    <div id="section-klaster" class="dashboard-section hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-serif font-bold text-coffee-900">Mode Edit Klaster</h2>
+            <button type="button" onclick="loadKlasterDashboard()" class="px-4 py-2 bg-coffee-100 text-coffee-700 text-xs font-semibold rounded-lg hover:bg-coffee-200">Refresh</button>
+        </div>
+        <div id="klaster-dash-content" class="bg-white rounded-xl border border-coffee-100 p-4"><p class="text-sm text-coffee-400">Klik Refresh untuk memuat artikel.</p></div>
+    </div>
+
     <div id="section-content" class="dashboard-section hidden">
         <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
             <div class="flex items-center gap-4 flex-wrap">
@@ -2609,6 +2625,34 @@ function toggleArticleStatus(id) {
 }
 
 // ========== DASHBOARD RENDER ==========
+const BERITA_KLASTER = [
+    { nama: "Harga & Pasar", nama_en: "Prices & Market", kunci: ["harga kopi","harga arabica","harga robusta","fob","nilai ekspor","c-market","stok","diferensial","lelang"] },
+    { nama: "Produksi & Panen", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","perkebunan","peremajaan","cuaca","gagal panen","bibit","banyuwangi"] },
+    { nama: "Ekspor & Perdagangan", nama_en: "Exports & Trade", kunci: ["ekspor","impor","perdagangan","kemendag","mendag","wamendag","business matching","mitra dagang","jtci","maroko","mesir","chili","inggris"] },
+    { nama: "Kebijakan & Regulasi", nama_en: "Policy & Regulation", kunci: ["eudr","tarif","regulasi","pemerintah","kementan","bea cukai","subsidi","peraturan","izin","communal branding","sertifikasi barista"] },
+    { nama: "Industri & Hilirisasi", nama_en: "Industry & Downstreaming", kunci: ["umkm","hilirisasi","kemasan","siap minum","ready-to-drink","produk olahan","pembinaan","lapas","cfu","perlengkapan","mesin espresso"] },
+    { nama: "Konsumsi & Gaya Hidup", nama_en: "Consumption & Lifestyle", kunci: ["konsumsi","per kapita","gaya hidup","cold brew","iced coffee","kopi susu","minum kopi","caffeine","kafein","kopi instan"] },
+    { nama: "Kedai & Ritel", nama_en: "Cafés & Retail", kunci: ["coffee shop","cafe","kedai","nongkrong","tenant","gerai","ritel modern","street coffee","barista championship","latte art"] },
+    { nama: "Brand & Komunitas", nama_en: "Brand & Community", kunci: ["fore coffee","tanamera","kopi kenangan","pop-up","merchandise","festival","coffee party","csr","kolaborasi brand","brand"] },
+    { nama: "Kopi Regional Indonesia", nama_en: "Indonesian Regional Coffee", kunci: ["gayo","toraja","kintamani","banyuwangi","papua","java preanger","flores","aceh","boyolali","solo","surabaya","yogyakarta","jogja","jawa tengah","lampung"] }
+];
+const NOISE_RX = /ditertibkan|satpol pp|diciduk|penertiban|terbakar|kebakaran|bunuh|tabrakan|tilang|razia/i;
+const PROMO_RX = /promo|diskon|bundling|cashback|voucher|gratis/i;
+function klasterisasi(artikel, lang) {
+    var bersih = (artikel || []).filter(function (a) { return !NOISE_RX.test(String(a.judul || "")) && !PROMO_RX.test(String(a.judul || "")); });
+    var kl = BERITA_KLASTER.map(function (k) { return { nama: lang === "en" && k.nama_en ? k.nama_en : k.nama, kunci: k.kunci, items: [] }; });
+    var lainnya = { nama: lang === "en" ? "Others" : "Lainnya", items: [] };
+    bersih.forEach(function (a) {
+        var t = String(a.judul || "").toLowerCase();
+        var key = String(a.tautan || a.judul);
+        var hitName = a.klaster_user;
+        if (!hitName) { var hit = BERITA_KLASTER.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0]; hitName = hit ? (lang === "en" && hit.nama_en ? hit.nama_en : hit.nama) : null; }
+        var kartu = kl.filter(function (k) { return k.nama === hitName; })[0];
+        (kartu || lainnya).items.push(a);
+    });
+    return kl.concat(lainnya).filter(function (k) { return k.items.length; });
+}
+
 function renderDashboardArticles() {
     const tbody = document.getElementById("dashboard-articles-table");
     if (!tbody) return;
@@ -3057,6 +3101,7 @@ function showDashboardSection(section) {
     document.querySelectorAll(".sidebar-item").forEach(item => item.classList.remove("active"));
     document.getElementById("nav-" + section).classList.add("active");
     if (section === "statistics") { renderDashboardStatistics(); }
+    if (section === "klaster") { loadKlasterDashboard(); }
     document.getElementById("dashboard-title").textContent = titles[section] || "Overview";
     if (window.innerWidth < 768) {
         document.getElementById("dashboard-sidebar").classList.add("-translate-x-full");
@@ -3214,6 +3259,43 @@ function refreshComments() {
     renderDashboardComments();
     showToast("Komentar di-refresh!", "success");
 }
+
+
+function loadKlasterDashboard() {
+    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/berita-all.json", { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) {
+            var artikel = (j && j.artikel) || [];
+            var box = document.getElementById("klaster-dash-content");
+            if (!box) return;
+            window.__beritaAll = artikel;
+            var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
+            box.innerHTML = '<p class="text-xs text-coffee-500 mb-3">Total ' + artikel.length + ' artikel. Rekomendasi AI ditandai; pilih kotak untuk menimpa, lalu Terapkan &amp; Posting.</p>' +
+                '<div style="max-height:500px;overflow-y:auto;">' + artikel.map(function (a, idx) {
+                    var t = String(a.judul || "").toLowerCase();
+                    var rec = BERITA_KLASTER.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0];
+                    var cur = a.klaster_user || (rec ? rec.nama : "Lainnya");
+                    var opt = BERITA_KLASTER.map(function (k) { return '<option value="' + k.nama + '"' + (k.nama === cur ? ' selected' : '') + '>' + k.nama + '</option>'; }).join('') + '<option value="Lainnya"' + (cur === "Lainnya" ? ' selected' : '') + '>Lainnya</option>';
+                    return '<div class="flex items-center gap-2 py-2 border-b border-coffee-50">' +
+                        '<span class="text-xs text-coffee-400 w-6">' + (idx + 1) + '</span>' +
+                        '<a href="' + esc(a.tautan) + '" target="_blank" class="flex-1 text-xs text-coffee-800 hover:underline" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">' + esc(a.judul) + '</a>' +
+                        '<select data-idx="' + idx + '" class="klaster-select text-[11px] border border-coffee-200 rounded px-1 py-0.5">' + opt + '</select>' +
+                        (a.klaster_user ? '' : ' <span class="text-[9px] px-1 rounded bg-coffee-100 text-coffee-500">AI</span>') +
+                        '</div>';
+                }).join('') + '</div>' +
+                '<button type="button" onclick="aplikasiKlaster()" class="mt-3 px-4 py-2 bg-coffee-800 text-white text-xs font-semibold rounded-lg hover:bg-coffee-700">Terapkan &amp; Posting</button>';
+        })
+        .catch(function () { document.getElementById("klaster-dash-content").innerHTML = '<div class="text-sm text-coffee-400">Data belum tersedia.</div>'; });
+}
+window.aplikasiKlaster = function () {
+    var sel = document.querySelectorAll(".klaster-select");
+    var out = [];
+    sel.forEach(function (s) { var a = (window.__beritaAll || [])[parseInt(s.getAttribute("data-idx"), 10)]; if (a) out.push({ tautan: a.tautan, klaster: s.value }); });
+    var blob = new Blob([JSON.stringify(out, null, 1)], { type: "application/json" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "klaster-final.json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+    showToast("klaster-final.json terdownload. Upload ke folder data/ repo Update-Coffee-Data, lalu Run workflow.", "success");
+};
 
 // ========== INIT (FIXED ORDER) ==========
 document.addEventListener("DOMContentLoaded", function() {
