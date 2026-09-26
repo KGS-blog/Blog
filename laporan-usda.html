@@ -248,8 +248,8 @@ function switchTab(tabName) {
 
 // ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.26-11 =====
 const BERITA_KLASTER = [
-            { nama: "Harga & Pasar", slug: "harga-pasar", analisis_id: "harga-komoditas", nama_en: "Prices & Market", kunci: ["harga","ekspor","impor","fob","kurs","dolar","lelang","nilai ekspor","penurunan harga","kenaikan harga","vietnam","brazil","brasil","kolombia","stok","c-market","eropa","amerika","jepang","mahal","murah"] },
-            { nama: "Produksi & Panen", slug: "produksi-panen", analisis_id: "hilirisasi-produksi", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","cuaca","kemarau","hujan","la nina","el nino","gagal panen","bibit","tanam","areal","luas areal"] },
+            { nama: "Harga & Pasar", slug: "harga-pasar", analisis_id: null, nama_en: "Prices & Market", kunci: ["harga","ekspor","impor","fob","kurs","dolar","lelang","nilai ekspor","penurunan harga","kenaikan harga","vietnam","brazil","brasil","kolombia","stok","c-market","eropa","amerika","jepang","mahal","murah"] },
+            { nama: "Produksi & Panen", slug: "produksi-panen", analisis_id: null, nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","cuaca","kemarau","hujan","la nina","el nino","gagal panen","bibit","tanam","areal","luas areal"] },
             { nama: "Kebijakan & Regulasi", slug: "kebijakan-regulasi", analisis_id: null, nama_en: "Policy & Regulation", kunci: ["eudr","tarif","regulasi","pemerintah","kementan","bea cukai","subsidi","peraturan","izin","kemendag","sertifikasi","standar"] },
             { nama: "Event & Kompetisi", slug: "event-kompetisi", analisis_id: "brand-event", nama_en: "Events & Competitions", kunci: ["event","festival","pameran","gjaw","kompetisi","cupping","workshop","lomba","expo","juara","championship","champion"] },
             { nama: "Barista & Teknik Seduh", slug: "barista-teknik-seduh", analisis_id: null, nama_en: "Barista & Brewing", kunci: ["barista","brewing","seduh","latte","manual brew","v60","grinder","espresso","pour over","teknik seduh","tata cara","latte art","drip"] },
@@ -257,7 +257,7 @@ const BERITA_KLASTER = [
             { nama: "Kedai, Konsumsi & Gaya Hidup", slug: "kedai-konsumsi-gaya-hidup", analisis_id: "konsumsi-domestik", nama_en: "Cafes, Consumption & Lifestyle", kunci: ["kedai","kafe","konsumsi","gerai","ritel","gaya hidup","cold brew","menu","franchise","coffee shop","cafe"] },
             { nama: "Ekspor & Daya Saing", slug: "ekspor-daya-saing", analisis_id: "ekspor-daya-saing", nama_en: "Exports & Competitiveness", kunci: ["ekspor","daya saing","brand","merek","internasional","global"] },
             { nama: "Pendidikan & Industri", slug: "edukasi-industri", analisis_id: "edukasi-industri", nama_en: "Education & Industry", kunci: ["edukasi","pendidikan","industri","akademi","kurikulum","pelatihan"] },
-            { nama: "Brand Global", slug: "brand-global", analisis_id: "brand-global", nama_en: "Global Brands", kunci: ["brand","merek","global","internasional","posisi","repositioning"] }
+            { nama: "Brand Global", slug: "brand-global", analisis_id: null, nama_en: "Global Brands", kunci: ["brand","merek","global","internasional","posisi","repositioning"] }
         ];
 function loadBeritaAnalisis() {
     var L = currentLang === "en" ? { kosong: "No news yet.", lainnya: "more in this cluster", arsip: "oldest archived (see berita-all)", kuat: "Strong dominance — market attention concentrated here.", signif: "Significant topic — worth monitoring.", pendukung: "Supporting topic — secondary context." }
@@ -309,8 +309,8 @@ function loadBeritaAnalisis() {
             var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
             var itemLink = function (a) {
                 var href = esc(a.tautan);
-                if (!href) return '<div class="block text-xs text-coffee-700 py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</div>';
-                return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
+                if (!href) return '<div class="block text-xs text-coffee-700 py-1 px-1 border-b border-coffee-50 break-words whitespace-normal leading-snug" title="' + esc(a.judul) + '">' + esc(a.judul) + '</div>';
+                return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 px-1 border-b border-coffee-50 break-words whitespace-normal leading-snug" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
             };
             det2.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' + semua.filter(function (k) { return k.items.length; }).map(function (k) {
                 var pct = Math.round(k.items.length / total * 100);
