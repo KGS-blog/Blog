@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-11 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
+<!-- laporan-usda.html — v2026.09.26-6 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -188,10 +188,11 @@ function setLanguage(lang) {
         }
     });
 
-    // Update tab labels + re-render kartu dinamis (v2026.09.26-7: assert, tidak gagal senyap)
-    try { updateTabLabels(); } catch (e1) { console.error("[setLanguage] updateTabLabels gagal:", e1); }
-    try { loadBeritaAnalisis(); } catch (e2) { console.error("[setLanguage] loadBeritaAnalisis gagal:", e2); }
-    try { loadAnalisisDashboard(); } catch (e3) { console.error("[setLanguage] loadAnalisisDashboard gagal:", e3); }
+    // Update tab labels
+    updateTabLabels();
+    loadBeritaAnalisis();
+    loadAnalisisDashboard();
+
 }
 
 function updateTabLabels() {
@@ -199,7 +200,7 @@ function updateTabLabels() {
     const keys = ["nav_usda_report", "nav_historical", "nav_update"];
     tabs.forEach((tabId, idx) => {
         const el = document.getElementById(tabId);
-        if (el) { const sp = el.querySelector("span"); if (sp) sp.textContent = translations[keys[idx]][currentLang]; }
+        if (el) el.querySelector("span").textContent = translations[keys[idx]][currentLang];
     });
 }
 
@@ -246,76 +247,53 @@ function switchTab(tabName) {
 
 
 
-// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.26-11 =====
+// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.25-7 =====
 const BERITA_KLASTER = [
-            { nama: "Harga & Pasar", slug: "harga-pasar", nama_en: "Prices & Market", kunci: ["harga","ekspor","impor","fob","kurs","dolar","lelang","nilai ekspor","penurunan harga","kenaikan harga","vietnam","brazil","brasil","kolombia","stok","c-market","eropa","amerika","jepang","mahal","murah"] },
-            { nama: "Produksi & Panen", slug: "produksi-panen", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","cuaca","kemarau","hujan","la nina","el nino","gagal panen","bibit","tanam","areal","luas areal"] },
-            { nama: "Kebijakan & Regulasi", slug: "kebijakan-regulasi", nama_en: "Policy & Regulation", kunci: ["eudr","tarif","regulasi","pemerintah","kementan","bea cukai","subsidi","peraturan","izin","kemendag","sertifikasi","standar"] },
-            { nama: "Event & Kompetisi", slug: "event-kompetisi", nama_en: "Events & Competitions", kunci: ["event","festival","pameran","gjaw","kompetisi","cupping","workshop","lomba","expo","juara","championship","champion"] },
-            { nama: "Barista & Teknik Seduh", slug: "barista-teknik-seduh", nama_en: "Barista & Brewing", kunci: ["barista","brewing","seduh","latte","manual brew","v60","grinder","espresso","pour over","teknik seduh","tata cara","latte art","drip"] },
-            { nama: "Riset & Tren Konsumen", slug: "riset-tren-konsumen", nama_en: "Consumer Research & Trends", kunci: ["jakpat","survei","riset","tren","preferensi","survey","konsumen"] },
-            { nama: "Kedai, Konsumsi & Gaya Hidup", slug: "kedai-konsumsi-gaya-hidup", nama_en: "Cafes, Consumption & Lifestyle", kunci: ["kedai","kafe","konsumsi","gerai","ritel","gaya hidup","cold brew","menu","franchise","coffee shop","cafe"] }
-        ];
+    { nama: "Harga & Pasar", nama_en: "Prices & Market", kunci: ["harga kopi","harga arabica","harga robusta","fob","nilai ekspor","c-market","stok","diferensial","lelang"] },
+    { nama: "Produksi & Panen", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","perkebunan","peremajaan","cuaca","gagal panen","bibit","banyuwangi"] },
+    { nama: "Ekspor & Perdagangan", nama_en: "Exports & Trade", kunci: ["ekspor","impor","perdagangan","kemendag","mendag","wamendag","business matching","mitra dagang","jtci","maroko","mesir","chili","inggris"] },
+    { nama: "Kebijakan & Regulasi", nama_en: "Policy & Regulation", kunci: ["eudr","tarif","regulasi","pemerintah","kementan","bea cukai","subsidi","peraturan","izin","communal branding","sertifikasi barista"] },
+    { nama: "Industri & Hilirisasi", nama_en: "Industry & Downstreaming", kunci: ["umkm","hilirisasi","kemasan","siap minum","ready-to-drink","produk olahan","pembinaan","lapas","cfu","perlengkapan","mesin espresso"] },
+    { nama: "Konsumsi & Gaya Hidup", nama_en: "Consumption & Lifestyle", kunci: ["konsumsi","per kapita","gaya hidup","cold brew","iced coffee","kopi susu","minum kopi","caffeine","kafein","kopi instan"] },
+    { nama: "Kedai & Ritel", nama_en: "Cafés & Retail", kunci: ["coffee shop","cafe","kedai","nongkrong","tenant","gerai","ritel modern","street coffee","barista championship","latte art"] },
+    { nama: "Brand & Komunitas", nama_en: "Brand & Community", kunci: ["fore coffee","tanamera","kopi kenangan","pop-up","merchandise","festival","coffee party","csr","kolaborasi brand","brand"] },
+    { nama: "Kopi Regional Indonesia", nama_en: "Indonesian Regional Coffee", kunci: ["gayo","toraja","kintamani","banyuwangi","papua","java preanger","flores","aceh","boyolali","solo","surabaya","yogyakarta","jogja","jawa tengah","lampung"] }
+];
+const NOISE_RX = /ditertibkan|satpol pp|diciduk|penertiban|terbakar|kebakaran|bunuh|tabrakan|tilang|razia/i;
+const PROMO_RX = /promo|diskon|bundling|cashback|voucher|gratis/i;
 function loadBeritaAnalisis() {
-    var L = currentLang === "en" ? { kosong: "No news yet.", lainnya: "more in this cluster", arsip: "oldest archived (see berita-all)", kuat: "Strong dominance — market attention concentrated here.", signif: "Significant topic — worth monitoring.", pendukung: "Supporting topic — secondary context." }
-        : { kosong: "Belum ada berita.", lainnya: "berita lainnya di klaster ini", arsip: "terlama terarsip (lihat berita-all)", kuat: "Dominasi kuat — perhatian pasar terpusat di sini.", signif: "Topik signifikan — layak dipantau.", pendukung: "Topik pendukung — konteks sekunder." };
+    var L = currentLang === "en" ? { kosong: "No news yet.", lainnya: "more in this cluster", kuat: "Strong dominance — market attention concentrated here.", signif: "Significant topic — worth monitoring.", pendukung: "Supporting topic — secondary context." }
+        : { kosong: "Belum ada berita.", lainnya: "berita lainnya di klaster ini", kuat: "Dominasi kuat — perhatian pasar terpusat di sini.", signif: "Topik signifikan — layak dipantau.", pendukung: "Topik pendukung — konteks sekunder." };
     var det2 = document.getElementById("berita-klaster");
     if (!det2) return;
     fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/berita-all.json", { cache: "no-store" })
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
         .then(function (j) {
             var mentah = (j && j.artikel) || [];
-            // v2026.09.26-9: semua artikel ditampilkan & terarsip (NewsData wajib tersimpan) — tanpa filter judul
-            var artikel = mentah.slice();
+            var KOPI_RX = /kopi|coffee|arabica|robusta/i;
+            var artikel = mentah.filter(function (a) { return KOPI_RX.test(String(a.judul || "")); });
             if (!artikel.length) { var pesan = (j && j.message) ? String(j.message).slice(0, 140) : L.kosong; det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + pesan.replace(/</g, "&lt;") + '</div>'; return; }
+            var bersih = artikel.filter(function (a) { return !NOISE_RX.test(String(a.judul || "")) && !PROMO_RX.test(String(a.judul || "")); });
             var kl = BERITA_KLASTER.map(function (k) { return { nama: k.nama, nama_en: k.nama_en, kunci: k.kunci, items: [] }; });
             var lainnya = { nama: currentLang === "en" ? "Others" : "Lainnya", items: [] };
-            artikel.forEach(function (a) {
+            bersih.forEach(function (a) {
                 var t = String(a.judul || "").toLowerCase();
                 var hit = kl.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0];
                 (hit || lainnya).items.push(a);
             });
-            // v2026.09.26-9: gali sub-klaster dinamis dari "Lainnya" — topik berulang >=2 artikel jadi grup baru, diulang sampai habis
-            lainnya.items.sort(function (a, b) { return String(b.tanggal || "").localeCompare(String(a.tanggal || "")); });
-            var STOPW = { yang:1, untuk:1, dengan:1, dari:1, pada:1, dalam:1, akan:1, adalah:1, dan:1, atau:1, juga:1, serta:1, the:1, for:1, with:1, from:1, this:1, that:1, and:1, are:1, was:1, coffee:1, kopi:1, indonesia:1, indonesian:1, jakarta:1, jpg:1, jpeg:1, png:1, com:1, net:1, www:1, https:1, http:1, berita:1, artikel:1, news:1, tahun:1, hari:1, ini:1, baru:1 };
-            var subK = [], subN = 0;
-            while (lainnya.items.length >= 2 && subN < 15) {
-                var freq = {};
-                lainnya.items.forEach(function (a) {
-                    var seen = {};
-                    String(a.judul || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).forEach(function (w) {
-                        if (w.length < 4 || STOPW[w] || /^\d+$/.test(w)) return;
-                        if (!seen[w]) { seen[w] = 1; freq[w] = (freq[w] || 0) + 1; }
-                    });
-                });
-                var best = null, bestC = 1;
-                Object.keys(freq).forEach(function (w) { if (freq[w] >= 2 && freq[w] > bestC) { best = w; bestC = freq[w]; } });
-                if (!best) break;
-                subN++;
-                var cap = best.charAt(0).toUpperCase() + best.slice(1);
-                var grp = { nama: "Topik: " + cap, nama_en: "Topic: " + cap, items: [] };
-                var rest = [];
-                lainnya.items.forEach(function (a) {
-                    if (String(a.judul || "").toLowerCase().indexOf(best) !== -1) grp.items.push(a); else rest.push(a);
-                });
-                subK.push(grp);
-                lainnya.items = rest;
-            }
-            var semua = kl.concat(subK, (lainnya.items.length ? [lainnya] : []));
-            var total = artikel.length;
+            var semua = kl.concat(lainnya.items.length ? [lainnya] : []);
+            var total = bersih.length;
             var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
             var itemLink = function (a) {
-                var href = esc(a.tautan);
-                if (!href) return '<div class="block text-xs text-coffee-700 py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</div>';
-                return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
+                return '<a href="' + esc(a.tautan) + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
             };
             det2.innerHTML = '<div class="grid md:grid-cols-2 gap-4">' + semua.filter(function (k) { return k.items.length; }).map(function (k) {
                 var pct = Math.round(k.items.length / total * 100);
                 var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
-                var tampil = k.items.slice(0, 30); var sisa = k.items.length - 30;
+                var tampil = k.items.slice(0, 30); var sisa = k.items.slice(30);
                 return '<div class="card p-4"><div class="flex items-center justify-between gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-sm leading-tight">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
                     '<p class="text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div>' + tampil.map(itemLink).join("") + '</div>' +
-                    (sisa > 0 ? '<div class="text-[10px] text-coffee-400 mt-1">+' + sisa + ' ' + L.arsip + '</div>' : '') + '</div>';
+                    (sisa.length ? '<details class="mt-1"><summary class="cursor-pointer text-[10px] font-semibold text-coffee-400">+' + sisa.length + ' ' + L.lainnya + '</summary><div class="mt-1">' + sisa.map(itemLink).join("") + '</div></details>' : '') + '</div>';
             }).join("") + '</div>';
         })
         .catch(function () { det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + L.kosong + '</div>'; });
@@ -331,37 +309,20 @@ function loadAnalisisDashboard() {
             var perTerbaru = (j.batches && j.batches[0] && j.batches[0].periode) || j.periode;
             if (periode && perTerbaru) periode.textContent = "Periode terbaru: " + perTerbaru + " \u00b7 " + batches.length + " batch terarsip";
             if (!batches.length) { box.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Analisis belum tersedia.</div>'; return; }
-            // v2026.09.26-11: wadah 7 grup mengekor Tab 2; grup berisi pakai field "klaster" (slug)
-            var esc = function (s) { return String(s == null ? "" : s).replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
-            var renderGrup = function (g, heading, periodeStr) {
-                var sumber = (g.sumber || []).map(function (s) {
-                    return '<li class="mb-1"><span class="text-coffee-600 font-medium">' + esc(s.media || "") + '</span> &mdash; ' +
-                        (s.tautan ? '<a href="' + esc(s.tautan) + '" target="_blank" rel="noopener noreferrer" class="text-coffee-700 underline">' : '<span>') +
-                        esc(s.judul || "") + (s.tautan ? '</a>' : '</span>') +
-                        (s.tanggal ? ' <span class="text-coffee-400 text-xs">(' + esc(s.tanggal) + ')</span>' : '') + '</li>';
-                }).join("");
-                return '<article class="card p-6 md:p-8 mb-8">' +
-                    (heading ? '<div class="mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-800 text-white">' + esc(heading) + '</span></div>' : '') +
-                    '<div class="flex items-center gap-3 flex-wrap mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-700">' + esc(g.jumlah_sumber) + ' berita digabungkan</span></div>' +
-                    '<h3 class="font-serif text-xl md:text-2xl font-bold text-coffee-900 mb-3">' + esc((currentLang === "en" && g.judul_en) ? g.judul_en : (g.judul_id || g.judul) || "") + '</h3>' +
-                    '<p class="text-xs text-coffee-500 mb-3 italic">' + esc((currentLang === "en" && g.ringkasan_en) ? g.ringkasan_en : (g.ringkasan_id || g.ringkasan) || "") + '</p>' +
-                    '<div class="text-sm text-coffee-700 leading-relaxed" style="text-align:left;">' + ((currentLang === "en" && g.isi_en) ? g.isi_en : (g.isi_id || g.isi) || "") + '</div>' +
-                    '<p class="text-xs text-coffee-400 mt-4">Oleh: Ganjar Satyanagara &middot; ' + esc(periodeStr || "") + '</p>' +
-                    '<details class="mt-5 pt-4 border-t border-coffee-100"><summary class="cursor-pointer text-xs font-semibold text-coffee-500 uppercase tracking-wide">Sumber berita (' + esc(g.jumlah_sumber) + ')</summary><ul class="mt-3 text-sm text-coffee-600 list-none pl-0">' + sumber + '</ul></details></article>';
-            };
             box.innerHTML = batches.slice(0, 6).map(function (bt) {
-                var bySlug = {}, legacy = [];
-                (bt.grup || []).forEach(function (g) {
-                    if (g && g.klaster && bySlug[g.klaster] === undefined && BERITA_KLASTER.some(function (k) { return k.slug === g.klaster; })) bySlug[g.klaster] = g;
-                    else legacy.push(g);
-                });
-                var slotHtml = BERITA_KLASTER.map(function (k) {
-                    var g = bySlug[k.slug];
-                    if (!g) return '<article class="card p-6 md:p-8 mb-8" style="border-style:dashed"><div class="mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-500">' + esc((currentLang === "en" && k.nama_en) ? k.nama_en : k.nama) + '</span></div><p class="text-sm text-coffee-400 italic">' + (currentLang === "en" ? "Analysis for this group is being prepared." : "Analisis grup ini sedang disiapkan.") + '</p></article>';
-                    return renderGrup(g, (currentLang === "en" && k.nama_en) ? k.nama_en : k.nama, bt.periode || "");
+              return '<div class="mb-10"><div class="text-center mb-5"><span class="inline-block px-3 py-1 rounded-full bg-coffee-100 text-coffee-700 text-xs font-semibold">' + String(bt.periode || "") + '</span></div>' +
+                bt.grup.map(function (g) {
+                var sumber = (g.sumber || []).map(function (s) {
+                    return '<li class="mb-1"><span class="text-coffee-600 font-medium">' + String(s.media || "") + '</span> &mdash; ' +
+                        (s.tautan ? '<a href="' + String(s.tautan).replace(/"/g, "&quot;") + '" target="_blank" rel="noopener noreferrer" class="text-coffee-700 underline">' : '<span>') +
+                        String(s.judul || "").replace(/</g, "&lt;") + (s.tautan ? '</a>' : '</span>') +
+                        (s.tanggal ? ' <span class="text-coffee-400 text-xs">(' + s.tanggal + ')</span>' : '') + '</li>';
                 }).join("");
-                var legacyHtml = legacy.map(function (g) { return renderGrup(g, "", bt.periode || ""); }).join("");
-                return '<div class="mb-10"><div class="text-center mb-5"><span class="inline-block px-3 py-1 rounded-full bg-coffee-100 text-coffee-700 text-xs font-semibold">' + esc(String(bt.periode || "")) + '</span></div>' + slotHtml + legacyHtml + '</div>';
+                return '<article class="card p-6 md:p-8 mb-8"><div class="flex items-center gap-3 flex-wrap mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-700">' + g.jumlah_sumber + ' berita digabungkan</span></div>' +
+                    '<h3 class="font-serif text-xl md:text-2xl font-bold text-coffee-900 mb-3">' + String((currentLang === "en" && g.judul_en) ? g.judul_en : (g.judul_id || g.judul) || "").replace(/</g, "&lt;") + '</h3>' + '<p class="text-xs text-coffee-500 mb-3 italic">' + String((currentLang === "en" && g.ringkasan_en) ? g.ringkasan_en : (g.ringkasan_id || g.ringkasan) || "") + '</p>'  +
+                    '<div class="text-sm text-coffee-700 leading-relaxed" style="text-align:left;">' + ((currentLang === "en" && g.isi_en) ? g.isi_en : (g.isi_id || g.isi) || "") + '</div>' + '<p class="text-xs text-coffee-400 mt-4">Oleh: Ganjar Satyanagara &middot; ' + (j.periode || "") + '</p>'  +
+                    '<details class="mt-5 pt-4 border-t border-coffee-100"><summary class="cursor-pointer text-xs font-semibold text-coffee-500 uppercase tracking-wide">Sumber berita (' + g.jumlah_sumber + ')</summary><ul class="mt-3 text-sm text-coffee-600 list-none pl-0">' + sumber + '</ul></details></article>';
+                }).join("") + '</div>';
             }).join("");
         })
         .catch(function () { var box = document.getElementById("klaster-ringkas"); if (box) box.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Analisis belum tersedia &mdash; upload data/analisis-berita.json ke repo.</div>'; });
@@ -461,7 +422,6 @@ tailwind.config = {
     }
 }
 </script>
-<base target="_blank">
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
@@ -595,7 +555,7 @@ function loadLivePSD() {
         .catch(function () { var box = document.getElementById("psd-cards"); if (box) box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia &mdash; jalankan workflow Update-Coffee-Data.</div>'; });
 }
 </script>
-<!-- PANEL BPS (dari engine) — v2026.09.26-11 -->
+<!-- PANEL BPS (dari engine) — v2026.09.26-4 -->
 <div class="card p-6 md:p-8 mb-12">
     <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 flex items-center gap-2 flex-wrap">
         <i class="fas fa-landmark text-coffee-500"></i>
@@ -607,109 +567,33 @@ function loadLivePSD() {
 </div>
 <script>
 function loadBPSPanel() {
-        var box = document.getElementById("bps-cards");
-        if (!box) return;
-        fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/ekspor.json", { cache: "no-store" })
-            .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-            .then(function (j) {
-                // v2026.09.26-9: baca schema engine datasets[] (angka nyata + top-5 provinsi); fallback legacy
-                var esc = function (s) { return String(s == null ? "" : s).replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
-                var num = function (v) { var n = Number(v); return (v === null || v === undefined || isNaN(n)) ? null : n; };
-                var fmt = function (n) { return n === null ? "-" : n.toLocaleString("id-ID"); };
-                var root = (j && Array.isArray(j.datasets)) ? j : ((j && j.mentah && Array.isArray(j.mentah.datasets)) ? j.mentah : null);
-                if (root && Array.isArray(root.datasets) && root.datasets.length) {
-                    var ds = root.datasets;
-                    var pick = function (id) { var f = null; ds.forEach(function (d) { if (d && d.id === id) f = d; }); return f; };
-                    var stat = pick("bps_coffee_statistics");
-                    var prov = pick("bps_coffee_provinces");
-                    var trade = pick("bps_coffee_trade");
-                    var rows = [], tblHtml = "";
-                    if (stat && Array.isArray(stat.records)) {
-                        var ly = 0;
-                        stat.records.forEach(function (r) { var y = num(r && r.year); if (r && r.producer_category === "total" && y !== null && y > ly) ly = y; });
-                        var prod = null, area = null;
-                        stat.records.forEach(function (r) {
-                            if (!r || r.producer_category !== "total" || num(r.year) !== ly) return;
-                            if (r.metric === "production") prod = num(r.value);
-                            if (r.metric === "plantation_area") area = num(r.value);
-                        });
-                        if (prod !== null) rows.push(["Produksi nasional " + ly, fmt(prod) + " ton"]);
-                        if (area !== null) rows.push(["Luas areal " + ly, fmt(area) + " ha"]);
-                    }
-                    if (prov && Array.isArray(prov.records)) {
-                        var nat = null;
-                        prov.records.forEach(function (r) {
-                            if (!r || r.geography_level !== "national") return;
-                            if (!nat || (num(r.year) || 0) >= (num(nat.year) || 0)) nat = r;
-                        });
-                        if (nat && num(nat.productivity_kg_per_ha) !== null) rows.push(["Produktivitas " + nat.year, fmt(num(nat.productivity_kg_per_ha)) + " kg/ha"]);
-                        var py = nat ? (num(nat.year) || 0) : 0;
-                        var tops = prov.records.filter(function (r) { return r && r.geography_level === "province" && (num(r.year) || 0) === py && num(r.production_ton) !== null; })
-                            .sort(function (a, b) { return (num(b.production_ton) || 0) - (num(a.production_ton) || 0); }).slice(0, 5);
-                        if (tops.length) {
-                            tblHtml = '<div class="mt-2"><div class="text-xs font-semibold text-coffee-600 mb-1">Top-5 produksi provinsi ' + py + '</div>'
-                                + '<table class="w-full text-xs"><thead><tr class="text-coffee-400 border-b border-coffee-100"><th class="text-left py-0.5 pr-2">Provinsi</th><th class="text-right py-0.5 pr-2">Produksi (ton)</th><th class="text-right py-0.5">kg/ha</th></tr></thead><tbody>'
-                                + tops.map(function (r) { return '<tr class="border-b border-coffee-50"><td class="py-0.5 pr-2">' + esc(r.geography) + '</td><td class="text-right py-0.5 pr-2">' + fmt(num(r.production_ton)) + '</td><td class="text-right py-0.5">' + (num(r.productivity_kg_per_ha) !== null ? fmt(num(r.productivity_kg_per_ha)) : "-") + '</td></tr>'; }).join("")
-                                + "</tbody></table></div>";
-                        }
-                    }
-                    if (trade && Array.isArray(trade.records)) {
-                        var lex = null, lim = null;
-                        trade.records.forEach(function (r) {
-                            if (!r) return;
-                            var y = num(r.year) || 0;
-                            if (r.trade_flow === "export" && (!lex || y > (num(lex.year) || 0))) lex = r;
-                            if (r.trade_flow === "import" && (!lim || y > (num(lim.year) || 0))) lim = r;
-                        });
-                        if (lex) rows.push(["Ekspor " + lex.year, fmt(num(lex.volume)) + " ton \u00b7 USD " + fmt(num(lex.value)) + " ribu"]);
-                        if (lim) rows.push(["Impor " + lim.year, fmt(num(lim.volume)) + " ton \u00b7 USD " + fmt(num(lim.value)) + " ribu"]);
-                    }
-                    var cat = ds.map(function (d) { return (d && d.title) ? String(d.title) : ""; }).filter(Boolean);
-                    if (rows.length) {
-                        box.innerHTML = '<ul class="list-disc pl-5 space-y-1">' + rows.map(function (rw) { return "<li><strong>" + esc(rw[0]) + ":</strong> " + esc(rw[1]) + "</li>"; }).join("") + "</ul>"
-                            + tblHtml
-                            + (cat.length ? '<div class="text-xs text-coffee-400 mt-2">Dataset engine: ' + esc(cat.join(" \u00b7 ")) + "</div>" : "")
-                            + '<div class="text-xs text-coffee-400 mt-1">Sumber: BPS (publikasi 05100.26021) via Engine KGS.</div>';
-                    } else {
-                        var tot = ds.reduce(function (a, d) { return a + (d && Array.isArray(d.records) ? d.records.length : 0); }, 0);
-                        box.innerHTML = "Data tersedia: " + ds.length + " dataset (" + tot + " catatan)." + tblHtml;
-                    }
-                    return;
-                }
-                var ek = j || {};
-                if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
-                    var d = ek.bulanan[ek.bulanan.length - 1];
-                    var usdN = Number(d.nilaiUSD);
-                    var usdTxt = (d.nilaiUSD === null || d.nilaiUSD === undefined || isNaN(usdN)) ? String(d.nilaiUSD == null ? "-" : d.nilaiUSD).replace(/</g, "&lt;") : usdN.toLocaleString("id-ID");
-                    var kgTxt = "";
-                    if (d.nettoKg !== undefined && d.nettoKg !== null && d.nettoKg !== "") {
-                        var kgN = Number(d.nettoKg);
-                        kgTxt = " \u00b7 " + (isNaN(kgN) ? String(d.nettoKg).replace(/</g, "&lt;") : kgN.toLocaleString("id-ID")) + " kg";
-                    }
-                    box.innerHTML = "<strong>" + String(d.bulan || "").replace(/</g, "&lt;") + " " + String(ek.tahun || "").replace(/</g, "&lt;") + ":</strong> USD " + usdTxt + kgTxt;
-                    return;
-                }
-                if (ek.mentah) {
-                    var m = ek.mentah || {};
-                    var lists = Object.keys(m).map(function (k) { return m[k]; }).filter(Array.isArray);
-                    if (lists.length) {
-                        var names = [], tahun = "";
-                        lists.forEach(function (L) { L.slice(0, 5).forEach(function (r2) {
-                            var n = r2 && (r2.turvar || r2.name || r2.nama || r2.title);
-                            if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim());
-                            if (r2 && r2.th && String(r2.th) > String(tahun)) tahun = r2.th;
-                        }); });
-                        box.innerHTML = names.length
-                            ? '<ul class="list-disc pl-5 space-y-1">' + names.slice(0, 8).map(function (n2) { return "<li>" + String(n2).replace(/</g, "&lt;") + "</li>"; }).join("") + '</ul>' + (names.length > 8 ? '<div class="text-xs text-coffee-400 mt-1">+' + (names.length - 8) + ' lainnya</div>' : "") + (tahun ? '<div class="text-xs text-coffee-400 mt-1">Tahun tersedia: ' + String(tahun).replace(/</g, "&lt;") + '</div>' : "")
-                            : "Data tersedia (" + (ek.data || []).length + " entri).";
-                        return;
-                    }
-                }
-                box.innerHTML = "Data tersedia (" + (ek.data || []).length + " entri).";
-            })
-            .catch(function () { box.innerHTML = "Data BPS belum tersedia."; });
-    }
-    loadBPSPanel();
+    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/ekspor.json", { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (ek) {
+            var box = document.getElementById("bps-cards");
+            var upd = document.getElementById("bps-updated");
+            if (!box) return;
+            if (upd && ek.fetched) upd.textContent = "Update: " + new Date(ek.fetched).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+            if (ek.status === "Error") { box.innerHTML = '<div class="text-coffee-500">' + String(ek.message || "").replace(/</g, "&lt;").slice(0, 150) + '</div>'; return; }
+            if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
+                var d = ek.bulanan[ek.bulanan.length - 1];
+                box.innerHTML = "<strong>" + d.bulan + " " + ek.tahun + ":</strong> USD " + Number(d.nilaiUSD).toLocaleString("id-ID") + (d.nettoKg ? " · " + Number(d.nettoKg).toLocaleString("id-ID") + " kg" : "");
+                return;
+            }
+            try {
+                var m = ek.mentah || {};
+                var lists = Object.keys(m).map(function (k) { return m[k]; }).filter(Array.isArray);
+                var names = [];
+                lists.forEach(function (L) { L.slice(0, 5).forEach(function (r2) { var n = r2 && (r2.turvar || r2.name || r2.nama || r2.title || r2.th); if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim()); }); });
+                var tahun = ""; lists.forEach(function (L) { L.forEach(function (r2) { if (r2 && r2.th && !tahun) tahun = String(r2.th); }); });
+                box.innerHTML = names.length
+                    ? '<ul class="list-disc pl-5 space-y-1">' + names.slice(0, 8).map(function (n2) { return "<li>" + n2 + "</li>"; }).join("") + '</ul>' + (names.length > 8 ? '<div class="text-xs text-coffee-400 mt-1">+' + (names.length - 8) + ' lainnya</div>' : "") + (tahun ? '<div class="text-xs text-coffee-400 mt-1">Tahun tersedia: ' + tahun + '</div>' : "")
+                    : "Data tersedia (" + (ek.data || []).length + " entri).";
+            } catch (e) { box.textContent = "Data BPS tersedia."; }
+        })
+        .catch(function () { var b = document.getElementById("bps-cards"); if (b) b.innerHTML = '<div class="text-coffee-400">Data BPS belum tersedia.</div>'; });
+}
+loadBPSPanel();
 </script>
 <!-- Source & Disclaimer -->
     <div class="text-center">
