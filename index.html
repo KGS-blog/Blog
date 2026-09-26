@@ -779,7 +779,7 @@ window.__qcoAnLang = function (lang) {
 </div>
 
 <!-- TWO COLUMN LAYOUT: 75% Main + 25% Sidebar -->
-<div class="flex flex-row gap-8">
+<div class="flex flex-row gap-1">
 
     <!-- LEFT COLUMN: Main Content (75%) -->
     <div class="w-3/4">
@@ -2084,10 +2084,8 @@ function renderArticlesSidebar() {
         const isActive = featuredId === art.id;
         return `<div class="p-4 border-b border-coffee-50 last:border-0 hover:bg-coffee-50 transition-colors cursor-pointer ${isActive ? 'bg-coffee-50 border-l-4 border-l-coffee-600' : ''}" onclick="showFeaturedArticle(${art.id})">
             <h4 class="font-serif text-sm font-bold text-coffee-900 line-clamp-2 ${isActive ? 'text-coffee-600' : ''} mb-2">${title}</h4>
-            <div class="flex items-center gap-3 text-xs text-coffee-400">
-                <span><i class="far fa-calendar mr-1"></i>${art.date}</span>
-                <span><i class="far fa-clock mr-1"></i>${art.readTime} min</span>
-                <span><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span>
+            <div class="text-xs text-coffee-400">
+                <span>${art.date}</span>
             </div>
         </div>`;
         }).join("") + (sidebarArticles.length > 5 ? `<button type="button" onclick="toggleSidebarExpand()" class="w-full py-2.5 text-xs font-medium text-coffee-600 hover:bg-coffee-50 transition-colors border-t border-coffee-100">${sidebarExpanded ? "Tutup" : "Lihat semua (" + sidebarArticles.length + ")"}</button>` : "");
