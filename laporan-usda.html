@@ -316,8 +316,8 @@ function loadBeritaAnalisis() {
                 var pct = Math.round(k.items.length / total * 100);
                 var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
                 var tampil = k.items.slice(0, 30); var sisa = k.items.length - 30;
-                return '<div class="card p-3 md:p-4"><div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1.5 md:gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-xs md:text-sm leading-tight">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap w-fit">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
-                    '<p class="text-[10px] md:text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div>' + tampil.map(itemLink).join("") + '</div>' +
+                return '<div class="card p-3 md:p-4 min-w-0"><div class="flex flex-col md:flex-row md:items-start md:justify-between gap-1.5 md:gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-xs md:text-sm leading-tight min-w-0 break-words">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap flex-shrink-0">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
+                    '<p class="text-[10px] md:text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div class="min-w-0 space-y-0">' + tampil.map(itemLink).join("") + '</div>' +
                     (sisa > 0 ? '<div class="text-[10px] text-coffee-400 mt-1">+' + sisa + ' ' + L.arsip + '</div>' : '') + '</div>';
             }).join("") + '</div>';
         })
@@ -365,9 +365,20 @@ function loadAnalisisDashboard() {
                 console.log("[loadAnalisisDashboard] Periode " + bt.periode + " || ids in data:", allIds);
                 var slotHtml = BERITA_KLASTER.map(function (k) {
                     var g = null;
-                    if (k.analisis_id) {
-                        g = byAnalisisId[k.analisis_id];
+                    var lookupKey = k.analisis_id;
+
+                    // Try direct mapping first
+                    if (lookupKey) {
+                        g = byAnalisisId[lookupKey];
+                        if (!g) {
+                            console.log("[BERITA_KLASTER] " + k.nama + " (analisis_id: " + lookupKey + ") — NOT FOUND in periode " + bt.periode);
+                        } else {
+                            console.log("[BERITA_KLASTER] " + k.nama + " (analisis_id: " + lookupKey + ") — FOUND");
+                        }
+                    } else {
+                        console.log("[BERITA_KLASTER] " + k.nama + " — NO analisis_id mapping");
                     }
+
                     if (!g) return '<article class="card p-6 md:p-8 mb-8" style="border-style:dashed;border-color:#e0d5c5"><div class="mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-500">' + esc((currentLang === "en" && k.nama_en) ? k.nama_en : k.nama) + '</span></div><p class="text-sm text-coffee-400 italic">' + (currentLang === "en" ? "Analysis for this group is being prepared." : "Analisis grup ini sedang disiapkan.") + '</p></article>';
                     return renderGrup(g, (currentLang === "en" && k.nama_en) ? k.nama_en : k.nama, bt.periode || "");
                 }).join("");
