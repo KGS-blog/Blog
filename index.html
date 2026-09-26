@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- QFin Blog HTML - v2026.09.26-5 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
+<!-- QFin Blog HTML - v2026.09.26-6 | menu Tentang dihapus (gabung Beranda), CTA hero = Berita Kopi Terkini ke laporan-usda.html#berita -->
 <html lang="id" class="scroll-smooth">
 <head>
 <!-- Meta Pixel Code -->
@@ -336,6 +336,7 @@ main {
 }
 </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -393,7 +394,6 @@ main {
     <!-- DESKTOP NAV: urutan di HTML = Beranda, Tentang, Artikel, Kalkulator, Market Analysis, Langganan -->
     <div class="hidden sm:flex items-center gap-6">
         <button type="button" class="nav-link nav-btn" data-nav="hero">Beranda</button>
-        <button type="button" class="nav-link nav-btn" data-nav="about">Tentang</button>
         <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
         <a href="kalkulator.html" class="nav-link">Kalkulator</a>
         <a href="laporan-usda.html" class="nav-link">Market Analysis</a>
@@ -414,7 +414,6 @@ main {
 <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-lg border-t border-coffee-100 z-40 relative">
 <div class="px-6 py-4 space-y-3">
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="hero" data-mobile="1">Beranda</button>
-    <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="about" data-mobile="1">Tentang</button>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="articles" data-mobile="1">Artikel</button>
     <a href="kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
     <a href="laporan-usda.html" class="block nav-link py-2 text-left w-full">Market Analysis</a>
@@ -442,7 +441,7 @@ main {
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <button type="button" class="btn-primary text-lg" data-nav="articles" data-editable="hero_cta1"><i class="fas fa-book-open mr-2"></i>Jelajahi Artikel</button>
-        <button type="button" class="px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-nav="about" data-editable="hero_cta2"><i class="fas fa-user mr-2"></i>Tentang Saya</button>
+        <a href="laporan-usda.html#berita" class="inline-block px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-editable="hero_cta2"><i class="fas fa-newspaper mr-2"></i>Berita Kopi Terkini</a>
     </div>
     <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
         <div class="text-center"><div class="text-3xl font-serif font-bold text-white" id="stat-articles">0</div><div class="text-sm text-coffee-300" data-editable="stat_articles_label">Artikel</div></div>
@@ -975,7 +974,6 @@ window.__qcoAnLang = function (lang) {
         <h4 class="font-serif font-bold text-white mb-4" data-editable="footer_nav_title">Navigasi</h4>
         <ul class="space-y-2 text-sm">
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_home" data-nav="hero">Beranda</button></li>
-            <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_about" data-nav="about">Tentang</button></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" data-nav="articles">Artikel</button></li>
             <li><a href="kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
             <li><a href="laporan-usda.html" class="hover:text-white transition-colors">Market Analysis</a></li>
@@ -1829,7 +1827,7 @@ function updateStaticContent() {
     update("[data-i18n=hero_desc]", "Mengumpulkan dan menganalisis data kopi Indonesia \u2014 dari kebun hingga pasar global. Referensi independen untuk pembeli, eksportir, dan pelaku industri yang ingin memahami pangsa pasar dan produk kopi Indonesia.", "Collecting and analyzing Indonesian coffee data \u2014 from farm to global market. An independent reference for buyers, exporters, and industry players seeking to understand Indonesian coffee\u2019s market share and products.");
     update("[data-editable=hero_badge]", "Coffee Researcher", "Coffee Researcher");
     update("[data-editable=hero_cta1]", "Jelajahi Artikel", "Explore Articles");
-    update("[data-editable=hero_cta2]", "Tentang Saya", "About Me");
+    update("[data-editable=hero_cta2]", "Berita Kopi Terkini", "Latest Coffee News");
     update("[data-editable=stat_articles_label]", "Artikel", "Articles");
     update("[data-editable=stat_research_label]", "Tahun Riset", "Years Research");
     update("[data-editable=stat_supply_label]", "Tahun Supply", "Years Supply");
