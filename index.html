@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- QFin Blog HTML - v2026.09.26-3 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
+<!-- QFin Blog HTML - v2026.09.26-4 | 7 artikel bawaan + auto-backup 7 hari + Sheets dihapus -->
 <html lang="id" class="scroll-smooth">
 <head>
 <!-- Meta Pixel Code -->
@@ -24,7 +24,7 @@ src="https://www.facebook.com/tr?id=1498535007132214&ev=PageView&noscript=1"
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Coffee Researcher</title>
 
-<!-- ===== SEO & SOCIAL META (v2026.09.26-3) ===== -->
+<!-- ===== SEO & SOCIAL META (v2026.09.26-4) ===== -->
 <meta name="description" content="Referensi data & analisis pasar kopi Indonesia oleh Ganjar Satyanagara (Q Grader): data live USDA & Yahoo, analisis berita, pangsa pasar dan produk kopi Indonesia untuk pembeli global.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>">
 <meta property="og:type" content="website">
@@ -311,7 +311,7 @@ main {
 <base target="_blank">
 <base target="_blank">
 <style>
-/* ===== MOBILE READABILITY — v2026.09.26-3 ===== */
+/* ===== MOBILE READABILITY — v2026.09.26-4 ===== */
 @media (max-width: 767px) {
   .featured-article-content, #article-body-content {
     font-size: 1rem !important;
@@ -510,11 +510,11 @@ main {
       <div id="qco-mw-kurs" style="font-size:1.15rem;font-weight:800;color:#e0d5c5;font-family:monospace;">&mdash;</div>
       <div id="qco-mw-kurs-chg" style="font-size:.6rem;color:#9a8b76;"></div>
     </div>
-    <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;">
+    <a href="laporan-usda.html" id="qco-mw-ekspor-tile" style="display:block;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;text-decoration:none;color:inherit;">
       <div style="font-size:.58rem;color:#9a8b76;text-transform:uppercase;">Data BPS</div>
       <div id="qco-mw-ekspor" style="font-size:.68rem;font-weight:700;color:#fcd34d;line-height:1.35;">&mdash;</div>
-      <div id="qco-mw-ekspor-note" style="font-size:.58rem;color:#9a8b76;"></div>
-    </div>
+      <div style="font-size:.58rem;color:#b09473;">klik untuk lihat</div>
+    </a>
   </div>
   <div style="margin-top:10px;padding:9px 11px;background:rgba(255,255,255,.04);border-radius:10px;font-size:.67rem;color:#c9b89e;line-height:1.65;">
     <div><span style="color:#9a8b76;">Arabika:</span> World <b id="qco-mw-a1" style="color:#93c5fd;"></b> &middot; +Diff <b id="qco-mw-a2" style="color:#93c5fd;"></b> &middot; Cherry <b id="qco-mw-a3" style="color:#93c5fd;"></b></div>
@@ -523,7 +523,7 @@ main {
   </div>
   <div style="margin-top:8px;font-size:.6rem;color:#7a6a58;"><span id="qco-mw-params"></span> &middot; <a href="kalkulator.html" style="color:#b09473;">sesuaikan di kalkulator</a></div>
   <script>
-// ===== WIDGET "DARI KEBUN KE ICE" — fetch — v2026.09.26-3 =====
+// ===== WIDGET "DARI KEBUN KE ICE" — fetch — v2026.09.26-4 =====
 (function () {
   var DATA_BASE = "https://KGS-blog.github.io/Update-Coffee-Data/data";
   var LB_TO_KG = 0.45359237;
@@ -566,41 +566,14 @@ main {
       t("qco-mw-updated", "Data pasar belum tersedia \u2014 jalankan workflow Update-Coffee-Data");
     }
     if (ek) {
-      var txt = "Menunggu data", note = "Sumber: BPS";
+      var n = 0;
       try {
-        if (!(Array.isArray(ek.bulanan) && ek.bulanan.length) && Array.isArray(ek.data) && ek.data.length) {
-          var bl = ek.data[ek.data.length - 1];
-          var adaNilai = ek.data.some(function (r) { return r && (r.nilaiUSD !== "" || (r.nilai !== undefined && r.nilai !== "")); });
-          if (adaNilai && bl && (bl.bulan || bl.nilaiUSD)) {
-            txt = ek.data.length + " data tersedia" + (bl.bulan ? " · terakhir: " + bl.bulan : "");
-          } else {
-            try {
-              var m = ek.mentah || {};
-              var lists = Object.keys(m).map(function (k) { return m[k]; }).filter(Array.isArray);
-              var names = [];
-              lists.forEach(function (L) {
-                L.slice(0, 3).forEach(function (r) {
-                  var n = r && (r.turvar || r.name || r.nama || r.title || r.th);
-                  if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim());
-                });
-              });
-              var tahun = "";
-              lists.forEach(function (L) { L.forEach(function (r) { if (r && r.th && !tahun) tahun = String(r.th); }); });
-              txt = names.length ? names.slice(0, 3).join(", ") + (names.length > 3 ? " +" + (names.length - 3) : "") : ek.data.length + " entri";
-              if (tahun) txt += " · " + tahun;
-            } catch (eR) { txt = ek.data.length + " entri tersedia"; }
-          }
+        if (Array.isArray(ek.data)) n = ek.data.length;
+        else if (ek.mentah) {
+          Object.keys(ek.mentah).forEach(function (k) { if (Array.isArray(ek.mentah[k])) n += ek.mentah[k].length; });
         }
-        if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
-          var d = ek.bulanan[ek.bulanan.length - 1];
-          txt = d.bulan + " " + ek.tahun + ": USD " + Number(d.nilaiUSD).toLocaleString("id-ID");
-          if (d.nettoKg) txt += " \u00b7 " + Number(d.nettoKg).toLocaleString("id-ID") + " kg";
-          note = ek.bulanan.length + " bulan tersedia \u00b7 BPS";
-        }
-      } catch (e) {}
-      if (ek.status === "Error") { txt = "Akses BPS sedang diperbaiki"; note = (ek.message || "").slice(0, 80); }
-      t("qco-mw-ekspor", txt);
-      t("qco-mw-ekspor-note", note + " \u00b7 " + fmtDate(ek.fetched));
+      } catch (eN) {}
+      t("qco-mw-ekspor", (n || "N") + " laporan/data tersedia");
     }
   });
 })();
@@ -904,7 +877,7 @@ window.__qcoAnLang = function (lang) {
                     <span data-i18n="sidebar_loading">Memuat artikel...</span>
                 </div>
             </div>
-            <!-- Berita Kopi Terkini (sidebar widget) — v2026.09.26-3 -->
+            <!-- Berita Kopi Terkini (sidebar widget) — v2026.09.26-4 -->
             <div class="mt-6">
                 <div class="bg-coffee-800 text-white rounded-t-xl p-4">
                     <h3 class="font-serif text-lg font-bold flex items-center gap-2">
