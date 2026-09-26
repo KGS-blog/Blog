@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-9 | rebuilt dari deploy, dashboard edit + tabel BPS -->
+<!-- laporan-usda.html — v2026.09.26-10 | rebuilt dari deploy, dashboard edit + tabel BPS -->
 <!-- laporan-usda.html — v2026.09.26-6 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -309,7 +309,7 @@ function renderKlaster(artikel, L, esc, det2) {
     det2.innerHTML = '<div class="grid md:grid-cols-2 gap-4">' + semua.map(function (k) {
         var pct = Math.round(k.items.length / total * 100);
         var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
-        var tampil = k.items.slice(0, 30); var sisa = k.items.slice(30);
+        var tampil = k.items; var sisa = [];
         return '<div class="card p-4"><div class="flex items-center justify-between gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-sm">' + k.nama + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700">' + k.items.length + ' · ' + pct + '%</span></div>' +
             '<p class="text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div>' + tampil.map(itemLink).join("") + '</div>' +
             (sisa.length ? '<details><summary class="cursor-pointer text-[10px] font-semibold text-coffee-400">+' + sisa.length + ' ' + L.lainnya + '</summary><div>' + sisa.map(itemLink).join("") + '</div></details>' : '') + '</div>';
@@ -602,7 +602,7 @@ function loadLivePSD() {
 <script>
 function loadBPSPanel() {
     fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/ekspor.json", { cache: "no-store" })
-        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (r) { if (!r.ok) throw new Error("404"); return r.json(); })
         .then(function (ek) {
             var box = document.getElementById("bps-cards");
             var upd = document.getElementById("bps-updated");
@@ -613,16 +613,26 @@ function loadBPSPanel() {
                 var m = ek.mentah || {};
                 var keys = Object.keys(m).filter(function (k) { return Array.isArray(m[k]) && m[k].length; });
                 if (keys.length) {
-                    box.innerHTML = '<table class="w-full text-sm"><thead><tr class="bg-coffee-50 text-coffee-700"><th class="px-3 py-2 text-left">Dataset</th><th class="px-3 py-2 text-right">Baris</th><th class="px-3 py-2 text-left">Kolom</th></tr></thead><tbody>' +
-                        keys.slice(0, 6).map(function (k) {
-                            var rows = m[k];
-                            var cols = rows[0] ? Object.keys(rows[0]).slice(0, 4).join(", ") : "-";
-                            return '<tr class="border-t border-coffee-100"><td class="px-3 py-2">' + k + '</td><td class="px-3 py-2 text-right">' + rows.length + '</td><td class="px-3 py-2 text-coffee-500 text-xs">' + cols + '</td></tr>';
-                        }).join("") + '</tbody></table>';
-                } else { box.textContent = "Data tersedia (" + ((ek.data || []).length) + " entri)."; }
-            } catch (e) { box.textContent = "Data BPS tersedia."; }
+                    var rows = keys.map(function (k) {
+                        var arr = m[k];
+                        var cols = arr[0] ? Object.keys(arr[0]).slice(0, 4).join(", ") : "-";
+                        return '<tr class="border-t border-coffee-100"><td class="px-3 py-2 font-medium">' + k + '</td><td class="px-3 py-2 text-right">' + arr.length + '</td><td class="px-3 py-2 text-coffee-500 text-xs">' + cols + '</td></tr>';
+                    }).join("");
+                    box.innerHTML = '<table class="w-full text-sm"><thead><tr class="bg-coffee-50 text-coffee-700"><th class="px-3 py-2 text-left">Dataset</th><th class="px-3 py-2 text-right">Baris</th><th class="px-3 py-2 text-left">Kolom</th></tr></thead><tbody>' + rows + '</tbody></table>';
+                } else if (Array.isArray(ek.data) && ek.data.length) {
+                    box.innerHTML = '<p>' + ek.data.length + ' entri tersedia.</p>';
+                } else {
+                    box.innerHTML = '<p class="text-coffee-400">Data BPS tersedia.</p>';
+                }
+            } catch (e) {
+                box.innerHTML = '<p class="text-coffee-400">Error membaca data.</p>';
+            }
         })
-        .catch(function () { var b = document.getElementById("bps-cards"); if (b) b.innerHTML = '<div class="text-coffee-400">Data BPS belum tersedia.</div>'; });
+        .catch(function (e) {
+            console.error("loadBPSPanel:", e);
+            var box = document.getElementById("bps-cards");
+            if (box) box.innerHTML = '<div class="text-coffee-400">Data BPS tidak tersedia.</div>';
+        });
 }
 </script>
 <!-- Source & Disclaimer -->
