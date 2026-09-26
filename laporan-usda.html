@@ -309,12 +309,12 @@ function loadBeritaAnalisis() {
                 if (!href) return '<div class="block text-xs text-coffee-700 py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</div>';
                 return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
             };
-            det2.innerHTML = '<div class="grid md:grid-cols-2 gap-4">' + semua.filter(function (k) { return k.items.length; }).map(function (k) {
+            det2.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' + semua.filter(function (k) { return k.items.length; }).map(function (k) {
                 var pct = Math.round(k.items.length / total * 100);
                 var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
                 var tampil = k.items.slice(0, 30); var sisa = k.items.length - 30;
-                return '<div class="card p-4"><div class="flex items-center justify-between gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-sm leading-tight">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
-                    '<p class="text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div>' + tampil.map(itemLink).join("") + '</div>' +
+                return '<div class="card p-3 md:p-4"><div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1.5 md:gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-xs md:text-sm leading-tight">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap w-fit">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
+                    '<p class="text-[10px] md:text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div>' + tampil.map(itemLink).join("") + '</div>' +
                     (sisa > 0 ? '<div class="text-[10px] text-coffee-400 mt-1">+' + sisa + ' ' + L.arsip + '</div>' : '') + '</div>';
             }).join("") + '</div>';
         })
@@ -331,6 +331,7 @@ function loadAnalisisDashboard() {
             var perTerbaru = (j.batches && j.batches[0] && j.batches[0].periode) || j.periode;
             if (periode && perTerbaru) periode.textContent = "Periode terbaru: " + perTerbaru + " \u00b7 " + batches.length + " batch terarsip";
             if (!batches.length) { box.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Analisis belum tersedia.</div>'; return; }
+            console.log("[loadAnalisisDashboard] Loaded batches:", batches.length, "|| BERITA_KLASTER slugs:", BERITA_KLASTER.map(function(k) { return k.slug; }));
             // v2026.09.26-11: wadah 7 grup mengekor Tab 2; grup berisi pakai field "klaster" (slug)
             var esc = function (s) { return String(s == null ? "" : s).replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
             var renderGrup = function (g, heading, periodeStr) {
@@ -351,13 +352,22 @@ function loadAnalisisDashboard() {
             };
             box.innerHTML = batches.slice(0, 6).map(function (bt) {
                 var bySlug = {}, legacy = [];
+                var allKlaster = [];
                 (bt.grup || []).forEach(function (g) {
-                    if (g && g.klaster && bySlug[g.klaster] === undefined && BERITA_KLASTER.some(function (k) { return k.slug === g.klaster; })) bySlug[g.klaster] = g;
-                    else legacy.push(g);
+                    if (g && g.klaster) {
+                        allKlaster.push(g.klaster);
+                        var matched = BERITA_KLASTER.some(function (k) { return k.slug === g.klaster; });
+                        if (bySlug[g.klaster] === undefined && matched) {
+                            bySlug[g.klaster] = g;
+                        } else if (!matched) {
+                            legacy.push(g);
+                        }
+                    }
                 });
+                console.log("[loadAnalisisDashboard] Periode " + bt.periode + " || klaster in data:", allKlaster, "|| matched bySlug:", Object.keys(bySlug));
                 var slotHtml = BERITA_KLASTER.map(function (k) {
                     var g = bySlug[k.slug];
-                    if (!g) return '<article class="card p-6 md:p-8 mb-8" style="border-style:dashed"><div class="mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-500">' + esc((currentLang === "en" && k.nama_en) ? k.nama_en : k.nama) + '</span></div><p class="text-sm text-coffee-400 italic">' + (currentLang === "en" ? "Analysis for this group is being prepared." : "Analisis grup ini sedang disiapkan.") + '</p></article>';
+                    if (!g) return '<article class="card p-6 md:p-8 mb-8" style="border-style:dashed;border-color:#e0d5c5"><div class="mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-500">' + esc((currentLang === "en" && k.nama_en) ? k.nama_en : k.nama) + '</span></div><p class="text-sm text-coffee-400 italic">' + (currentLang === "en" ? "Analysis for this group is being prepared." : "Analisis grup ini sedang disiapkan.") + '</p></article>';
                     return renderGrup(g, (currentLang === "en" && k.nama_en) ? k.nama_en : k.nama, bt.periode || "");
                 }).join("");
                 var legacyHtml = legacy.map(function (g) { return renderGrup(g, "", bt.periode || ""); }).join("");
@@ -484,15 +494,15 @@ tailwind.config = {
         </div>
     </a>
     <!-- External Nav Links -->
-    <div class="flex items-center gap-5">
-        <a href="index.html" class="nav-link hidden md:flex items-center gap-2 text-sm">
-            <i class="fas fa-arrow-left text-xs"></i><span data-i18n="nav_back">Kembali ke Blog</span>
+    <div class="flex items-center gap-3 md:gap-5">
+        <a href="index.html" class="nav-link flex items-center gap-2 text-xs md:text-sm">
+            <i class="fas fa-arrow-left text-xs"></i><span data-i18n="nav_back" class="hidden sm:inline">Kembali ke Blog</span><span class="inline sm:hidden">Blog</span>
         </a>
-        <a href="kalkulator.html" class="nav-link hidden md:flex items-center gap-2 text-sm" data-i18n="nav_calc">Kalkulator</a>
+        <a href="kalkulator.html" class="nav-link flex items-center gap-2 text-xs md:text-sm" data-i18n="nav_calc"><span class="hidden sm:inline">Kalkulator</span><span class="inline sm:hidden">Kalk</span></a>
         <div class="h-5 w-px bg-coffee-200 hidden md:block"></div>
         <div class="flex items-center gap-1 bg-coffee-100 rounded-lg p-1">
-            <button type="button" id="btn-id" class="lang-btn active" onclick="setLanguage('id')">ID</button>
-            <button type="button" id="btn-en" class="lang-btn inactive" onclick="setLanguage('en')">EN</button>
+            <button type="button" id="btn-id" class="lang-btn active text-xs" onclick="setLanguage('id')">ID</button>
+            <button type="button" id="btn-en" class="lang-btn inactive text-xs" onclick="setLanguage('en')">EN</button>
         </div>
     </div>
 </div>
