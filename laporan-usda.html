@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-7 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
+<!-- laporan-usda.html — v2026.09.26-8 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -246,7 +246,7 @@ function switchTab(tabName) {
 
 
 
-// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.26-7 =====
+// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.26-8 =====
 const BERITA_KLASTER = [
     { nama: "Harga & Ekspor", nama_en: "Prices & Exports", kunci: ["harga","ekspor","fob","nilai ekspor","penurunan","kenaikan","kurs","dolar","mahal","murah","lelang"] },
     { nama: "Produksi & Panen", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","cuaca","kemarau","hujan","la nina","el nino","gagal panen","bibit","tanam"] },
@@ -255,8 +255,8 @@ const BERITA_KLASTER = [
     { nama: "Pasar Global", nama_en: "Global Market", kunci: ["vietnam","brazil","brasil","kolombia","ice","arabica","robusta","stok","dunia","global","c-market","eropa","amerika","jepang"] }
 ];
 function loadBeritaAnalisis() {
-    var L = currentLang === "en" ? { kosong: "No news yet.", lainnya: "more in this cluster", kuat: "Strong dominance — market attention concentrated here.", signif: "Significant topic — worth monitoring.", pendukung: "Supporting topic — secondary context." }
-        : { kosong: "Belum ada berita.", lainnya: "berita lainnya di klaster ini", kuat: "Dominasi kuat — perhatian pasar terpusat di sini.", signif: "Topik signifikan — layak dipantau.", pendukung: "Topik pendukung — konteks sekunder." };
+    var L = currentLang === "en" ? { kosong: "No news yet.", lainnya: "more in this cluster", arsip: "oldest archived (see berita-all)", kuat: "Strong dominance — market attention concentrated here.", signif: "Significant topic — worth monitoring.", pendukung: "Supporting topic — secondary context." }
+        : { kosong: "Belum ada berita.", lainnya: "berita lainnya di klaster ini", arsip: "terlama terarsip (lihat berita-all)", kuat: "Dominasi kuat — perhatian pasar terpusat di sini.", signif: "Topik signifikan — layak dipantau.", pendukung: "Topik pendukung — konteks sekunder." };
     var det2 = document.getElementById("berita-klaster");
     if (!det2) return;
     fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/berita-all.json", { cache: "no-store" })
@@ -273,7 +273,33 @@ function loadBeritaAnalisis() {
                 var hit = kl.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0];
                 (hit || lainnya).items.push(a);
             });
-            var semua = kl.concat(lainnya.items.length ? [lainnya] : []);
+            // v2026.09.26-8: gali sub-klaster dinamis dari "Lainnya" — topik berulang >=5 artikel jadi grup baru, diulang sampai habis
+            lainnya.items.sort(function (a, b) { return String(b.tanggal || "").localeCompare(String(a.tanggal || "")); });
+            var STOPW = { yang:1, untuk:1, dengan:1, dari:1, pada:1, dalam:1, akan:1, adalah:1, dan:1, atau:1, juga:1, serta:1, the:1, for:1, with:1, from:1, this:1, that:1, and:1, are:1, was:1, coffee:1, kopi:1, indonesia:1, indonesian:1, jakarta:1, jpg:1, jpeg:1, png:1, com:1, net:1, www:1, https:1, http:1, berita:1, artikel:1, news:1, tahun:1, hari:1, ini:1, baru:1 };
+            var subK = [], subN = 0;
+            while (lainnya.items.length >= 5 && subN < 15) {
+                var freq = {};
+                lainnya.items.forEach(function (a) {
+                    var seen = {};
+                    String(a.judul || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).forEach(function (w) {
+                        if (w.length < 4 || STOPW[w] || /^\d+$/.test(w)) return;
+                        if (!seen[w]) { seen[w] = 1; freq[w] = (freq[w] || 0) + 1; }
+                    });
+                });
+                var best = null, bestC = 4;
+                Object.keys(freq).forEach(function (w) { if (freq[w] >= 5 && freq[w] > bestC) { best = w; bestC = freq[w]; } });
+                if (!best) break;
+                subN++;
+                var cap = best.charAt(0).toUpperCase() + best.slice(1);
+                var grp = { nama: "Topik: " + cap, nama_en: "Topic: " + cap, items: [] };
+                var rest = [];
+                lainnya.items.forEach(function (a) {
+                    if (String(a.judul || "").toLowerCase().indexOf(best) !== -1) grp.items.push(a); else rest.push(a);
+                });
+                subK.push(grp);
+                lainnya.items = rest;
+            }
+            var semua = kl.concat(subK, (lainnya.items.length ? [lainnya] : []));
             var total = artikel.length;
             var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
             var itemLink = function (a) {
@@ -284,10 +310,10 @@ function loadBeritaAnalisis() {
             det2.innerHTML = '<div class="grid md:grid-cols-2 gap-4">' + semua.filter(function (k) { return k.items.length; }).map(function (k) {
                 var pct = Math.round(k.items.length / total * 100);
                 var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
-                var tampil = k.items.slice(0, 30); var sisa = k.items.slice(30);
+                var tampil = k.items.slice(0, 30); var sisa = k.items.length - 30;
                 return '<div class="card p-4"><div class="flex items-center justify-between gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-sm leading-tight">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
                     '<p class="text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div>' + tampil.map(itemLink).join("") + '</div>' +
-                    (sisa.length ? '<details class="mt-1"><summary class="cursor-pointer text-[10px] font-semibold text-coffee-400">+' + sisa.length + ' ' + L.lainnya + '</summary><div class="mt-1">' + sisa.map(itemLink).join("") + '</div></details>' : '') + '</div>';
+                    (sisa > 0 ? '<div class="text-[10px] text-coffee-400 mt-1">+' + sisa + ' ' + L.arsip + '</div>' : '') + '</div>';
             }).join("") + '</div>';
         })
         .catch(function () { det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + L.kosong + '</div>'; });
@@ -550,7 +576,7 @@ function loadLivePSD() {
         .catch(function () { var box = document.getElementById("psd-cards"); if (box) box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia &mdash; jalankan workflow Update-Coffee-Data.</div>'; });
 }
 </script>
-<!-- PANEL BPS (dari engine) — v2026.09.26-7 -->
+<!-- PANEL BPS (dari engine) — v2026.09.26-8 -->
 <div class="card p-6 md:p-8 mb-12">
     <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 flex items-center gap-2 flex-wrap">
         <i class="fas fa-landmark text-coffee-500"></i>
@@ -562,40 +588,99 @@ function loadLivePSD() {
 </div>
 <script>
 function loadBPSPanel() {
-    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/ekspor.json", { cache: "no-store" })
-        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-        .then(function (ek) {
-            var box = document.getElementById("bps-cards");
-            var upd = document.getElementById("bps-updated");
-            if (!box) return;
-            if (upd && ek.fetched) upd.textContent = "Update: " + new Date(ek.fetched).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-            if (ek.status === "Error") { box.innerHTML = '<div class="text-coffee-500">' + String(ek.message || "").replace(/</g, "&lt;").slice(0, 150) + '</div>'; return; }
-            if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
-                var d = ek.bulanan[ek.bulanan.length - 1];
-                var usdN = Number(d.nilaiUSD);
-                var usdTxt = (d.nilaiUSD === null || d.nilaiUSD === undefined || isNaN(usdN)) ? String(d.nilaiUSD === null || d.nilaiUSD === undefined ? "-" : d.nilaiUSD).replace(/</g, "&lt;") : usdN.toLocaleString("id-ID");
-                var kgTxt = "";
-                if (d.nettoKg !== undefined && d.nettoKg !== null && d.nettoKg !== "") {
-                    var kgN = Number(d.nettoKg);
-                    kgTxt = " · " + (isNaN(kgN) ? String(d.nettoKg).replace(/</g, "&lt;") : kgN.toLocaleString("id-ID")) + " kg";
+        var box = document.getElementById("bps-cards");
+        if (!box) return;
+        fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/ekspor.json", { cache: "no-store" })
+            .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+            .then(function (j) {
+                // v2026.09.26-8: baca schema engine datasets[] (angka nyata); fallback legacy
+                var esc = function (s) { return String(s == null ? "" : s).replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
+                var num = function (v) { var n = Number(v); return (v === null || v === undefined || isNaN(n)) ? null : n; };
+                var fmt = function (n) { return n === null ? "-" : n.toLocaleString("id-ID"); };
+                var root = (j && Array.isArray(j.datasets)) ? j : ((j && j.mentah && Array.isArray(j.mentah.datasets)) ? j.mentah : null);
+                if (root && Array.isArray(root.datasets) && root.datasets.length) {
+                    var ds = root.datasets;
+                    var pick = function (id) { var f = null; ds.forEach(function (d) { if (d && d.id === id) f = d; }); return f; };
+                    var stat = pick("bps_coffee_statistics");
+                    var prov = pick("bps_coffee_provinces");
+                    var trade = pick("bps_coffee_trade");
+                    var rows = [];
+                    if (stat && Array.isArray(stat.records)) {
+                        var ly = 0;
+                        stat.records.forEach(function (r) { var y = num(r && r.year); if (r && r.producer_category === "total" && y !== null && y > ly) ly = y; });
+                        var prod = null, area = null;
+                        stat.records.forEach(function (r) {
+                            if (!r || r.producer_category !== "total" || num(r.year) !== ly) return;
+                            if (r.metric === "production") prod = num(r.value);
+                            if (r.metric === "plantation_area") area = num(r.value);
+                        });
+                        if (prod !== null) rows.push(["Produksi nasional " + ly, fmt(prod) + " ton"]);
+                        if (area !== null) rows.push(["Luas areal " + ly, fmt(area) + " ha"]);
+                    }
+                    if (prov && Array.isArray(prov.records)) {
+                        var nat = null;
+                        prov.records.forEach(function (r) {
+                            if (!r || r.geography_level !== "national") return;
+                            if (!nat || (num(r.year) || 0) >= (num(nat.year) || 0)) nat = r;
+                        });
+                        if (nat && num(nat.productivity_kg_per_ha) !== null) rows.push(["Produktivitas " + nat.year, fmt(num(nat.productivity_kg_per_ha)) + " kg/ha"]);
+                    }
+                    if (trade && Array.isArray(trade.records)) {
+                        var lex = null, lim = null;
+                        trade.records.forEach(function (r) {
+                            if (!r) return;
+                            var y = num(r.year) || 0;
+                            if (r.trade_flow === "export" && (!lex || y > (num(lex.year) || 0))) lex = r;
+                            if (r.trade_flow === "import" && (!lim || y > (num(lim.year) || 0))) lim = r;
+                        });
+                        if (lex) rows.push(["Ekspor " + lex.year, fmt(num(lex.volume)) + " ton \u00b7 USD " + fmt(num(lex.value)) + " ribu"]);
+                        if (lim) rows.push(["Impor " + lim.year, fmt(num(lim.volume)) + " ton \u00b7 USD " + fmt(num(lim.value)) + " ribu"]);
+                    }
+                    var cat = ds.map(function (d) { return (d && d.title) ? String(d.title) : ""; }).filter(Boolean);
+                    if (rows.length) {
+                        box.innerHTML = '<ul class="list-disc pl-5 space-y-1">' + rows.map(function (rw) { return "<li><strong>" + esc(rw[0]) + ":</strong> " + esc(rw[1]) + "</li>"; }).join("") + "</ul>"
+                            + (cat.length ? '<div class="text-xs text-coffee-400 mt-2">Dataset engine: ' + esc(cat.join(" \u00b7 ")) + "</div>" : "")
+                            + '<div class="text-xs text-coffee-400 mt-1">Sumber: BPS (publikasi 05100.26021) via Engine KGS.</div>';
+                    } else {
+                        var tot = ds.reduce(function (a, d) { return a + (d && Array.isArray(d.records) ? d.records.length : 0); }, 0);
+                        box.innerHTML = "Data tersedia: " + ds.length + " dataset (" + tot + " catatan).";
+                    }
+                    return;
                 }
-                box.innerHTML = "<strong>" + String(d.bulan || "").replace(/</g, "&lt;") + " " + String(ek.tahun || "").replace(/</g, "&lt;") + ":</strong> USD " + usdTxt + kgTxt;
-                return;
-            }
-            try {
-                var m = ek.mentah || {};
-                var lists = Object.keys(m).map(function (k) { return m[k]; }).filter(Array.isArray);
-                var names = [];
-                lists.forEach(function (L) { L.slice(0, 5).forEach(function (r2) { var n = r2 && (r2.turvar || r2.name || r2.nama || r2.title); if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim()); }); });
-                var tahun = ""; lists.forEach(function (L) { L.forEach(function (r2) { if (r2 && r2.th && !tahun) tahun = String(r2.th); }); });
-                box.innerHTML = names.length
-                    ? '<ul class="list-disc pl-5 space-y-1">' + names.slice(0, 8).map(function (n2) { return "<li>" + String(n2).replace(/</g, "&lt;") + "</li>"; }).join("") + '</ul>' + (names.length > 8 ? '<div class="text-xs text-coffee-400 mt-1">+' + (names.length - 8) + ' lainnya</div>' : "") + (tahun ? '<div class="text-xs text-coffee-400 mt-1">Tahun tersedia: ' + String(tahun).replace(/</g, "&lt;") + '</div>' : "")
-                    : "Data tersedia (" + (ek.data || []).length + " entri).";
-            } catch (e) { box.textContent = "Data BPS tersedia."; }
-        })
-        .catch(function () { var b = document.getElementById("bps-cards"); if (b) b.innerHTML = '<div class="text-coffee-400">Data BPS belum tersedia.</div>'; });
-}
-loadBPSPanel();
+                var ek = j || {};
+                if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
+                    var d = ek.bulanan[ek.bulanan.length - 1];
+                    var usdN = Number(d.nilaiUSD);
+                    var usdTxt = (d.nilaiUSD === null || d.nilaiUSD === undefined || isNaN(usdN)) ? String(d.nilaiUSD == null ? "-" : d.nilaiUSD).replace(/</g, "&lt;") : usdN.toLocaleString("id-ID");
+                    var kgTxt = "";
+                    if (d.nettoKg !== undefined && d.nettoKg !== null && d.nettoKg !== "") {
+                        var kgN = Number(d.nettoKg);
+                        kgTxt = " \u00b7 " + (isNaN(kgN) ? String(d.nettoKg).replace(/</g, "&lt;") : kgN.toLocaleString("id-ID")) + " kg";
+                    }
+                    box.innerHTML = "<strong>" + String(d.bulan || "").replace(/</g, "&lt;") + " " + String(ek.tahun || "").replace(/</g, "&lt;") + ":</strong> USD " + usdTxt + kgTxt;
+                    return;
+                }
+                if (ek.mentah) {
+                    var m = ek.mentah || {};
+                    var lists = Object.keys(m).map(function (k) { return m[k]; }).filter(Array.isArray);
+                    if (lists.length) {
+                        var names = [], tahun = "";
+                        lists.forEach(function (L) { L.slice(0, 5).forEach(function (r2) {
+                            var n = r2 && (r2.turvar || r2.name || r2.nama || r2.title);
+                            if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim());
+                            if (r2 && r2.th && String(r2.th) > String(tahun)) tahun = r2.th;
+                        }); });
+                        box.innerHTML = names.length
+                            ? '<ul class="list-disc pl-5 space-y-1">' + names.slice(0, 8).map(function (n2) { return "<li>" + String(n2).replace(/</g, "&lt;") + "</li>"; }).join("") + '</ul>' + (names.length > 8 ? '<div class="text-xs text-coffee-400 mt-1">+' + (names.length - 8) + ' lainnya</div>' : "") + (tahun ? '<div class="text-xs text-coffee-400 mt-1">Tahun tersedia: ' + String(tahun).replace(/</g, "&lt;") + '</div>' : "")
+                            : "Data tersedia (" + (ek.data || []).length + " entri).";
+                        return;
+                    }
+                }
+                box.innerHTML = "Data tersedia (" + (ek.data || []).length + " entri).";
+            })
+            .catch(function () { box.innerHTML = "Data BPS belum tersedia."; });
+    }
+    loadBPSPanel();
 </script>
 <!-- Source & Disclaimer -->
     <div class="text-center">
