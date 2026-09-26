@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-11 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
+<!-- laporan-usda.html — v2026.09.26-12 | hash #berita auto-buka tab Clustering Berita; tab1 live-only, tab2 Clustering, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -373,7 +373,9 @@ document.addEventListener("DOMContentLoaded", function() {
     loadLivePSD();
     loadBeritaAnalisis();
     loadAnalisisDashboard();
-    switchTab('usda');
+    // v2026.09.26-12: link eksternal laporan-usda.html#berita -> buka tab Clustering Berita Kopi Terkini
+    var __hash = (window.location.hash || "").toLowerCase();
+    switchTab(__hash.indexOf("berita") !== -1 ? "historical" : "usda");
     var now = new Date();
     var timeStr = now.toLocaleDateString("id-ID", {day:"numeric", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit"});
     var el = document.getElementById("usda-last-updated");
@@ -461,6 +463,7 @@ tailwind.config = {
     }
 }
 </script>
+<base target="_blank">
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
