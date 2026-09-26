@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Laporan Kopi Indonesia & USDA</title>
-<!-- laporan-usda.html — v2026.09.26-4 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
+<!-- laporan-usda.html — v2026.09.26-7 | tab1 live-only, tab2 Clustering kompak, tab3 Analisis, ID/EN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -15,7 +15,7 @@ let currentLang = "id";
 
 const translations = {
     // Nav & Global
-    "nav_usda_report": { id: "Data Laporan USDA", en: "USDA Report Data" },
+    "nav_usda_report": { id: "Data Laporan BPS - USDA", en: "BPS - USDA Report Data" },
     "nav_historical": { id: "Clustering Berita Kopi Terkini", en: "Coffee News Clustering" },
     "nav_update": { id: "Report Kopi Terkini", en: "Latest Coffee Report" },
     "nav_back": { id: "Kembali ke Blog", en: "Back to Blog" },
@@ -23,7 +23,7 @@ const translations = {
 
     // USDA Section
     "usda_label": { id: "Data Resmi", en: "Official Data" },
-    "usda_title": { id: "Laporan USDA Kopi Indonesia", en: "USDA Indonesia Coffee Report" },
+    "usda_title": { id: "Data Laporan BPS - USDA", en: "BPS - USDA Coffee Report" },
     "usda_desc": { 
         id: "Perkembangan produksi, ekspor, dan pasar kopi Indonesia berdasarkan data resmi USDA Foreign Agricultural Service (FAS).", 
         en: "Production, export, and market developments of Indonesian coffee based on official USDA Foreign Agricultural Service (FAS) data." 
@@ -188,11 +188,10 @@ function setLanguage(lang) {
         }
     });
 
-    // Update tab labels
-    updateTabLabels();
-    loadBeritaAnalisis();
-    loadAnalisisDashboard();
-
+    // Update tab labels + re-render kartu dinamis (v2026.09.26-7: assert, tidak gagal senyap)
+    try { updateTabLabels(); } catch (e1) { console.error("[setLanguage] updateTabLabels gagal:", e1); }
+    try { loadBeritaAnalisis(); } catch (e2) { console.error("[setLanguage] loadBeritaAnalisis gagal:", e2); }
+    try { loadAnalisisDashboard(); } catch (e3) { console.error("[setLanguage] loadAnalisisDashboard gagal:", e3); }
 }
 
 function updateTabLabels() {
@@ -200,7 +199,7 @@ function updateTabLabels() {
     const keys = ["nav_usda_report", "nav_historical", "nav_update"];
     tabs.forEach((tabId, idx) => {
         const el = document.getElementById(tabId);
-        if (el) el.querySelector("span").textContent = translations[keys[idx]][currentLang];
+        if (el) { const sp = el.querySelector("span"); if (sp) sp.textContent = translations[keys[idx]][currentLang]; }
     });
 }
 
@@ -247,7 +246,7 @@ function switchTab(tabName) {
 
 
 
-// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.25-7 =====
+// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.26-7 =====
 const BERITA_KLASTER = [
     { nama: "Harga & Ekspor", nama_en: "Prices & Exports", kunci: ["harga","ekspor","fob","nilai ekspor","penurunan","kenaikan","kurs","dolar","mahal","murah","lelang"] },
     { nama: "Produksi & Panen", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","cuaca","kemarau","hujan","la nina","el nino","gagal panen","bibit","tanam"] },
@@ -265,9 +264,9 @@ function loadBeritaAnalisis() {
         .then(function (j) {
             var mentah = (j && j.artikel) || [];
             var KOPI_RX = /kopi|coffee|arabica|robusta/i;
-            var artikel = mentah.filter(function (a) { return KOPI_RX.test(String(a.judul || "")); });
+            var artikel = mentah.filter(function (a) { return a.asal === "engine" || KOPI_RX.test(String(a.judul || "")); });
             if (!artikel.length) { var pesan = (j && j.message) ? String(j.message).slice(0, 140) : L.kosong; det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + pesan.replace(/</g, "&lt;") + '</div>'; return; }
-            var kl = BERITA_KLASTER.map(function (k) { return { nama: k.nama, kunci: k.kunci, items: [] }; });
+            var kl = BERITA_KLASTER.map(function (k) { return { nama: k.nama, nama_en: k.nama_en, kunci: k.kunci, items: [] }; });
             var lainnya = { nama: currentLang === "en" ? "Others" : "Lainnya", items: [] };
             artikel.forEach(function (a) {
                 var t = String(a.judul || "").toLowerCase();
@@ -278,7 +277,9 @@ function loadBeritaAnalisis() {
             var total = artikel.length;
             var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
             var itemLink = function (a) {
-                return '<a href="' + esc(a.tautan) + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
+                var href = esc(a.tautan);
+                if (!href) return '<div class="block text-xs text-coffee-700 py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</div>';
+                return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 border-b border-coffee-50" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
             };
             det2.innerHTML = '<div class="grid md:grid-cols-2 gap-4">' + semua.filter(function (k) { return k.items.length; }).map(function (k) {
                 var pct = Math.round(k.items.length / total * 100);
@@ -418,6 +419,7 @@ tailwind.config = {
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body class="antialiased">
 
@@ -455,7 +457,7 @@ tailwind.config = {
     <!-- Desktop Tabs -->
     <div class="hidden lg:flex items-center justify-center gap-2 py-3">
         <button id="tab-usda" onclick="switchTab('usda')" class="tab-btn active">
-            <i class="fas fa-file-alt text-xs"></i><span data-i18n="nav_usda_report">Data Laporan USDA</span>
+            <i class="fas fa-file-alt text-xs"></i><span data-i18n="nav_usda_report">Data Laporan BPS - USDA</span>
         </button>
         <button id="tab-historical" onclick="switchTab('historical')" class="tab-btn inactive">
             <i class="fas fa-chart-line text-xs"></i><span data-i18n="nav_historical">Clustering Berita Kopi Terkini</span>
@@ -467,7 +469,7 @@ tailwind.config = {
     <!-- Mobile Tabs -->
     <div class="lg:hidden flex items-center gap-2 py-3 overflow-x-auto">
         <button id="tab-usda-mobile" onclick="switchTab('usda')" class="tab-btn active whitespace-nowrap">
-            <i class="fas fa-file-alt text-xs"></i><span data-i18n="nav_usda_report">Data Laporan USDA</span>
+            <i class="fas fa-file-alt text-xs"></i><span data-i18n="nav_usda_report">Data Laporan BPS - USDA</span>
         </button>
         <button id="tab-historical-mobile" onclick="switchTab('historical')" class="tab-btn inactive whitespace-nowrap">
             <i class="fas fa-chart-line text-xs"></i><span data-i18n="nav_historical">Clustering Berita</span>
@@ -487,7 +489,7 @@ tailwind.config = {
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
     <div class="text-center mb-12">
         <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase" data-i18n="usda_label">Data Resmi</span>
-        <h2 class="section-title mt-2" data-i18n="usda_title">Laporan USDA Kopi Indonesia</h2>
+        <h2 class="section-title mt-2" data-i18n="usda_title">Data Laporan BPS - USDA</h2>
         <p class="text-lg text-coffee-500 max-w-3xl mx-auto mt-4" data-i18n="usda_desc">
             Perkembangan produksi, ekspor, dan pasar kopi Indonesia berdasarkan data resmi USDA Foreign Agricultural Service (FAS).
         </p>
@@ -548,7 +550,7 @@ function loadLivePSD() {
         .catch(function () { var box = document.getElementById("psd-cards"); if (box) box.innerHTML = '<div class="col-span-full text-sm text-coffee-400">Data PSD belum tersedia &mdash; jalankan workflow Update-Coffee-Data.</div>'; });
 }
 </script>
-<!-- PANEL BPS (dari engine) — v2026.09.26-4 -->
+<!-- PANEL BPS (dari engine) — v2026.09.26-7 -->
 <div class="card p-6 md:p-8 mb-12">
     <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 flex items-center gap-2 flex-wrap">
         <i class="fas fa-landmark text-coffee-500"></i>
@@ -570,16 +572,25 @@ function loadBPSPanel() {
             if (ek.status === "Error") { box.innerHTML = '<div class="text-coffee-500">' + String(ek.message || "").replace(/</g, "&lt;").slice(0, 150) + '</div>'; return; }
             if (Array.isArray(ek.bulanan) && ek.bulanan.length) {
                 var d = ek.bulanan[ek.bulanan.length - 1];
-                box.innerHTML = "<strong>" + d.bulan + " " + ek.tahun + ":</strong> USD " + Number(d.nilaiUSD).toLocaleString("id-ID") + (d.nettoKg ? " · " + Number(d.nettoKg).toLocaleString("id-ID") + " kg" : "");
+                var usdN = Number(d.nilaiUSD);
+                var usdTxt = (d.nilaiUSD === null || d.nilaiUSD === undefined || isNaN(usdN)) ? String(d.nilaiUSD === null || d.nilaiUSD === undefined ? "-" : d.nilaiUSD).replace(/</g, "&lt;") : usdN.toLocaleString("id-ID");
+                var kgTxt = "";
+                if (d.nettoKg !== undefined && d.nettoKg !== null && d.nettoKg !== "") {
+                    var kgN = Number(d.nettoKg);
+                    kgTxt = " · " + (isNaN(kgN) ? String(d.nettoKg).replace(/</g, "&lt;") : kgN.toLocaleString("id-ID")) + " kg";
+                }
+                box.innerHTML = "<strong>" + String(d.bulan || "").replace(/</g, "&lt;") + " " + String(ek.tahun || "").replace(/</g, "&lt;") + ":</strong> USD " + usdTxt + kgTxt;
                 return;
             }
             try {
                 var m = ek.mentah || {};
                 var lists = Object.keys(m).map(function (k) { return m[k]; }).filter(Array.isArray);
                 var names = [];
-                lists.forEach(function (L) { L.slice(0, 5).forEach(function (r2) { var n = r2 && (r2.turvar || r2.name || r2.nama || r2.title || r2.th); if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim()); }); });
+                lists.forEach(function (L) { L.slice(0, 5).forEach(function (r2) { var n = r2 && (r2.turvar || r2.name || r2.nama || r2.title); if (n && names.indexOf(String(n).trim()) === -1) names.push(String(n).trim()); }); });
                 var tahun = ""; lists.forEach(function (L) { L.forEach(function (r2) { if (r2 && r2.th && !tahun) tahun = String(r2.th); }); });
-                box.innerHTML = names.length ? "<strong>" + names.slice(0, 5).join(", ") + "</strong>" + (names.length > 5 ? " +" + (names.length - 5) : "") + (tahun ? " &middot; tahun " + tahun : "") : "Data tersedia (" + (ek.data || []).length + " entri).";
+                box.innerHTML = names.length
+                    ? '<ul class="list-disc pl-5 space-y-1">' + names.slice(0, 8).map(function (n2) { return "<li>" + String(n2).replace(/</g, "&lt;") + "</li>"; }).join("") + '</ul>' + (names.length > 8 ? '<div class="text-xs text-coffee-400 mt-1">+' + (names.length - 8) + ' lainnya</div>' : "") + (tahun ? '<div class="text-xs text-coffee-400 mt-1">Tahun tersedia: ' + String(tahun).replace(/</g, "&lt;") + '</div>' : "")
+                    : "Data tersedia (" + (ek.data || []).length + " entri).";
             } catch (e) { box.textContent = "Data BPS tersedia."; }
         })
         .catch(function () { var b = document.getElementById("bps-cards"); if (b) b.innerHTML = '<div class="text-coffee-400">Data BPS belum tersedia.</div>'; });
