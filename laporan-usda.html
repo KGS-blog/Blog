@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://KGS-blog.github.io/Update-Coffee-Data/BERITA_KLASTER_FINAL.js"></script>
 <script>
 // ========== BILINGUAL SYSTEM ==========
 let currentLang = "id";
@@ -246,101 +247,71 @@ function switchTab(tabName) {
 
 
 
-// ===== KLASTER BERITA + ANALISIS DASHBOARD — v2026.09.27-15 (OPTIMIZED: 810+ KEYWORDS WITH SPECIFICITY) =====
-const BERITA_KLASTER = [
-    // CLUSTER 1: Harga & Pasar — 51 keywords (was 21)
-    { nama: "Harga & Pasar", slug: "harga-pasar", analisis_id: "harga-komoditas", nama_en: "Prices & Market", kunci: ["harga","ekspor","impor","fob","kurs","dolar","lelang","nilai ekspor","penurunan harga","kenaikan harga","stok","c-market","mahal","murah","ico","new york","london","futures","forward contract","spot price","harga spot","supply","demand","shortage","kekurangan","surplus","oversupply","purchasing power","daya beli","affordability","supply chain","rantai pasokan","logistics","pengiriman","shipping","margin","keuntungan","profit","loss","rugi","revenue","pendapatan","wholesale","retail","distributor","buyer","seller","pembeli","penjual","competition","kompetisi","market share","pangsa pasar","price movement","pergerakan harga","volatility","volatilitas"] },
+// ===== KLASTER BERITA — IMPORTED FROM BERITA_KLASTER_FINAL.js =====
+// Note: BERITA_KLASTER constant & clustering logic moved to separate file
+// Version: v2026.09.27-15 (810+ keywords)
+// BERITA_KLASTER constant akan di-load dari BERITA_KLASTER_FINAL.js
+// Hasil clustering tersimpan di window.BERITA_HASIL_CLUSTERING
 
-    // CLUSTER 2: Produksi & Panen — 64 keywords (was 60) — ADDED: program peremajaan, rejuvenasi, replanting program, peremajaan kebun
-    { nama: "Produksi & Panen", slug: "produksi-panen", analisis_id: "hilirisasi-produksi", nama_en: "Production & Harvest", kunci: ["panen","produksi","produktivitas","kebun","cuaca","kemarau","hujan","la nina","el nino","gagal panen","bibit","tanam","areal","luas areal","budidaya","pertanian","agronomic","agronomi","farming","farm","plantation","pemeliharaan kebun","manajemen kebun","perawatan tanaman","karakteristik kebun","farm characteristics","shade grown","monoculture","intercropping","companion planting","soil","tanah","pH","nutrient","nitrogen","phosphorus","potassium","hama","penyakit","pest","disease","fungal","jamur","karat kopi","coffee leaf rust","berry borer","pest control","pestisida","organic","varietas","arabica","robusta","hybrid","breed","genetic","genetika","breeding program","selection","seleksi","yield improvement","altitude","ketinggian","elevation","climate","iklim","terroir","temperature","temperatur","precipitation","curah hujan","picker","petik","hand picked","selective picking","strip picking","mechanical harvest","machine harvest","mesin panen","yield","hasil panen","ton","ton per hectare","annual production","crop forecast","proyeksi panen","harvest season","musim panen","petani","farmer","smallholder","cooperative","koperasi","group farming","profil rasa","flavor profile","taste profile","sensory characteristics","program peremajaan","rejuvenasi","replanting program","peremajaan kebun"] },
-
-    // CLUSTER 3: Kebijakan & Regulasi — 42 keywords (was 12)
-    { nama: "Kebijakan & Regulasi", slug: "kebijakan-regulasi", analisis_id: null, nama_en: "Policy & Regulation", kunci: ["eudr","tarif","regulasi","pemerintah","kementan","bea cukai","subsidi","peraturan","izin","kemendag","sertifikasi","standar","bappebti","ipc","ica","ico","aeki","kemenlu","kemenkeu","kemenperin","presiden","menteri","kementerian","certification","sertifikat","eco-label","ecolabel","fair trade","rainforest alliance","organic certification","utz certified","carbon footprint","jejak karbon","sustainability","berkelanjutan","environmental impact","dampak lingkungan","sni","iso","quality standard","standar mutu","food safety","pesticide residue","residual pestisida","maximum residue level","heavy metals","logam berat","mycotoxin","kontaminasi","trade war","tariff","trade agreement","perjanjian dagang","protectionist","proteksionisme","wto","asean","kerjasama dagang","export license","izin ekspor","import duty","bea masuk","climate change","perubahan iklim","climate adaptation","mitigasi","water rights","hak air","irrigation","irigasi","labor","tenaga kerja","minimum wage","upah minimum","working conditions","child labor","buruh anak","forced labor","land rights","hak lahan","land reform","agrarian","kepemilikan lahan","community rights","indigenous","adat"] },
-
-    // CLUSTER 4: Event & Kompetisi — 27 keywords (was 24) — ADDED: coffee party, pesta kopi, party
-    { nama: "Event & Kompetisi", slug: "event-kompetisi", analisis_id: "brand-event", nama_en: "Events & Competitions", kunci: ["event","festival","pameran","gjaw","kompetisi","cupping","workshop","lomba","expo","juara","championship","champion","barista championship","barista competition","latte art competition","cupping competition","roasting competition","brewing championship","coffee in good spirits","igs","wbc","world barista championship","bisazza","specialty coffee competition","pameran kopi","coffee exhibition","trade show","conference","seminar","training session","sesi pelatihan","convention","konvensi","summit","forum","gathering","festival kopi","coffee festival","coffee culture","budaya kopi","tasting event","event pencicipan","coffee tasting","coffee tour","penghargaan","award","recognition","trophy","hadiah","best coffee","kopi terbaik","best barista","best roaster","finalist","winner","pemenang","sponsor","organizer","penyelenggara","host","partnership","kerjasama","coffee party","pesta kopi","party"] },
-
-    // CLUSTER 5: Barista & Teknik Seduh — 149 keywords (was 13)
-    { nama: "Barista & Teknik Seduh", slug: "barista-teknik-seduh", analisis_id: null, nama_en: "Barista & Brewing", kunci: ["barista","brewing","seduh","latte","manual brew","v60","grinder","espresso","pour over","teknik seduh","tata cara","latte art","drip","mesin kopi","coffee machine","espresso machine","mesin espresso","moka pot","moka","french press","aeropress","chemex","kalita wave","cloth filter","filter kain","paper filter","metal filter","saringan","portafilter","basket","shower head","group head","tamper","scale","timbangan","timer","thermometer","barometer","water heater","pemanas air","steam wand","milk frother","tamping","distribusi","distribution","water temperature","temperatur air","brew time","waktu seduh","extraction","ekstrasi","contact time","grind size","ukuran penggilingan","coarse","fine","medium","water quality","kualitas air","mineral content","ph","yield","ratio","perbandingan","coffee to water","coffee water ratio","channeling","blooming","pre-infusion","flow rate","laju aliran","americano","cappuccino","flat white","macchiato","ristretto","lungo","cortado","affogato","mocha","cold brew","cold drip","iced coffee","ice latte","specialty drink","minuman spesial","signature drink","latte art","seni kopi","rosettas","tulips","hearts","milk steaming","steam susu","microfoam","frothing","consistency","texture","temperature","technique","skill","coffee knowledge","pengetahuan kopi","sensory","tasting notes","body","acidity","bitterness","sweetness","flavor","aroma","aftertaste","mouthfeel","balance","complexity","tasting wheel","sensory profile","cup score","sca","specialty coffee association","certification","certified","level 1","level 2","level 3","course","kursus","training","pelatihan","barista school","sekolah barista","best practice","standard operating procedure","sop","quality control","kontrol kualitas","sanitation","kebersihan","maintenance","perawatan"] },
-
-    // CLUSTER 6: Riset & Tren Konsumen — 101 keywords (was 97) — ADDED: aman diminum, kesehatan kopi, daily consumption safe, berapa cangkir
-    { nama: "Riset & Tren Konsumen", slug: "riset-tren-konsumen", analisis_id: "konsumsi-domestik", nama_en: "Consumer Research & Trends", kunci: ["beverage","minuman","consumption","konsumsi","consume","jakpat","survei","riset","tren","preferensi","survey","konsumen","research","penelitian","study","studi","analysis","analisis","data","statistics","statistik","trend","insight","consumer behavior","perilaku konsumen","consumer habits","kebiasaan konsumen","consumption pattern","pola konsumsi","drinking habit","kebiasaan minum","consumption rate","laju konsumsi","per capita","per capita consumption","market size","ukuran pasar","market value","nilai pasar","frequency","frekuensi","occasion","kesempatan","place of consumption","tempat minum","at home","di rumah","out of home","millennial","gen z","generation","age group","kelompok usia","urban","perkotaan","rural","pedesaan","metropolitan","income level","tingkat pendapatan","socioeconomic","professional","student","pekerja","mahasiswa","preference","preferensi","choice","pilihan","like","dislike","satisfaction","kepuasan","brand preference","preferensi merek","brand loyalty","kesetiaan merek","quality perception","persepsi kualitas","value for money","health","kesehatan","wellness","benefit","manfaat","caffeine","kafein","antioxidant","antioksidan","organic","organik","natural","alami","health-conscious","dietary","diet","fasting","puasa","intermittent fasting","nutrition","nutrisi","calorie","kalori","lifestyle","gaya hidup","culture","budaya","habit","kebiasaan","morning ritual","ritual pagi","social","sosial","gathering","coffee culture","budaya kopi","coffee community","komunitas kopi","specialty","specialty coffee","third wave","artisan","emerging trend","tren baru","rising trend","growth","pertumbuhan","decline","penurunan","shift","pergeseran","change","perubahan","momentum","acceleration","akselerasi","covid impact","pandemic impact","dampak pandemi","demographic","demografi","geographic","geografis","regional","national","nasional","international","internasional","urban growth","pertumbuhan perkotaan","migration","migrasi","aman diminum","kesehatan kopi","daily consumption safe","berapa cangkir","cup per day"] },
-
-    // CLUSTER 7: Kedai, Konsumsi & Gaya Hidup — 82+ keywords (was 80+) — ADDED: homey, coffee homey
-    { nama: "Kedai, Konsumsi & Gaya Hidup", slug: "kedai-konsumsi-gaya-hidup", analisis_id: "konsumsi-domestik", nama_en: "Cafes, Consumption & Lifestyle", kunci: ["kedai","kafe","gerai","ritel","cold brew","menu","franchise","coffee shop","cafe","coffee shop","kafe kopi","espresso bar","specialty coffee","third wave","artisan coffee","independent cafe","chain cafe","jaringan kafe","kiosk","stand","food truck","mobile","roastery","roastery cafe","traditional","modern","retail","ritel","store","toko","outlet","cabang","franchise","franchisee","franchisor","location","lokasi","strategic location","lokasi strategis","interior","ambiance","suasana","design","desain","seating","tempat duduk","counter","outdoor","indoor","menu","menu kopi","drink menu","food menu","menu makanan","specialty drink","minuman spesial","signature","food pairing","pasangan makanan","snack","dessert","pastry","breakfast","sarapan","lunch","dinner","tea","teh","morning","pagi","afternoon","sore","evening","malam","work","kerja","meeting","pertemuan","social","sosial","gathering","berkumpul","date","kencan","study","belajar","relaxation","santai","leisure","experience","pengalaman","lifestyle","gaya hidup","culture","community","komunitas","social space","ruang sosial","hangout","tempat nongkrong","gathering place","rumah kedua","habit forming","routine","rutinitas","business","bisnis","owner","pemilik","entrepreneur","wirausaha","profit","keuntungan","revenue","pendapatan","expansion","ekspansi","growth","pertumbuhan","scaling","service","layanan","customer service","pelayanan pelanggan","customer satisfaction","kepuasan pelanggan","loyalty program","membership","keanggotaan","rewards","reward program","quality","kualitas","consistency","standards","target market","pasar target","urban professional","office worker","wifi","workspace","workstation","meeting room","ruang rapat","delivery","pengiriman","takeaway","takeout","dine-in","street coffee","kaki lima","warung kopi","tempat kopi enak","kopi enak","spot kopi","kedai pinggir jalan","17 street","street vendor","pedagang kaki lima","homey","coffee homey"] },
-
-    // CLUSTER 8: Ekspor & Daya Saing — 90+ keywords (was 6) — ADDED REGIONAL ORIGINS & EXPORT QUALITY
-    { nama: "Ekspor & Daya Saing", slug: "ekspor-daya-saing", analisis_id: "ekspor-daya-saing", nama_en: "Exports & Competitiveness", kunci: ["ekspor","daya saing","brand","merek","internasional","global","export","exportable","export-ready","export market","import","importer","buyer","pembeli","customer","shipment","port","pelabuhan","container","logistics","logistik","supply chain","rantai pasokan","trade","perdagangan","trader","trading house","world market","pasar dunia","global market","export destination","developed country","developing country","neighbor country","negara tetangga","us market","eu market","asian market","pasar asia","japan","jepang","korea","australia","china","cina","india","vietnam","vietnam","brazil","brasil","kolombia","peru","uganda","wholesale","wholesale buyer","distributor","retailer","specialty","specialty coffee","premium","premium coffee","high end","single origin","single origin","single estate","terroir","microlot","micro lot","limited edition","edisi terbatas","roaster","roasting","roasted","specialty roaster","cup score","cupping score","sca score","q grader","defect","defective bean","cacat","quality defect","competitive advantage","keunggulan kompetitif","differentiation","unique selling point","usp","positioning","cost leadership","innovation","inovasi","quality","kualitas","reliability","keandalan","consistency","brand","brand image","reputation","reputasi","recognition","branding","brand building","brand awareness","brand equity","certification","award","penghargaan","akreditasi","market share","pangsa pasar","market position","posisi pasar","competitor","kompetitor","competition","kompetisi","market trend","tren pasar","market growth","pertumbuhan pasar","opportunity","peluang","threat","ancaman","price premium","premium harga","pricing strategy","strategi harga","value added","nilai tambah","value proposition","value chain","profit margin","margin keuntungan","fair trade","ethical","etis","sustainability","keberlanjutan","eco-friendly","ramah lingkungan","organic","shade grown","carbon neutral","carbon offset","carbon footprint","market intelligence","market analysis","benchmarking","best practice","industry standard","government support","dukungan pemerintah","export incentive","trade mission","trade show","promotion","promosi","kopi gayo","gayo coffee","aceh coffee","kopi aceh","regional origin","coffee origin","dinobatkan","terbaik di asia","peringkat dunia","kualitas ekspor","award winner","award international"] },
-
-    // CLUSTER 9: Pendidikan & Industri — 97 keywords (was 6)
-    { nama: "Pendidikan & Industri", slug: "edukasi-industri", analisis_id: "edukasi-industri", nama_en: "Education & Industry", kunci: ["edukasi","pendidikan","industri","akademi","kurikulum","pelatihan","education","training","workshop","course","kursus","seminar","webinar","school","sekolah","academy","akademi","institute","lembaga","center","pusat","university","universitas","college","vocational","barista school","sekolah barista","coffee school","roasting course","cupping course","brewing course","sensory training","specialty coffee association","sca","certification","world coffee event","wce","world barista championship","wbc","curriculum","kurikulum","syllabus","course content","materi","module","modul","lesson","pelajaran","unit","practical","praktik","theory","teori","hands-on","assessment","ujian","exam","test","evaluation","penilaian","trainer","pelatih","instructor","instruktur","facilitator","expert","ahli","mentor","master","champion","certification","sertifikasi","certified","tersertifikasi","q grader","q processor","level 1","level 2","level 3","accredited","terakreditasi","credential","kredensial","standard","standar","requirement","persyaratan","compliance","professional development","pengembangan profesional","career path","jalur karir","advancement","kemajuan","skill development","pengembangan keterampilan","upskilling","continuous learning","lifelong learning","pembelajaran berkelanjutan","industry knowledge","pengetahuan industri","best practice","innovation","inovasi","technology","teknologi","research","penelitian","development","pengembangan","pilot program","program percobaan","case study","studi kasus","industry development","pengembangan industri","industry growth","industry association","asosiasi industri","trade body","aeki","ico","ica","ici","iwic","lobbying","advocacy","kampanye","policy advocacy","industry news","berita industri","industry report","student","peserta","participant","trainee","apprentice","graduate","alumni","peer learning","collaboration","network","networking","community","komunitas","impact","dampak","outcome","hasil","effectiveness","efektivitas","satisfaction","kepuasan","feedback","testimonial","success rate","tingkat keberhasilan","graduation rate","online","virtual","distance learning","e-learning","video tutorial","online course","platform","knowledge sharing","berbagi pengetahuan","documentation","sop","standard operating procedure","guide","panduan","manual","reference","literature"] },
-
-    // CLUSTER 10: Brand Global — 110+ keywords (was 6) — ADDED LOCAL & EMERGING BRANDS
-    { nama: "Brand Global", slug: "brand-global", analisis_id: "brand-global", nama_en: "Global Brands", kunci: ["brand","merek","global","internasional","posisi","repositioning","brand name","merek","merek global","multinational brand","international brand","retail brand","coffee chain","coffee company","startup","startup kopi","new brand","merek baru","starbucks","coffee bean","peets","intelligentsia","blue bottle","lavazza","nespresso","keurig","nescafe","folgers","maxwell house","illy","illy coffee","segafredo","kimbo","victor","kraft","jacobs","jacobs douwe","fore coffee","litterly coffee","bacha coffee","draft coffee","taname ra coffee","positioning","market position","brand positioning","repositioning","rebranding","brand refresh","brand evolution","brand identity","identitas merek","brand image","brand value","brand equity","brand strength","brand loyalty","marketing","pemasaran","advertising","iklan","campaign","kampanye","promotion","promosi","brand awareness","awareness merek","communication","komunikasi","messaging","social media","media sosial","digital marketing","pemasaran digital","influencer","partnership","kerjasama","corporate","korporat","company","perusahaan","corporation","ceo","cfo","executive","eksekutif","leadership","acquisition","akuisisi","merger","investment","funding","pendanaan","ipo","public company","expansion","ekspansi","growth","pertumbuhan","opening","new store","toko baru","new market","pasar baru","market entry","penetrasi pasar","global expansion","distribution","distribusi","franchise","joint venture","partnership","kerjasama","innovation","inovasi","product launch","peluncuran produk","new product","produk baru","product line","lini produk","ready-to-drink","rtd","instant coffee","coffee pod","capsule","kapsul","equipment","peralatan","technology","sustainability","keberlanjutan","csr","corporate social responsibility","environmental","lingkungan","eco-friendly","green","organic","fair trade","ethical sourcing","ethical","responsible","partnership","kerjasama","collaboration","kolaborasi","co-branding","licensing","supplier","distributor","retailer","retail partner","news","berita","announcement","pengumuman","statement","press release","siaran pers","press conference","achievement","pencapaian","award","penghargaan","recognition","akreditasi","customer experience","pengalaman pelanggan","loyalty program","membership","rewards","satisfaction","kepuasan","customer service","layanan pelanggan","price","harga","pricing","pricing strategy","premium pricing","value","value proposition","discount","sale","penjualan","revenue","pendapatan","sales growth","pertumbuhan penjualan","diskon","promo"] }
-];
 function loadBeritaAnalisis() {
     var L = currentLang === "en" ? { kosong: "No news yet.", lainnya: "more in this cluster", arsip: "oldest archived (see berita-all)", kuat: "Strong dominance — market attention concentrated here.", signif: "Significant topic — worth monitoring.", pendukung: "Supporting topic — secondary context." }
         : { kosong: "Belum ada berita.", lainnya: "berita lainnya di klaster ini", arsip: "terlama terarsip (lihat berita-all)", kuat: "Dominasi kuat — perhatian pasar terpusat di sini.", signif: "Topik signifikan — layak dipantau.", pendukung: "Topik pendukung — konteks sekunder." };
     var det2 = document.getElementById("berita-klaster");
     if (!det2) return;
-    fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/berita-all.json", { cache: "no-store" })
-        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-        .then(function (j) {
-            var mentah = (j && j.artikel) || [];
-            // v2026.09.26-9: semua artikel ditampilkan & terarsip (NewsData wajib tersimpan) — tanpa filter judul
-            var artikel = mentah.slice();
-            if (!artikel.length) { var pesan = (j && j.message) ? String(j.message).slice(0, 140) : L.kosong; det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + pesan.replace(/</g, "&lt;") + '</div>'; return; }
-            var kl = BERITA_KLASTER.map(function (k) { return { nama: k.nama, nama_en: k.nama_en, kunci: k.kunci, items: [] }; });
-            var lainnya = { nama: currentLang === "en" ? "Others" : "Lainnya", items: [] };
-            artikel.forEach(function (a) {
-                var t = String(a.judul || "").toLowerCase();
-                var hit = kl.filter(function (k) { return k.kunci.some(function (kw) { return t.indexOf(kw) !== -1; }); })[0];
-                (hit || lainnya).items.push(a);
+
+    var maxRetry = 50;
+    var retryCount = 0;
+
+    var checkClustering = function() {
+        if (window.BERITA_HASIL_CLUSTERING) {
+            displayClustering();
+        } else if (retryCount < maxRetry) {
+            retryCount++;
+            setTimeout(checkClustering, 100);
+        } else {
+            det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Clustering data tidak tersedia</div>';
+        }
+    };
+
+    var displayClustering = function() {
+        var hasil = window.BERITA_HASIL_CLUSTERING;
+        if (!hasil.success || !hasil.klaster.length) {
+            var pesan = hasil.error || L.kosong;
+            det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + pesan.replace(/</g, "&lt;") + '</div>';
+            return;
+        }
+
+        var total = hasil.total_artikel;
+        var semua = hasil.klaster.slice();
+
+        if (hasil.lainnya_jumlah > 0) {
+            semua.push({
+                nama: currentLang === "en" ? "Others" : "Lainnya",
+                nama_en: "Others",
+                items: hasil.lainnya_items,
+                jumlah: hasil.lainnya_jumlah,
+                persen: hasil.lainnya_persen
             });
-            // v2026.09.26-9: gali sub-klaster dinamis dari "Lainnya" — topik berulang >=2 artikel jadi grup baru, diulang sampai habis
-            lainnya.items.sort(function (a, b) { return String(b.tanggal || "").localeCompare(String(a.tanggal || "")); });
-            var STOPW = { yang:1, untuk:1, dengan:1, dari:1, pada:1, dalam:1, akan:1, adalah:1, dan:1, atau:1, juga:1, serta:1, the:1, for:1, with:1, from:1, this:1, that:1, and:1, are:1, was:1, coffee:1, kopi:1, indonesia:1, indonesian:1, jakarta:1, jpg:1, jpeg:1, png:1, com:1, net:1, www:1, https:1, http:1, berita:1, artikel:1, news:1, tahun:1, hari:1, ini:1, baru:1 };
-            var subK = [], subN = 0;
-            while (lainnya.items.length >= 2 && subN < 15) {
-                var freq = {};
-                lainnya.items.forEach(function (a) {
-                    var seen = {};
-                    String(a.judul || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).forEach(function (w) {
-                        if (w.length < 4 || STOPW[w] || /^\d+$/.test(w)) return;
-                        if (!seen[w]) { seen[w] = 1; freq[w] = (freq[w] || 0) + 1; }
-                    });
-                });
-                var best = null, bestC = 1;
-                Object.keys(freq).forEach(function (w) { if (freq[w] >= 2 && freq[w] > bestC) { best = w; bestC = freq[w]; } });
-                if (!best) break;
-                subN++;
-                var cap = best.charAt(0).toUpperCase() + best.slice(1);
-                var grp = { nama: "Topik: " + cap, nama_en: "Topic: " + cap, items: [] };
-                var rest = [];
-                lainnya.items.forEach(function (a) {
-                    if (String(a.judul || "").toLowerCase().indexOf(best) !== -1) grp.items.push(a); else rest.push(a);
-                });
-                subK.push(grp);
-                lainnya.items = rest;
-            }
-            var semua = kl.concat(subK, (lainnya.items.length ? [lainnya] : []));
-            var total = artikel.length;
-            var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
-            var itemLink = function (a) {
-                var href = esc(a.tautan);
-                if (!href) return '<div class="block text-xs text-coffee-700 py-1 px-1 border-b border-coffee-50 break-words whitespace-normal leading-snug" title="' + esc(a.judul) + '">' + esc(a.judul) + '</div>';
-                return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 px-1 border-b border-coffee-50 break-words whitespace-normal leading-snug" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
-            };
-            det2.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' + semua.filter(function (k) { return k.items.length; }).map(function (k) {
-                var pct = Math.round(k.items.length / total * 100);
-                var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
-                var tampil = k.items.slice(0, 30); var sisa = k.items.length - 30;
-                return '<div class="card p-3 md:p-4 min-w-0"><div class="flex flex-col md:flex-row md:items-start md:justify-between gap-1.5 md:gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-xs md:text-sm leading-tight min-w-0 break-words">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap flex-shrink-0">' + k.items.length + ' &middot; ' + pct + '%</span></div>' +
-                    '<p class="text-[10px] md:text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div class="min-w-0 space-y-0">' + tampil.map(itemLink).join("") + '</div>' +
-                    (sisa > 0 ? '<div class="text-[10px] text-coffee-400 mt-1">+' + sisa + ' ' + L.arsip + '</div>' : '') + '</div>';
-            }).join("") + '</div>';
-        })
-        .catch(function () { det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + L.kosong + '</div>'; });
+        }
+
+        var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
+        var itemLink = function (a) {
+            var href = esc(a.tautan);
+            if (!href) return '<div class="block text-xs text-coffee-700 py-1 px-1 border-b border-coffee-50 break-words whitespace-normal leading-snug" title="' + esc(a.judul) + '">' + esc(a.judul) + '</div>';
+            return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 px-1 border-b border-coffee-50 break-words whitespace-normal leading-snug" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
+        };
+
+        det2.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' + semua.map(function (k) {
+            var pct = k.persen || Math.round((k.jumlah || k.items.length) / total * 100);
+            var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
+            var tampil = k.items.slice(0, 30); var sisa = (k.items.length || 0) - 30;
+            return '<div class="card p-3 md:p-4 min-w-0"><div class="flex flex-col md:flex-row md:items-start md:justify-between gap-1.5 md:gap-2 mb-1.5"><h3 class="font-serif font-bold text-coffee-900 text-xs md:text-sm leading-tight min-w-0 break-words">' + (currentLang === "en" && k.nama_en ? k.nama_en : k.nama) + '</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-coffee-100 text-coffee-700 whitespace-nowrap flex-shrink-0">' + (k.jumlah || k.items.length) + ' &middot; ' + pct + '%</span></div>' +
+                '<p class="text-[10px] md:text-[11px] text-coffee-500 mb-2">' + narasi + '</p><div class="min-w-0 space-y-0">' + tampil.map(itemLink).join("") + '</div>' +
+                (sisa > 0 ? '<div class="text-[10px] text-coffee-400 mt-1">+' + sisa + ' ' + L.arsip + '</div>' : '') + '</div>';
+        }).join("") + '</div>';
+    };
+
+    checkClustering();
 }
 function loadAnalisisDashboard() {
     fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/analisis-arsip.json", { cache: "no-store" })
