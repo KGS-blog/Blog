@@ -13,7 +13,7 @@
 <script>
 // ========== BILINGUAL SYSTEM ==========
 let currentLang = "id";
-
+ 
 const translations = {
     // Nav & Global
     "nav_usda_report": { id: "Data Laporan BPS - USDA", en: "BPS - USDA Report Data" },
@@ -21,7 +21,7 @@ const translations = {
     "nav_update": { id: "Report Kopi Terkini", en: "Latest Coffee Report" },
     "nav_back": { id: "Kembali ke Blog", en: "Back to Blog" },
     "nav_calc": { id: "Kalkulator", en: "Calculator" },
-
+ 
     // USDA Section
     "usda_label": { id: "Data Resmi", en: "Official Data" },
     "usda_title": { id: "Data Laporan BPS - USDA", en: "BPS - USDA Coffee Report" },
@@ -57,7 +57,7 @@ const translations = {
     "usda_yoy_up2": { id: "+8.3% YoY", en: "+8.3% YoY" },
     "usda_yoy_up3": { id: "+1.0% YoY", en: "+1.0% YoY" },
     "usda_yoy_down": { id: "-8.1% YoY", en: "-8.1% YoY" },
-
+ 
     // Historical Section
     "hist_label": { id: "Data Historis", en: "Historical Data" },
     "hist_title": { id: "Clustering Berita Kopi Terkini", en: "Coffee News Clustering" },
@@ -96,7 +96,7 @@ const translations = {
     "hist_policy": { id: "Policy & Currency", en: "Policy & Currency" },
     "hist_crop": { id: "Crop Cycle Calendar", en: "Crop Cycle Calendar" },
     "hist_trigger": { id: "Trigger Threshold", en: "Trigger Threshold" },
-
+ 
     // Update Indonesia Section
     "upd_label": { id: "Update Terkini", en: "Latest Update" },
     "upd_title": { id: "Analisis Pasar Kopi Indonesia", en: "Indonesian Coffee Market Analysis" },
@@ -162,7 +162,7 @@ const translations = {
     "upd_arabika_usd": { id: "Arabika USD/kg", en: "Arabica USD/kg" },
     "upd_kurs": { id: "Kurs IDR/USD", en: "IDR/USD Rate" },
     "upd_footer": { id: "Sumber Data: BPS · USDA FAS · AEKI · Bappebti · Kementan · BMKG · ICO | Mei 2026", en: "Data Sources: BPS · USDA FAS · AEKI · Bappebti · Ministry of Agriculture · BMKG · ICO | May 2026" },
-
+ 
     // Footer
     "footer_name": { id: "Ganjar Satyanagara", en: "Ganjar Satyanagara" },
     "footer_role": { id: "Coffee Researcher", en: "Coffee Researcher" },
@@ -171,12 +171,12 @@ const translations = {
     "footer_usda": { id: "Laporan USDA", en: "USDA Report" },
     "footer_copyright": { id: "2026 Ganjar Satyanagara", en: "2026 Ganjar Satyanagara" }
 };
-
+ 
 function setLanguage(lang) {
     currentLang = lang;
     document.getElementById("btn-id").className = lang === "id" ? "lang-btn active" : "lang-btn inactive";
     document.getElementById("btn-en").className = lang === "en" ? "lang-btn active" : "lang-btn inactive";
-
+ 
     // Update all elements with data-i18n
     document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
@@ -188,13 +188,13 @@ function setLanguage(lang) {
             }
         }
     });
-
+ 
     // Update tab labels + re-render kartu dinamis (v2026.09.26-7: assert, tidak gagal senyap)
     try { updateTabLabels(); } catch (e1) { console.error("[setLanguage] updateTabLabels gagal:", e1); }
     try { loadBeritaAnalisis(); } catch (e2) { console.error("[setLanguage] loadBeritaAnalisis gagal:", e2); }
     try { loadAnalisisDashboard(); } catch (e3) { console.error("[setLanguage] loadAnalisisDashboard gagal:", e3); }
 }
-
+ 
 function updateTabLabels() {
     const tabs = ["tab-usda", "tab-historical", "tab-update"];
     const keys = ["nav_usda_report", "nav_historical", "nav_update"];
@@ -203,7 +203,7 @@ function updateTabLabels() {
         if (el) { const sp = el.querySelector("span"); if (sp) sp.textContent = translations[keys[idx]][currentLang]; }
     });
 }
-
+ 
 function switchTab(tabName) {
     // Hide all sections
     ["section-usda", "section-historical", "section-update"].forEach(function(id) {
@@ -213,14 +213,14 @@ function switchTab(tabName) {
     // Show target section
     var target = document.getElementById("section-" + tabName);
     if (target) target.classList.remove("hidden");
-
+ 
     // Reset ALL tab buttons to inactive
     var allTabs = document.querySelectorAll(".tab-btn");
     allTabs.forEach(function(el) {
         el.classList.remove("active");
         el.classList.add("inactive");
     });
-
+ 
     // Set active for both desktop and mobile versions
     var activeIds = ["tab-" + tabName, "tab-" + tabName + "-mobile"];
     activeIds.forEach(function(id) {
@@ -230,38 +230,38 @@ function switchTab(tabName) {
             el.classList.add("active");
         }
     });
-
+ 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
+ 
 // ========== USDA CHARTS ==========
-
-
+ 
+ 
 // ========== HISTORICAL CHARTS ==========
-
+ 
 // ========== UPDATE INDONESIA CHARTS ==========
-
-
+ 
+ 
 // ========== REFRESH FUNCTIONS ==========
-
-
-
+ 
+ 
+ 
 // ===== KLASTER BERITA — IMPORTED FROM BERITA_KLASTER_FINAL.js =====
 // Note: BERITA_KLASTER constant & clustering logic moved to separate file
 // Version: v2026.09.27-15 (810+ keywords)
 // BERITA_KLASTER constant akan di-load dari BERITA_KLASTER_FINAL.js
 // Hasil clustering tersimpan di window.BERITA_HASIL_CLUSTERING
-
+ 
 function loadBeritaAnalisis() {
     var L = currentLang === "en" ? { kosong: "No news yet.", lainnya: "more in this cluster", arsip: "oldest archived (see berita-all)", kuat: "Strong dominance — market attention concentrated here.", signif: "Significant topic — worth monitoring.", pendukung: "Supporting topic — secondary context." }
         : { kosong: "Belum ada berita.", lainnya: "berita lainnya di klaster ini", arsip: "terlama terarsip (lihat berita-all)", kuat: "Dominasi kuat — perhatian pasar terpusat di sini.", signif: "Topik signifikan — layak dipantau.", pendukung: "Topik pendukung — konteks sekunder." };
     var det2 = document.getElementById("berita-klaster");
     if (!det2) return;
-
+ 
     var maxRetry = 50;
     var retryCount = 0;
-
+ 
     var checkClustering = function() {
         if (window.BERITA_HASIL_CLUSTERING) {
             displayClustering();
@@ -272,7 +272,7 @@ function loadBeritaAnalisis() {
             det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Clustering data tidak tersedia</div>';
         }
     };
-
+ 
     var displayClustering = function() {
         var hasil = window.BERITA_HASIL_CLUSTERING;
         if (!hasil.success || !hasil.klaster.length) {
@@ -280,10 +280,10 @@ function loadBeritaAnalisis() {
             det2.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">' + pesan.replace(/</g, "&lt;") + '</div>';
             return;
         }
-
+ 
         var total = hasil.total_artikel;
         var semua = hasil.klaster.slice();
-
+ 
         if (hasil.lainnya_jumlah > 0) {
             semua.push({
                 nama: currentLang === "en" ? "Others" : "Lainnya",
@@ -293,14 +293,14 @@ function loadBeritaAnalisis() {
                 persen: hasil.lainnya_persen
             });
         }
-
+ 
         var esc = function (s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
         var itemLink = function (a) {
             var href = esc(a.tautan);
             if (!href) return '<div class="block text-xs text-coffee-700 py-1 px-1 border-b border-coffee-50 break-words whitespace-normal leading-snug" title="' + esc(a.judul) + '">' + esc(a.judul) + '</div>';
             return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" class="block text-xs text-coffee-700 hover:text-coffee-900 no-underline py-1 px-1 border-b border-coffee-50 break-words whitespace-normal leading-snug" title="' + esc(a.judul) + '">' + esc(a.judul) + '</a>';
         };
-
+ 
         det2.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' + semua.map(function (k) {
             var pct = k.persen || Math.round((k.jumlah || k.items.length) / total * 100);
             var narasi = pct >= 40 ? L.kuat : (pct >= 20 ? L.signif : L.pendukung);
@@ -310,7 +310,7 @@ function loadBeritaAnalisis() {
                 (sisa > 0 ? '<div class="text-[10px] text-coffee-400 mt-1">+' + sisa + ' ' + L.arsip + '</div>' : '') + '</div>';
         }).join("") + '</div>';
     };
-
+ 
     checkClustering();
 }
 function loadAnalisisDashboard() {
@@ -356,7 +356,7 @@ function loadAnalisisDashboard() {
                 var slotHtml = BERITA_KLASTER.map(function (k) {
                     var g = null;
                     var lookupKey = k.analisis_id;
-
+ 
                     // Try direct mapping first
                     if (lookupKey) {
                         g = byAnalisisId[lookupKey];
@@ -368,7 +368,7 @@ function loadAnalisisDashboard() {
                     } else {
                         console.log("[BERITA_KLASTER] " + k.nama + " — NO analisis_id mapping");
                     }
-
+ 
                     if (!g) return '<article class="card p-6 md:p-8 mb-8" style="border-style:dashed;border-color:#e0d5c5"><div class="mb-3"><span class="text-xs font-bold px-3 py-1 rounded-full bg-coffee-100 text-coffee-500">' + esc((currentLang === "en" && k.nama_en) ? k.nama_en : k.nama) + '</span></div><p class="text-sm text-coffee-400 italic">' + (currentLang === "en" ? "Analysis for this group is being prepared." : "Analisis grup ini sedang disiapkan.") + '</p></article>';
                     return renderGrup(g, (currentLang === "en" && k.nama_en) ? k.nama_en : k.nama, bt.periode || "");
                 }).join("");
@@ -383,7 +383,7 @@ function loadAnalisisDashboard() {
         })
         .catch(function () { var box = document.getElementById("klaster-ringkas"); if (box) box.innerHTML = '<div class="text-center py-6 text-coffee-400 text-sm">Analisis belum tersedia &mdash; upload data/analisis-berita.json ke repo.</div>'; });
 }
-
+ 
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", function() {
     setLanguage("id");
@@ -423,7 +423,7 @@ document.addEventListener("DOMContentLoaded", function() {
 }
 /* Override any legacy .header styles */
 .header { background: transparent !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
-
+ 
 /* ===== SOCIAL SHARE BAR ===== */
 .share-bar {
     display: inline-flex;
@@ -462,7 +462,7 @@ document.addEventListener("DOMContentLoaded", function() {
 .share-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
 .share-copy { background: #7d5f3e; }
 .share-btn i { pointer-events: none; }
-
+ 
 /* Dark section variant */
 .dark-section .share-label { color: #c9b89e; }
 .dark-section .share-copy { background: #b09473; }
@@ -487,7 +487,7 @@ tailwind.config = {
 <base target="_blank">
 </head>
 <body class="antialiased">
-
+ 
 <!-- ========== MAIN NAVBAR (External Links) ========== -->
 <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg shadow-sm border-b border-coffee-100">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -515,7 +515,7 @@ tailwind.config = {
 </div>
 </div>
 </nav>
-
+ 
 <!-- ========== SUB-NAVBAR (Internal Page Tabs) ========== -->
 <div class="fixed top-16 left-0 right-0 z-40 bg-cream/95 backdrop-blur-md border-b border-coffee-100 shadow-sm">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -545,10 +545,10 @@ tailwind.config = {
     </div>
 </div>
 </div>
-
+ 
 <!-- Spacer for double navbar -->
 <div class="h-32 lg:h-36"></div>
-
+ 
 <!-- ==================== SECTION 1: USDA REPORT ==================== -->
 <section id="section-usda" class="py-12 bg-cream">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -559,7 +559,7 @@ tailwind.config = {
             Perkembangan produksi, ekspor, dan pasar kopi Indonesia berdasarkan data resmi USDA Foreign Agricultural Service (FAS).
         </p>
     </div>
-
+ 
     
     <!-- Social Share -->
     <div class="share-bar">
@@ -571,7 +571,7 @@ tailwind.config = {
         <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
         <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
     </div>
-
+ 
 <!-- LIVE USDA PSD — v2026.09.25-7 -->
 <div class="card p-6 md:p-8 mb-12">
     <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 flex items-center gap-2 flex-wrap">
@@ -743,7 +743,7 @@ function loadBPSPanel() {
     </div>
 </div>
 </section>
-
+ 
 <!-- ==================== SECTION 2: HISTORICAL DATA ==================== -->
 <section id="section-historical" class="hidden py-12 bg-white">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -756,7 +756,7 @@ function loadBPSPanel() {
         </div>
         <div id="berita-klaster"><div class="text-center py-8 text-coffee-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Menganalisis berita...</div></div>
     </div>
-
+ 
     <div class="text-center mb-10">
         <span class="text-coffee-500 font-medium tracking-wider text-sm uppercase" data-i18n="hist_label">Data Historis</span>
         <h2 class="section-title mt-2" data-i18n="hist_title">Tren Historis Pasar Kopi</h2>
@@ -764,7 +764,7 @@ function loadBPSPanel() {
             Pergerakan harga Arabica C-Market, Robusta London, dan kurs IDR/USD dalam 5 tahun terakhir.
         </p>
         
-
+ 
     <!-- Social Share -->
     <div class="share-bar">
         <span class="share-label"><i class="fas fa-share-alt mr-1"></i>Bagikan</span>
@@ -775,13 +775,13 @@ function loadBPSPanel() {
         <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
         <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
     </div>
-
+ 
     </div>
-
+ 
     
 </div>
 </section>
-
+ 
 <!-- ==================== SECTION 3: UPDATE KOPI INDONESIA ==================== -->
 <section id="section-update" class="hidden py-12 bg-cream">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -790,7 +790,7 @@ function loadBPSPanel() {
         <span class="inline-block px-4 py-1.5 rounded-full bg-coffee-100 text-coffee-600 text-xs font-medium tracking-wider uppercase mb-4" data-i18n="upd_label">Update Terkini</span>
         <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-coffee-900 leading-tight mb-4" data-i18n="upd_title">Analisis Pasar Kopi Indonesia</h1>
         <div class="w-24 h-1 bg-coffee-400 mx-auto rounded-full mb-4"></div>
-
+ 
     <!-- Social Share -->
     <div class="share-bar">
         <span class="share-label"><i class="fas fa-share-alt mr-1"></i>Bagikan</span>
@@ -801,10 +801,10 @@ function loadBPSPanel() {
         <button type="button" onclick="shareToLinkedIn()" class="share-btn share-li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></button>
         <button type="button" onclick="copyPageLink()" class="share-btn share-copy" title="Copy Link"><i class="fas fa-link"></i></button>
     </div>
-
+ 
         <p class="text-lg md:text-xl text-coffee-500 max-w-3xl mx-auto leading-relaxed font-light" data-i18n="upd_desc">Executive summary berdasarkan data BPS, USDA FAS, AEKI, Bappebti, Kementan, dan BMKG.</p>
     </div>
-
+ 
         <!-- ANALISIS BERITA PER GRUP — v2026.09.25-7 -->
     <div class="mb-8">
         <div class="text-center mb-6 pt-4">
@@ -814,11 +814,11 @@ function loadBPSPanel() {
         </div>
         <div id="klaster-ringkas"><div class="text-center py-4 text-coffee-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat analisis...</div></div>
     </div>
-
-
+ 
+ 
 </div>
 </section>
-
+ 
 <!-- FOOTER -->
 <footer class="bg-coffee-950 text-coffee-300 py-12 mt-12">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -839,7 +839,7 @@ function loadBPSPanel() {
 </div>
 </div>
 </footer>
-
+ 
 <script>
 // ========== SOCIAL SHARE FUNCTIONS ==========
 function getShareText() {
@@ -911,3 +911,4 @@ function showShareToast(msg) {
 </script>
 </body>
 </html>
+ 
