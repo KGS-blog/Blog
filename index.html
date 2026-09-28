@@ -2084,8 +2084,9 @@ function renderArticles(filter) {
             const title = currentLang === "id" ? art.title_id : art.title_en;
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
             const readMoreText = currentLang === "id" ? "Baca Selengkapnya" : "Read More";
+            const imageUrl = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
             return `<article class="card group overflow-hidden">
-            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl cursor-pointer" onclick="openArticle(${art.id})"><img src="${art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
+            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl cursor-pointer" onclick="openArticle(${art.id})"><img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
             <div class="p-6 flex flex-col h-full">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="tag">${catLabel}</span>
@@ -2293,9 +2294,14 @@ function renderFeaturedArticle(art) {
     // Generate schema markup
     const schemaJson = generateBlogPostingSchema(art, title, content_html, catLabel);
 
+    let imageHtml = '';
+    if (art.image) {
+        imageHtml = '<div class="w-full h-64 md:h-96 overflow-hidden"><img src="' + art.image + '" alt="' + title + '" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div>';
+    }
+
     container.innerHTML = `
         <article data-article-id="${art.id}" class="bg-white rounded-2xl shadow-sm border border-coffee-100 overflow-hidden">
-            ${art.image ? `<div class="w-full h-64 md:h-96 overflow-hidden"><img src="${art.image}" alt="${title}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div>` : ''}
+            ${imageHtml}
             <div class="p-5 md:p-12">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
                     <span class="tag">${catLabel}</span>
