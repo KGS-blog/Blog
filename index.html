@@ -506,7 +506,7 @@ main {
             <p class="text-xs text-coffee-500 -mt-1">Coffee Researcher</p>
         </div>
     </button>
-    <!-- DESKTOP NAV: urutan di HTML = Beranda, Artikel, Kalkulator, Data dan Berita Kopi Indonesia -->
+    <!-- DESKTOP NAV: urutan di HTML = Beranda, Tentang, Artikel, Kalkulator, Data dan Berita Kopi Indonesia -->
     <div class="hidden sm:flex items-center gap-6">
         <a href="gateway.html" class="nav-link">Beranda</a>
         <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
@@ -2352,7 +2352,7 @@ function renderFeaturedArticle(art) {
             </div>
             <script type="application/ld+json">
             ${schemaJson}
-            </script>
+            <\/script>
         </article>
     `;
 }
@@ -3065,9 +3065,9 @@ function submitComment(e) {
     const newComment = {
         id: Date.now(), name: form.name.value, email: form.email.value,
         topic: form.topic.value || "", comment: form.comment.value,
-        articleID: "", date: "Baru saja",,
+        articleID: "", date: "Baru saja",
         datePublished: "2026-09-28T00:00:00Z",
-        dateModified: "2026-09-28T00:00:00Z" status: "pending", likes: 0, role: "Visitor"
+        dateModified: "2026-09-28T00:00:00Z", status: "pending", likes: 0, role: "Visitor"
     };
     commentsData.unshift(newComment);
     saveToLocalStorage();
@@ -3096,9 +3096,9 @@ function submitReply(parentId) {
     const reply = {
         id: Date.now(), parentId: parentId, name: "Ganjar Satyanagara", email: "",
         topic: parent ? (parent.topic || "") : "", comment: ta.value.trim(),
-        articleID: parent ? (parent.articleID || "") : "", date: "Baru saja",,
+        articleID: parent ? (parent.articleID || "") : "", date: "Baru saja",
         datePublished: "2026-09-28T00:00:00Z",
-        dateModified: "2026-09-28T00:00:00Z"
+        dateModified: "2026-09-28T00:00:00Z",
         status: "approved", likes: 0, role: "Author"
     };
     commentsData.unshift(reply);
@@ -4875,9 +4875,7 @@ function updateUSDADisplay(data) {
 
     // Update executive summary
     if (data.executive) {
-        var prod = document.getElementById(",
-        datePublished: "2026-01-01T00:00:00Z",
-        dateModified: "2026-01-01T00:00:00Z"usda-val-production");
+        var prod = document.getElementById("usda-val-production");
         var exp = document.getElementById("usda-val-export");
         var dom = document.getElementById("usda-val-domestic");
         var end = document.getElementById("usda-val-ending");
