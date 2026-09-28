@@ -27,6 +27,28 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-QEG849B3YY');
+
+// GA4 Calculator Interaction Tracking
+function trackCalculatorInput(inputType, value) {
+    gtag('event', 'calculator_input', {
+        'input_type': inputType,
+        'input_value': value
+    });
+}
+
+function trackCalculatorCalculation(calculationType, inputData = {}) {
+    gtag('event', 'calculator_calculation', {
+        'calculation_type': calculationType,
+        'input_count': Object.keys(inputData).length
+    });
+}
+
+function trackCalculatorConversion(conversionType, result = {}) {
+    gtag('event', 'calculator_conversion', {
+        'conversion_type': conversionType,
+        'result_type': Object.keys(result).length > 0 ? 'success' : 'empty'
+    });
+}
 </script>
 <!-- End Google Analytics -->
 
@@ -2775,6 +2797,13 @@ function setFobGradeType(type, updateUI) {
 }
 
 function calculateFOBv2() {
+  // Track calculator interaction in GA4
+  trackCalculatorCalculation('fob_calculation', {
+    grade: document.getElementById('fob-grade')?.value,
+    cmarket: document.getElementById('fob-cmarket')?.value,
+    kurs: document.getElementById('fob-kurs')?.value
+  });
+
   const gradeSel = document.getElementById('fob-grade');
   const gradeOpt = gradeSel.options[gradeSel.selectedIndex];
   const cMarketLb = parseFloat(document.getElementById('fob-cmarket').value) || 0;
