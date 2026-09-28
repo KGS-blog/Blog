@@ -20,6 +20,7 @@ src="https://www.facebook.com/tr?id=1498535007132214&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
 
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QEG849B3YY"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -127,10 +128,6 @@ function trackReadTime(articleId, timeOnPage, estimatedReadTime, completionPerce
 }
 </script>
 <!-- End Google Analytics -->
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ganjar Satyanagara | Coffee Researcher</title>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -509,13 +506,12 @@ main {
             <p class="text-xs text-coffee-500 -mt-1">Coffee Researcher</p>
         </div>
     </button>
-    <!-- DESKTOP NAV: urutan di HTML = Beranda, Tentang, Artikel, Kalkulator, Market Analysis, Langganan -->
+    <!-- DESKTOP NAV: urutan di HTML = Beranda, Artikel, Kalkulator, Data dan Berita Kopi Indonesia -->
     <div class="hidden sm:flex items-center gap-6">
-        <button type="button" class="nav-link nav-btn" data-nav="hero">Beranda</button>
+        <a href="gateway.html" class="nav-link">Beranda</a>
         <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
-        <a href="kalkulator.html" class="nav-link">Kalkulator</a>
-        <a href="https://KGS-blog.github.io/Update-Coffee-Data/laporan-usda.html" class="nav-link">Market Analysis</a>
-        <button type="button" class="nav-link nav-btn" data-nav="subscribe">Langganan</button>
+        <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="nav-link">Kalkulator</a>
+        <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="nav-link">Data dan Berita Kopi Indonesia</a>
     </div>
     <div class="flex items-center gap-3">
         <!-- Admin button - only visible when logged in -->
@@ -531,11 +527,10 @@ main {
 <!-- MOBILE NAV: urutan harus SAMA PERSIS dengan desktop nav -->
 <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-lg border-t border-coffee-100 z-40 relative">
 <div class="px-6 py-4 space-y-3">
-    <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="hero" data-mobile="1">Beranda</button>
+    <a href="gateway.html" class="block nav-link py-2 text-left w-full">Beranda</a>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="articles" data-mobile="1">Artikel</button>
-    <a href="kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
-    <a href="https://KGS-blog.github.io/Update-Coffee-Data/laporan-usda.html" class="block nav-link py-2 text-left w-full">Market Analysis</a>
-    <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="subscribe" data-mobile="1">Langganan</button>
+    <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
+    <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="block nav-link py-2 text-left w-full">Data dan Berita Kopi Indonesia</a>
     <button type="button" id="mobile-admin-btn" onclick="showDashboard(); toggleMobileMenu();" class="hidden w-full text-left nav-link py-2 flex items-center gap-2"><i class="fas fa-lock text-xs"></i> Dashboard Admin</button>
 </div>
 </div>
@@ -560,7 +555,7 @@ main {
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <button type="button" class="btn-primary text-lg" data-nav="articles" data-editable="hero_cta1"><i class="fas fa-book-open mr-2"></i>Jelajahi Artikel</button>
-        <a href="https://KGS-blog.github.io/Update-Coffee-Data/laporan-usda.html#berita" class="inline-block px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-editable="hero_cta2"><i class="fas fa-newspaper mr-2"></i>Berita Kopi Terkini</a>
+        <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="inline-block px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-editable="hero_cta2"><i class="fas fa-newspaper mr-2"></i>Berita Kopi Terkini</a>
     </div>
 
     <!-- TENTANG PENULIS BOX -->
@@ -614,7 +609,7 @@ main {
       <div id="qco-mw-kurs" style="font-size:1.15rem;font-weight:800;color:#e0d5c5;font-family:monospace;">&mdash;</div>
       <div id="qco-mw-kurs-chg" style="font-size:.6rem;color:#9a8b76;"></div>
     </div>
-    <a href="https://KGS-blog.github.io/Update-Coffee-Data/laporan-usda.html" id="qco-mw-ekspor-tile" style="display:block;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;text-decoration:none;color:inherit;">
+    <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" id="qco-mw-ekspor-tile" style="display:block;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;text-decoration:none;color:inherit;">
       <div style="font-size:.58rem;color:#9a8b76;text-transform:uppercase;">Data BPS</div>
       <div id="qco-mw-ekspor" style="font-size:.68rem;font-weight:700;color:#fcd34d;line-height:1.35;">&mdash;</div>
       <div style="font-size:.58rem;color:#b09473;">klik untuk lihat</div>
@@ -625,7 +620,7 @@ main {
     <div><span style="color:#9a8b76;">Robusta:</span> World <b id="qco-mw-r1" style="color:#6ee7b7;"></b> &middot; +Diff <b id="qco-mw-r2" style="color:#6ee7b7;"></b> &middot; Cherry <b id="qco-mw-r3" style="color:#6ee7b7;"></b></div>
     <div><span style="color:#9a8b76;">Specialty:</span> 84&ndash;85 <b id="qco-mw-s84" style="color:#d8b4fe;"></b> &middot; 86+ <b id="qco-mw-s86" style="color:#d8b4fe;"></b> &middot; 88+ <b id="qco-mw-s88" style="color:#d8b4fe;"></b></div>
   </div>
-  <div style="margin-top:8px;font-size:.6rem;color:#7a6a58;"><span id="qco-mw-params"></span> &middot; <a href="kalkulator.html" style="color:#b09473;">sesuaikan di kalkulator</a></div>
+  <div style="margin-top:8px;font-size:.6rem;color:#7a6a58;"><span id="qco-mw-params"></span> &middot; <a href="https://KGS-blog.github.io/Blog/kalkulator.html" style="color:#b09473;">sesuaikan di kalkulator</a></div>
   <script>
 // ===== WIDGET "DARI KEBUN KE ICE" — fetch — v2026.09.26-5 =====
 (function () {
@@ -693,7 +688,7 @@ main {
     <div id="qco-expl-id" style="margin-top:10px;font-size:.74rem;color:#c9b89e;line-height:1.75;">
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">World</strong> adalah harga acuan internasional (C-Market) yang dikonversi ke Rupiah per kg. Ini harga &ldquo;papan&rdquo; di New York &mdash; <strong style="color:#e0d5c5;">bukan</strong> harga di kebun Indonesia.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">+Diff (Diferensial)</strong> adalah tambahan (atau pengurangan, kalau negatif) di atas harga acuan, sesuai kualitas dan asal. Diff +20&cent; berarti kopi ini diperdagangkan 20 sen di atas C-Market.</p>
-      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Diff sangat tergantung kondisi</strong> &mdash; tidak ada angka baku. Pembaca dapat mengeditnya di <a href="kalkulator.html" style="color:#b09473;">Kalkulator</a>; sesuaikan Diff dengan kondisi pengolahan (processing) Anda: metode (washed, natural, wet-hull, honey), skor cupping, defect &amp; moisture, asal, ukuran lot, sertifikasi, dan relasi dengan buyer. Gambaran umum: robusta komersial +$0.15&ndash;0.30, arabika regional +$0.50&ndash;1.20, specialty 86+ +$1.50&ndash;2.50 &mdash; dan bisa <em>negatif</em> untuk grade bawah atau lot besar tanpa diferensiasi.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Diff sangat tergantung kondisi</strong> &mdash; tidak ada angka baku. Pembaca dapat mengeditnya di <a href="https://KGS-blog.github.io/Blog/kalkulator.html" style="color:#b09473;">Kalkulator</a>; sesuaikan Diff dengan kondisi pengolahan (processing) Anda: metode (washed, natural, wet-hull, honey), skor cupping, defect &amp; moisture, asal, ukuran lot, sertifikasi, dan relasi dengan buyer. Gambaran umum: robusta komersial +$0.15&ndash;0.30, arabika regional +$0.50&ndash;1.20, specialty 86+ +$1.50&ndash;2.50 &mdash; dan bisa <em>negatif</em> untuk grade bawah atau lot besar tanpa diferensiasi.</p>
       <p style="margin:0 0 8px;padding:8px 10px;background:rgba(176,148,115,.08);border-left:3px solid #b09473;border-radius:0 8px 8px 0;"><strong style="color:#e0d5c5;">Contoh hitung:</strong> C-Market 274.90&cent; + Diff 20&cent; = 294.90&cent;/lb &rarr; (294.90 &divide; 100) &divide; 0.4536 = <strong style="color:#e0d5c5;">$6.50/kg</strong> &rarr; &times; kurs 17.836 &asymp; <strong style="color:#e0d5c5;">Rp116.000/kg</strong>. Angka ini yang tampil di kotak &ldquo;+Diff&rdquo; widget.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Cherry</strong> adalah <strong style="color:#e0d5c5;">estimasi matematis</strong> harga di tingkat petani dalam bentuk cherry/gabah, memakai rasio konversi (5:1 = &plusmn;5 kg cherry menjadi 1 kg green bean). Bukan harga riil kebun &mdash; harga sebenarnya ditentukan pasar lokal, kadar air, dan negosiasi.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Specialty Grade</strong> = C-Market + premium berdasarkan skor cupping (Q-Grade).</p>
@@ -702,7 +697,7 @@ main {
     <div id="qco-expl-en" style="display:none;margin-top:10px;font-size:.74rem;color:#c9b89e;line-height:1.75;">
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">World</strong> is the international benchmark price (C-Market) converted to IDR per kg &mdash; the New York &ldquo;board&rdquo; price, <strong style="color:#e0d5c5;">not</strong> the farm-gate price in Indonesia.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">+Diff (Differential)</strong> is the premium (or discount, if negative) over the benchmark, reflecting quality and origin. +20&cent; means this coffee trades 20 cents above the C-Market.</p>
-      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Diff is highly condition-dependent</strong> &mdash; there is no fixed number. You can edit it in the <a href="kalkulator.html" style="color:#b09473;">Calculator</a>; adjust Diff to your processing conditions: method (washed, natural, wet-hull, honey), cupping score, defect &amp; moisture, origin, lot size, certification, and buyer relationship. Rough guide: commercial robusta +$0.15&ndash;0.30, regional arabica +$0.50&ndash;1.20, specialty 86+ +$1.50&ndash;2.50 &mdash; and it can go <em>negative</em> for low grades or large undifferentiated lots.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Diff is highly condition-dependent</strong> &mdash; there is no fixed number. You can edit it in the <a href="https://KGS-blog.github.io/Blog/kalkulator.html" style="color:#b09473;">Calculator</a>; adjust Diff to your processing conditions: method (washed, natural, wet-hull, honey), cupping score, defect &amp; moisture, origin, lot size, certification, and buyer relationship. Rough guide: commercial robusta +$0.15&ndash;0.30, regional arabica +$0.50&ndash;1.20, specialty 86+ +$1.50&ndash;2.50 &mdash; and it can go <em>negative</em> for low grades or large undifferentiated lots.</p>
       <p style="margin:0 0 8px;padding:8px 10px;background:rgba(176,148,115,.08);border-left:3px solid #b09473;border-radius:0 8px 8px 0;"><strong style="color:#e0d5c5;">Worked example:</strong> C-Market 274.90&cent; + Diff 20&cent; = 294.90&cent;/lb &rarr; (294.90 &divide; 100) &divide; 0.4536 = <strong style="color:#e0d5c5;">$6.50/kg</strong> &rarr; &times; rate 17,836 &asymp; <strong style="color:#e0d5c5;">IDR 116,000/kg</strong>. That is the figure shown in the widget&rsquo;s &ldquo;+Diff&rdquo; tile.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Cherry</strong> is a <strong style="color:#e0d5c5;">mathematical estimate</strong> of the farm-gate price in cherry/parchment form, using a conversion ratio (5:1 = &plusmn;5 kg cherry per 1 kg green bean). It is not the real farm price &mdash; actual prices are set by local markets, moisture content, and negotiation.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Specialty Grade</strong> = C-Market + premium by cupping score (Q-Grade).</p>
@@ -1057,9 +1052,8 @@ window.__qcoAnLang = function (lang) {
         <ul class="space-y-2 text-sm">
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_home" data-nav="hero">Beranda</button></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" data-nav="articles">Artikel</button></li>
-            <li><a href="kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
-            <li><a href="https://KGS-blog.github.io/Update-Coffee-Data/laporan-usda.html" class="hover:text-white transition-colors">Market Analysis</a></li>
-            <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_subscribe" data-nav="subscribe">Langganan</button></li>
+            <li><a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
+            <li><a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="hover:text-white transition-colors">Data dan Berita Kopi Indonesia</a></li>
         </ul>
     </div>
     <div>
@@ -1115,7 +1109,6 @@ window.__qcoAnLang = function (lang) {
             <div onclick="showDashboardSection('content')" id="nav-content" class="sidebar-item"><i class="fas fa-file-alt w-5"></i><span>Konten & Artikel</span></div>
     <div onclick="showDashboardSection('editcontent')" id="nav-editcontent" class="sidebar-item"><i class="fas fa-pen w-5"></i><span>Edit Konten Blog</span></div>
     
-    <div onclick="showDashboardSection('subscribers')" id="nav-subscribers" class="sidebar-item"><i class="fas fa-users w-5"></i><span>Subscriber</span><span id="subscriber-badge" class="ml-auto bg-coffee-100 text-coffee-700 text-xs px-2 py-0.5 rounded-full">0</span></div>
     <div onclick="showDashboardSection('features')" id="nav-features" class="sidebar-item"><i class="fas fa-cog w-5"></i><span>Fitur & Pengaturan</span></div>
     <div onclick="showDashboardSection('categories')" id="nav-categories" class="sidebar-item"><i class="fas fa-tags w-5"></i><span>Kategori</span></div>
 </nav>
@@ -1352,23 +1345,6 @@ window.__qcoAnLang = function (lang) {
     <!-- COMMENTS -->
     
     <!-- SUBSCRIBERS -->
-    <div id="section-subscribers" class="dashboard-section hidden">
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-4">
-                <input type="text" id="search-subscribers" placeholder="Cari subscriber..." class="input-field w-64" onkeyup="searchDashboardSubscribers()">
-                <button type="button" class="btn-secondary" onclick="exportSubscribers()"><i class="fas fa-download mr-2"></i>Export CSV</button>
-            </div>
-            <div class="flex items-center gap-2"><span class="text-sm text-coffee-500" id="total-subscribers">0 total subscriber</span></div>
-        </div>
-        <div class="bg-white rounded-2xl border border-coffee-100 shadow-sm overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full" style="min-width: 800px;">
-                    <thead class="bg-coffee-50"><tr><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Nama</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Email</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Sumber</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Tanggal Daftar</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Status</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Aksi</th></tr></thead>
-                    <tbody class="divide-y divide-coffee-100" id="dashboard-subscribers-table"><tr><td colspan="6" class="px-6 py-4 text-center text-coffee-400"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat subscriber...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
     <!-- FEATURES -->
     <div id="section-features" class="dashboard-section hidden">
         <div class="grid md:grid-cols-2 gap-6 mb-8">
@@ -1376,12 +1352,6 @@ window.__qcoAnLang = function (lang) {
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3"><div class="w-10 h-10 bg-coffee-100 rounded-lg flex items-center justify-center"><i class="fas fa-comments text-coffee-600"></i></div><div><h4 class="font-medium text-coffee-900">Komentar</h4><p class="text-xs text-coffee-500">Izinkan pengunjung berkomentar</p></div></div>
                     <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer" onchange="toggleFeature('comments', this.checked)"><div class="w-11 h-6 bg-coffee-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-coffee-800"></div></label>
-                </div>
-            </div>
-            <div class="content-card">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3"><div class="w-10 h-10 bg-coffee-100 rounded-lg flex items-center justify-center"><i class="fas fa-envelope text-coffee-600"></i></div><div><h4 class="font-medium text-coffee-900">Newsletter</h4><p class="text-xs text-coffee-500">Form berlangganan email</p></div></div>
-                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer" onchange="toggleFeature('newsletter', this.checked)"><div class="w-11 h-6 bg-coffee-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-coffee-800"></div></label>
                 </div>
             </div>
         </div>
@@ -1392,7 +1362,7 @@ window.__qcoAnLang = function (lang) {
                 <div class="bg-coffee-50 rounded-xl p-4"><h4 class="font-medium text-coffee-900 mb-2">Export Backup (Download)</h4><p class="text-xs text-coffee-500 mb-3">Download semua data sebagai file JSON.</p><button type="button" onclick="exportAllData()" class="btn-primary w-full"><i class="fas fa-download mr-2"></i>Download Backup JSON</button></div>
                 <div class="bg-coffee-50 rounded-xl p-4"><h4 class="font-medium text-coffee-900 mb-2">Import Backup (Restore)</h4><p class="text-xs text-coffee-500 mb-3">Pulihkan data dari file JSON.</p><label class="block"><input type="file" accept=".json" onchange="importAllData(this.files[0])" class="hidden"><span class="btn-secondary w-full block text-center cursor-pointer"><i class="fas fa-upload mr-2"></i>Pilih File JSON</span></label></div>
             </div>
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4"><h4 class="font-medium text-blue-900 mb-2 flex items-center gap-2"><i class="fas fa-info-circle"></i> Status Penyimpanan</h4><div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm"><div><span class="text-blue-600">Artikel:</span><span id="backup-articles" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Komentar:</span><span id="backup-comments" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Subscriber:</span><span id="backup-subscribers" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Backup Terakhir:</span><span id="backup-last" class="font-bold text-blue-900">-</span></div></div></div>
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4"><h4 class="font-medium text-blue-900 mb-2 flex items-center gap-2"><i class="fas fa-info-circle"></i> Status Penyimpanan</h4><div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm"><div><span class="text-blue-600">Artikel:</span><span id="backup-articles" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Komentar:</span><span id="backup-comments" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Backup Terakhir:</span><span id="backup-last" class="font-bold text-blue-900">-</span></div></div></div>
         </div>
     </div>
     <!-- CATEGORIES -->
@@ -1570,6 +1540,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/TcU4su0.jpeg",
         date: "14 Mei 2026",
+        datePublished: "2026-05-14T00:00:00Z",
+        dateModified: "2026-05-14T00:00:00Z",
         readTime: "5",
         desc_id: "Kopi Sumatra lebih murah di New York daripada di Medan? Data nyata dari trader raksasa AS menunjukkan oligopoli global telah membuat harga FOB Indonesia kalah di depan landed cost mereka. Tapi di balik kekuatan Neumann dan Volcafe, ada celah besar yang tak pernah mereka lihat: konsumen kecil beribu-ribu kali lipat yang haus akan cerita asli Indonesia, dan ini yang tidak bisa dipenuhi para trader raksasa.",
         desc_en: "Sumatra coffee cheaper in New York than in Medan? Real data from US mega-traders shows global oligopolies have made Indonesian FOB prices lose to their own landed costs. But behind the power of Neumann and Volcafe lies a massive blind spot: thousands of small consumers starving for authentic Indonesian stories—something the giant traders can never fulfill.",
@@ -1585,6 +1557,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/O2Xs5ku.jpeg",
         date: "10 Mei 2026",
+        datePublished: "2026-05-10T00:00:00Z",
+        dateModified: "2026-05-10T00:00:00Z",
         readTime: "5",
         desc_id: "Memahami Pasar Kopi Specialty Amerika Serikat — Panduan komprehensif berbasis data NCDT 2025 untuk membedah definisi specialty coffee, dinamika konsumen generasi Gen Z hingga Boomers, fenomena Hybrid Consumption, hingga peluang investasi di industri kopi AS. Ditulis oleh Ganjar Satyanagara, Coffee Researcher bersertifikasi Q Grader dengan pengalaman 25+ tahun di consumer research dan 10+ tahun di industri kopi supply.",
         desc_en: "Understanding the U.S. Specialty Coffee Market — A data-driven guide based on the 2025 NCDT report dissecting specialty coffee definitions, generational consumer dynamics from Gen Z to Boomers, the Hybrid Consumption phenomenon, and investment opportunities in the U.S. coffee industry. Written by Ganjar Satyanagara, a Q Grader certified Coffee Researcher with 25+ years in consumer research and 10+ years in coffee supply.",
@@ -1600,6 +1574,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/vgcEMB2.png",
         date: "2026-02-25T05:00:00.000Z",
+        datePublished: "2026-02-25T05:00:00.000Z",
+        dateModified: "2026-02-25T05:00:00.000Z",
         readTime: "5",
         desc_id: "Saya ingin berbicara tentang insight dari perjalanan memasarkan kopi Indonesia di AS. Bukan teori dari ruang rapat, tapi catatan tangan setelah berbulan-bulan keliling dari farmers market di Maryland sampai cupping room di California.",
         desc_en: "I want to talk about insights from my journey marketing Indonesian coffee in the US. Not theories from a boardroom, but handwritten notes after months of traveling from farmers markets in Maryland to cupping rooms in California.",
@@ -1615,6 +1591,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/xmn0Ssm.jpeg",
         date: "2026-04-10T04:00:00.000Z",
+        datePublished: "2026-04-10T04:00:00.000Z",
+        dateModified: "2026-04-10T04:00:00.000Z",
         readTime: "5",
         desc_id: "Dari survei langsung di DMV area (DC-Maryland-Virginia), lebih dari 50% coffee shop sudah didatangi — tapi kopi Indonesia jarang muncul di menu pour over. Artikel ini membongkar kenapa Sumatra Mandheling mendominasi pasar US, perbedaan harga komersial vs specialty, dan fakta menarik: 3 zona lidah Amerika (Northeast bold-dark, Southern iced-premium, West Coast specialty-traceable) adalah pasangan sempurna untuk 68 Indikasi Geografis penghasil kopi Indonesia dengan karakter yang super beragam.",
         desc_en: "From direct surveys across the DMV area (DC-Maryland-Virginia), over 50% of coffee shops have been visited — yet Indonesian coffee rarely appears on pour over menus. This article uncovers why Sumatra Mandheling dominates the US market, commercial vs specialty pricing gaps, and a key insight: America's 3 taste zones (Northeast bold-dark, Southern iced-premium, West Coast specialty-traceable) are a perfect match for Indonesia's 68 Coffee Geographical Indications with wildly diverse character",
@@ -1630,6 +1608,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/rQZwTPX.png",
         date: "6 Mei 2026",
+        datePublished: "2026-05-06T00:00:00Z",
+        dateModified: "2026-05-06T00:00:00Z",
         readTime: "5",
         desc_id: "Giling Basah lahir dari kebutuhan, bukan dari laboratorium. Dari iklim lembap Sumatra hingga warung kopi di setiap sudut Indonesia — ini adalah cerita bagaimana budaya membentuk rasa, dan bagaimana rasa membentuk identitas",
         desc_en: "Giling Basah was born from necessity, not from a lab. From Sumatra's humid climate to the warung kopi on every Indonesian corner — this is the story of how culture shapes taste, and how taste shapes identity",
@@ -1645,6 +1625,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/7lrkCju.jpeg",
         date: "7 Mei 2026",
+        datePublished: "2026-05-07T00:00:00Z",
+        dateModified: "2026-05-07T00:00:00Z",
         readTime: "5",
         desc_id: "Artikel ini membongkar realitas kopi Indonesia di pasar AS melalui lensa empat segmen yang punya pemahaman sangat berbeda: Roasteri (6/10), Rantai ritel (3/10), Peminum specialty gelombang 4 (5/10), dan Peminum reguler (2/10). Selain itu, dijelaskan kenapa Indonesia kesulitan masuk ke festival kopi regional AS — mulai dari butuh jaringan lokal, biaya booth $250–$1.000+, sampai peran krusial distributor/fasilitator. Dilengkapi kalender 10 festival kopi AS sepanjang 2026, tiga masalah nyata yang menghalangi roaster AS (harga mahal untuk pembelian kecil, stok tidak stabil selain Sumatra, dan importir hanya menyediakan stok yang laku), analisis SWOT terupdate, serta tiga langkah konkret: turun ke festival lokal, edukasi berlapis per segmen, dan manfaatkan jaringan roaster independen. Penulis: Ganjar Satyanagara, Q Grader & Coffee Researcher.",
         desc_en: "This article reveals the reality of Indonesian coffee in the US market through the lens of four segments with vastly different understanding: roasteries (6/10), retail chains (3/10), specialty drinkers wave 4 (5/10), and regular consumers (2/10). It also explains why Indonesia struggles to enter US regional coffee festivals — from needing local networks, booth costs of $250–$1,000+, to the crucial role of distributors/facilitators. Includes a calendar of 10 US coffee festivals throughout 2026, three real problems blocking US roasters (expensive for small purchases, unstable stock besides Sumatra, and importers only stocking what sells), updated SWOT analysis, and three concrete steps: attend local festivals, layered education per segment, and leverage independent roaster networks. Author: Ganjar Satyanagara, Q Grader & Coffee Researcher.",
@@ -1660,6 +1642,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/vgcEMB2.png",
         date: "23 September 2026",
+        datePublished: "2026-09-23T00:00:00Z",
+        dateModified: "2026-09-23T00:00:00Z",
         readTime: "10",
         desc_id: "Sample cocok, pesanan besar datang rasanya beda. Bukan soal cupping score — konsistensi rasa kopi ternyata lahir dari hal yang jarang tercatat di dokumen: hubungan prosesor dan petani di hulu.",
         desc_en: "The sample tastes perfect, but the big order arrives different. It's not about the cupping score — flavor consistency is born from something rarely written in documents: the relationship between processors and farmers upstream.",
@@ -1676,6 +1660,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/TcU4su0.jpeg",
         date: "23 September 2026",
+        datePublished: "2026-09-23T00:00:00Z",
+        dateModified: "2026-09-23T00:00:00Z",
         readTime: "10",
         desc_id: "THR, hajatan keluarga, dan bantuan alat produksi kini dinilai 2 poin masing-masing. Begini cara kami mengubah relasi prosesor-petani menjadi skor 100 poin yang bisa diverifikasi, bukan sekadar cerita.",
         desc_en: "THR, family weddings, and productive-asset support now earn 2 points each. How we turn processor-farmer relationships into a verifiable 100-point score, not just a story.",
@@ -1705,6 +1691,7 @@ let dataLoadState = "loading"; // loading, local, error
 let statsRangeDays = 0; // 0 = all time, 7, 30, 90
 let statsCategoryChart = null;
 let statsActivityChart = null;
+const BLOG_BASE_URL = "https://blog.qcoid.com"; // Define early so generateBlogPostingSchema can use it
 
 // ========== DATA LOADING STATUS UI ==========
 function showDataStatus(status, message) {
@@ -1891,7 +1878,7 @@ function setLanguage(lang) {
 
 // ========== updateStaticContent — FIXED ==========
 // URUTAN ARRAY HARUS SAMA PERSIS dengan urutan elemen .nav-link di HTML!
-// HTML order: Beranda → Tentang → Artikel → Kalkulator → Market Analysis → Langganan
+// HTML order: Beranda → Tentang → Artikel → Kalkulator → Data dan Berita Kopi Indonesia → Langganan
 function updateStaticContent() {
     // Helper to safely update element content
     const update = (selector, idText, enText) => {
@@ -2019,11 +2006,11 @@ function updateStaticContent() {
     update("[data-i18n=stat_col_engagement]", "Engagement", "Engagement");
 
     // NAVBAR (public view) — URUTAN HARUS SAMA PERSIS DENGAN URUTAN ELEMEN HTML DI DOM
-    // HTML order: Beranda, Artikel, Kalkulator, Market Analysis, Langganan
+    // HTML order: Beranda, Artikel, Kalkulator, Data dan Berita Kopi Indonesia
     const navLinks = document.querySelectorAll("#public-view .nav-link");
-    // SAMPAI SINI: navTextsID[0] = Beranda, [1] = Artikel, [2] = Kalkulator, [3] = Market Analysis, [4] = Langganan
-    const navTextsID = ["Beranda", "Artikel", "Kalkulator", "Market Analysis", "Langganan"];
-    const navTextsEN = ["Home", "Articles", "Calculator", "Market Analysis", "Subscribe"];
+    // SAMPAI SINI: navTextsID[0] = Beranda, [1] = Artikel, [2] = Kalkulator, [3] = Data dan Berita Kopi Indonesia, [4] = Langganan
+    const navTextsID = ["Beranda", "Artikel", "Kalkulator", "Data dan Berita Kopi Indonesia", "Langganan"];
+    const navTextsEN = ["Home", "Articles", "Calculator", "Data dan Berita Kopi Indonesia", "Subscribe"];
     navLinks.forEach((link, idx) => {
         if (idx < 5 && link.textContent.trim() && !link.querySelector("i")) {
             link.textContent = currentLang === "id" ? navTextsID[idx] : navTextsEN[idx];
@@ -2096,13 +2083,28 @@ function renderArticles(filter) {
             const catLabel = catLabels[art.category] || art.category;
             const title = currentLang === "id" ? art.title_id : art.title_en;
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
-            const imgUrl = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
-            return `<article class="card group cursor-pointer" onclick="openArticle(${art.id})">
-            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${imgUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
-            <div class="p-6"><div class="flex items-center gap-3 mb-3"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
-            <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors">${title}</h3>
-            <p class="text-coffee-600 text-sm line-clamp-3 mb-4">${desc}</p>
-            <div class="flex items-center justify-between"><div class="flex items-center gap-2"><i class="far fa-clock text-coffee-400 text-xs"></i><span class="text-xs text-coffee-400">${art.readTime} menit baca</span></div><div class="flex items-center gap-2 text-coffee-400"><i class="far fa-eye text-xs"></i><span class="text-xs">${(parseInt(art.views) || 0).toLocaleString()}</span></div></div></div>
+            const readMoreText = currentLang === "id" ? "Baca Selengkapnya" : "Read More";
+            const imageUrl = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
+            return `<article class="card group overflow-hidden">
+            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl cursor-pointer" onclick="openArticle(${art.id})"><img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
+            <div class="p-6 flex flex-col h-full">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="tag">${catLabel}</span>
+                    <span class="text-xs text-coffee-400"><i class="far fa-calendar mr-1"></i>${art.date}</span>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors cursor-pointer" onclick="openArticle(${art.id})">${title}</h3>
+                <p class="text-coffee-600 text-sm line-clamp-3 mb-4 flex-1">${desc}</p>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3 text-xs text-coffee-500">
+                        <span><i class="fas fa-user mr-1"></i>Ganjar Satyanagara</span>
+                        <span><i class="far fa-clock mr-1"></i>${art.readTime} ${currentLang === "id" ? "menit baca" : "min read"}</span>
+                    </div>
+                    <span class="text-xs text-coffee-400"><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span>
+                </div>
+                <button type="button" onclick="openArticle(${art.id}); event.stopPropagation();" class="w-full py-2.5 px-4 bg-coffee-600 hover:bg-coffee-700 text-white rounded-lg font-medium text-sm transition-colors">
+                    <i class="fas fa-arrow-right mr-2"></i>${readMoreText}
+                </button>
+            </div>
         </article>`;
         }).join("");
     }
@@ -2181,11 +2183,12 @@ function renderArticlesSidebar() {
         const isActive = featuredId === art.id;
         return `<div class="p-4 border-b border-coffee-50 last:border-0 hover:bg-coffee-50 transition-colors cursor-pointer ${isActive ? 'bg-coffee-50 border-l-4 border-l-coffee-600' : ''}" onclick="showFeaturedArticle(${art.id})">
             <h4 class="font-serif text-sm font-bold text-coffee-900 line-clamp-2 ${isActive ? 'text-coffee-600' : ''} mb-2">${title}</h4>
-            <div class="text-xs text-coffee-400">
-                <span>${art.date}</span>
+            <div class="text-xs text-coffee-400 flex items-center gap-2">
+                <span><i class="far fa-calendar mr-1"></i>${art.date}</span>
+                <span class="flex items-center"><i class="far fa-clock mr-1"></i>${art.readTime} ${currentLang === "id" ? "min" : "min"}</span>
             </div>
         </div>`;
-        }).join("") + (sidebarArticles.length > 5 ? `<button type="button" onclick="toggleSidebarExpand()" class="w-full py-2.5 text-xs font-medium text-coffee-600 hover:bg-coffee-50 transition-colors border-t border-coffee-100">${sidebarExpanded ? "Tutup" : "Lihat semua (" + sidebarArticles.length + ")"}</button>` : "");
+        }).join("") + (sidebarArticles.length > 5 ? `<button type="button" onclick="toggleSidebarExpand()" class="w-full py-2.5 text-xs font-medium text-coffee-600 hover:bg-coffee-50 transition-colors border-t border-coffee-100">${sidebarExpanded ? currentLang === "id" ? "Tutup" : "Close" : (currentLang === "id" ? "Lihat semua" : "View all") + " (" + sidebarArticles.length + ")"}</button>` : "");
 }
 
 function showFeaturedArticle(id) {
@@ -2215,11 +2218,57 @@ function showFeaturedArticle(id) {
     refreshViewsDisplay();
 
     // Track sidebar article click in GA4
+    const title = currentLang === "id" ? art.title_id : art.title_en;
     const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
     const category = catLabels[art.category] || art.category;
-    const title = currentLang === "id" ? art.title_id : art.title_en;
     trackArticleClick(art.id, title, 'sidebar', category);
     initScrollDepthTracking(art.id, title, category);
+}
+
+// Generate BlogPosting schema markup for SEO
+function generateBlogPostingSchema(art, title, content_html, catLabel) {
+    // Extract description from appropriate language
+    const description = (currentLang === "id" ? art.desc_id : art.desc_en) || "";
+    const shortDesc = description.substring(0, 160) + (description.length > 160 ? "..." : "");
+
+    // Sanitize content for articleBody (remove tags, scripts, styles)
+    const plainText = content_html
+        .replace(/<script[^>]*>.*?<\/script>/gi, '')
+        .replace(/<style[^>]*>.*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const articleBody = plainText.substring(0, 5000);
+
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": title,
+        "description": shortDesc,
+        "image": art.image || "https://i.imgur.com/vgcEMB2.png",
+        "datePublished": art.datePublished || new Date().toISOString(),
+        "dateModified": art.dateModified || new Date().toISOString(),
+        "author": {
+            "@type": "Person",
+            "name": "Ganjar Satyanagara",
+            "url": "https://blog.qcoid.com"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Q Coffee Outlook",
+            "url": "https://blog.qcoid.com",
+            "logo": "https://i.imgur.com/vgcEMB2.png"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": BLOG_BASE_URL + "?article=" + art.id
+        },
+        "articleBody": articleBody,
+        "keywords": [catLabel, "kopi", "coffee", art.category].join(", ")
+    };
+
+    return JSON.stringify(schema);
 }
 
 function renderFeaturedArticle(art) {
@@ -2242,14 +2291,17 @@ function renderFeaturedArticle(art) {
     const shareText = encodeURIComponent(title);
     const shareUrlEnc = encodeURIComponent(shareUrl);
 
-    let featImageHtml = '';
+    // Generate schema markup
+    const schemaJson = generateBlogPostingSchema(art, title, content_html, catLabel);
+
+    let imageHtml = '';
     if (art.image) {
-        featImageHtml = '<div class="w-full h-64 md:h-96 overflow-hidden"><img src="' + art.image + '" alt="' + title + '" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div>';
+        imageHtml = '<div class="w-full h-64 md:h-96 overflow-hidden"><img src="' + art.image + '" alt="' + title + '" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div>';
     }
 
     container.innerHTML = `
         <article data-article-id="${art.id}" class="bg-white rounded-2xl shadow-sm border border-coffee-100 overflow-hidden">
-            ${featImageHtml}
+            ${imageHtml}
             <div class="p-5 md:p-12">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
                     <span class="tag">${catLabel}</span>
@@ -2298,6 +2350,9 @@ function renderFeaturedArticle(art) {
                     </button>
                 </div>
             </div>
+            <script type="application/ld+json">
+            ${schemaJson}
+            </script>
         </article>
     `;
 }
@@ -2319,8 +2374,6 @@ function filterArticles(category) {
 // Method 2: Query Param (?article=ID)
 // Method 3: postMessage (for iframe/parent communication)
 // Method 4: URL path component fallback
-
-const BLOG_BASE_URL = "https://blog.qcoid.com";
 
 function getCurrentArticleUrl() {
     const articleId = document.getElementById("modal-title").getAttribute("data-article-id");
@@ -3012,7 +3065,9 @@ function submitComment(e) {
     const newComment = {
         id: Date.now(), name: form.name.value, email: form.email.value,
         topic: form.topic.value || "", comment: form.comment.value,
-        articleID: "", date: "Baru saja", status: "pending", likes: 0, role: "Visitor"
+        articleID: "", date: "Baru saja",,
+        datePublished: "2026-09-28T00:00:00Z",
+        dateModified: "2026-09-28T00:00:00Z" status: "pending", likes: 0, role: "Visitor"
     };
     commentsData.unshift(newComment);
     saveToLocalStorage();
@@ -3041,7 +3096,9 @@ function submitReply(parentId) {
     const reply = {
         id: Date.now(), parentId: parentId, name: "Ganjar Satyanagara", email: "",
         topic: parent ? (parent.topic || "") : "", comment: ta.value.trim(),
-        articleID: parent ? (parent.articleID || "") : "", date: "Baru saja",
+        articleID: parent ? (parent.articleID || "") : "", date: "Baru saja",,
+        datePublished: "2026-09-28T00:00:00Z",
+        dateModified: "2026-09-28T00:00:00Z"
         status: "approved", likes: 0, role: "Author"
     };
     commentsData.unshift(reply);
@@ -3290,9 +3347,9 @@ function openAllArticlesModal() {
             const catLabel = catLabels[art.category] || art.category;
             const title = currentLang === "id" ? art.title_id : art.title_en;
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
-            const modalImg = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
+            const modalImageUrl = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
             return `<article class="card group cursor-pointer" onclick="closeAllArticlesModal(); setTimeout(() => openArticle(${art.id}), 300);">
-                <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${modalImg}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${modalImageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
                 <div class="p-5"><div class="flex items-center gap-2 mb-2"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
                 <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors line-clamp-2">${title}</h3>
                 <p class="text-coffee-600 text-sm line-clamp-2 mb-3">${desc}</p>
@@ -4818,7 +4875,9 @@ function updateUSDADisplay(data) {
 
     // Update executive summary
     if (data.executive) {
-        var prod = document.getElementById("usda-val-production");
+        var prod = document.getElementById(",
+        datePublished: "2026-01-01T00:00:00Z",
+        dateModified: "2026-01-01T00:00:00Z"usda-val-production");
         var exp = document.getElementById("usda-val-export");
         var dom = document.getElementById("usda-val-domestic");
         var end = document.getElementById("usda-val-ending");
