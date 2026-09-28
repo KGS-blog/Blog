@@ -148,6 +148,9 @@ function trackReadTime(articleId, timeOnPage, estimatedReadTime, completionPerce
 <meta name="twitter:title" content="Ganjar Satyanagara | Data & Analisis Pasar Kopi Indonesia">
 <meta name="twitter:description" content="Live USDA & Yahoo data, news analysis, Indonesian coffee market share and products for global buyers.">
 <meta name="twitter:image" content="https://i.imgur.com/vgcEMB2.png">
+<!-- Article Publication Meta Tags (updated dynamically) -->
+<meta property="article:published_time" content="">
+<meta property="article:modified_time" content="">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -2416,6 +2419,17 @@ function openArticle(id) {
         directLinkInput.value = getCurrentArticleUrl();
     }
 
+    // Update article publication meta tags for SEO
+    const pubMeta = document.querySelector('meta[property="article:published_time"]');
+    const modMeta = document.querySelector('meta[property="article:modified_time"]');
+    const ogUrlMeta = document.querySelector('meta[property="og:url"]');
+    const ogTitleMeta = document.querySelector('meta[property="og:title"]');
+
+    if (pubMeta) pubMeta.setAttribute('content', art.datePublished || new Date().toISOString());
+    if (modMeta) modMeta.setAttribute('content', art.dateModified || art.datePublished || new Date().toISOString());
+    if (ogUrlMeta) ogUrlMeta.setAttribute('content', getCurrentArticleUrl());
+    if (ogTitleMeta) ogTitleMeta.setAttribute('content', title || "Artikel Ganjar Satyanagara");
+
     document.getElementById("article-modal").classList.remove("hidden");
     document.body.style.overflow = "hidden";
     art.views = (parseInt(art.views) || 0) + 1;
@@ -2430,6 +2444,53 @@ function openArticle(id) {
 
     // Initialize scroll depth tracking for this article
     initScrollDepthTracking(art.id, title, category);
+
+    // Add related articles section at end of article
+    setTimeout(() => { displayRelatedArticles(art.id, art.category); }, 100);
+}
+
+// Display related articles by category for internal linking
+function displayRelatedArticles(currentArticleId, category) {
+    const modalBody = document.getElementById("article-body-content");
+    if (!modalBody) return;
+
+    // Get related articles (same category, excluding current)
+    const related = articlesData.filter(a =>
+        a.id != currentArticleId &&
+        a.category === category &&
+        a.status === "Published"
+    ).slice(0, 3);
+
+    if (related.length === 0) return;
+
+    const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
+    const catLabel = catLabels[category] || category;
+
+    const relatedHTML = `
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e8dcc8;">
+            <h3 style="font-size: 1.5rem; font-weight: bold; color: #4a3726; margin-bottom: 20px; font-family: 'Playfair Display', serif;">
+                <i class="fas fa-link mr-2"></i>${currentLang === "id" ? "Artikel Terkait" : "Related Articles"}
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                ${related.map(art => {
+                    const relTitle = currentLang === "id" ? art.title_id : art.title_en;
+                    const relDesc = currentLang === "id" ? art.desc_id : art.desc_en;
+                    const img = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=250&fit=crop';
+                    return `
+                    <div style="cursor: pointer; border-radius: 12px; overflow: hidden; background: #f5f1eb; transition: transform 0.3s ease;" onclick="openArticle(${art.id})">
+                        <img src="${img}" alt="${relTitle}" style="width: 100%; height: 160px; object-fit: cover;">
+                        <div style="padding: 16px;">
+                            <p style="font-size: 0.85rem; color: #b8860b; margin-bottom: 8px; font-weight: 600;">${relTitle.substring(0, 50)}...</p>
+                            <p style="font-size: 0.9rem; color: #7d5f3e; line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${relDesc}</p>
+                            <p style="font-size: 0.8rem; color: #a0826d;"><i class="far fa-calendar mr-1"></i>${art.date}</p>
+                        </div>
+                    </div>`;
+                }).join("")}
+            </div>
+        </div>
+    `;
+
+    modalBody.innerHTML += relatedHTML;
 }
 
 // Refresh views count display across all UI components
