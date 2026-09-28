@@ -27,6 +27,105 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-QEG849B3YY');
+
+// GA4 Event Tracking Functions
+window.__scrollEvents = {}; // Track scroll events per article
+
+// Track article clicks from featured, grid, or sidebar
+function trackArticleClick(articleId, articleTitle, section = 'grid', category = 'general') {
+    gtag('event', 'article_click', {
+        'article_id': articleId,
+        'article_title': articleTitle,
+        'section': section,
+        'category': category
+    });
+}
+
+// Track scroll depth (25%, 50%, 75%, 100%)
+function initScrollDepthTracking(articleId, articleTitle, category = 'general') {
+    if (!window.__scrollEvents[articleId]) {
+        window.__scrollEvents[articleId] = {
+            tracked_25: false,
+            tracked_50: false,
+            tracked_75: false,
+            tracked_100: false
+        };
+    }
+
+    const handleScroll = function() {
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (scrollHeight === 0) return;
+
+        const scrollPercent = Math.round((window.scrollY / scrollHeight) * 100);
+        const events = window.__scrollEvents[articleId];
+
+        if (scrollPercent >= 25 && !events.tracked_25) {
+            gtag('event', 'scroll_depth', {
+                'scroll_percentage': 25,
+                'article_id': articleId,
+                'article_title': articleTitle,
+                'category': category
+            });
+            events.tracked_25 = true;
+        }
+        if (scrollPercent >= 50 && !events.tracked_50) {
+            gtag('event', 'scroll_depth', {
+                'scroll_percentage': 50,
+                'article_id': articleId,
+                'article_title': articleTitle,
+                'category': category
+            });
+            events.tracked_50 = true;
+        }
+        if (scrollPercent >= 75 && !events.tracked_75) {
+            gtag('event', 'scroll_depth', {
+                'scroll_percentage': 75,
+                'article_id': articleId,
+                'article_title': articleTitle,
+                'category': category
+            });
+            events.tracked_75 = true;
+        }
+        if (scrollPercent >= 100 && !events.tracked_100) {
+            gtag('event', 'scroll_depth', {
+                'scroll_percentage': 100,
+                'article_id': articleId,
+                'article_title': articleTitle,
+                'category': category
+            });
+            events.tracked_100 = true;
+        }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+}
+
+// Track internal link clicks
+function trackInternalLink(linkTarget, sourceArticle, linkType = 'article') {
+    gtag('event', 'internal_link_click', {
+        'link_target': linkTarget,
+        'source_article': sourceArticle,
+        'link_type': linkType
+    });
+}
+
+// Track external link clicks
+function trackExternalLink(url, sourceArticle) {
+    gtag('event', 'external_link_click', {
+        'url': url,
+        'source_article': sourceArticle
+    });
+}
+
+// Track read time
+function trackReadTime(articleId, timeOnPage, estimatedReadTime, completionPercent = 0) {
+    gtag('event', 'article_read_time', {
+        'article_id': articleId,
+        'time_on_page': timeOnPage,
+        'estimated_read_time': estimatedReadTime,
+        'completion': completionPercent
+    });
+}
 </script>
 <!-- End Google Analytics -->
 
@@ -1441,6 +1540,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/TcU4su0.jpeg",
         date: "14 Mei 2026",
+        datePublished: "2026-05-14T00:00:00Z",
+        dateModified: "2026-05-14T00:00:00Z",
         readTime: "5",
         desc_id: "Kopi Sumatra lebih murah di New York daripada di Medan? Data nyata dari trader raksasa AS menunjukkan oligopoli global telah membuat harga FOB Indonesia kalah di depan landed cost mereka. Tapi di balik kekuatan Neumann dan Volcafe, ada celah besar yang tak pernah mereka lihat: konsumen kecil beribu-ribu kali lipat yang haus akan cerita asli Indonesia, dan ini yang tidak bisa dipenuhi para trader raksasa.",
         desc_en: "Sumatra coffee cheaper in New York than in Medan? Real data from US mega-traders shows global oligopolies have made Indonesian FOB prices lose to their own landed costs. But behind the power of Neumann and Volcafe lies a massive blind spot: thousands of small consumers starving for authentic Indonesian stories—something the giant traders can never fulfill.",
@@ -1456,6 +1557,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/O2Xs5ku.jpeg",
         date: "10 Mei 2026",
+        datePublished: "2026-05-10T00:00:00Z",
+        dateModified: "2026-05-10T00:00:00Z",
         readTime: "5",
         desc_id: "Memahami Pasar Kopi Specialty Amerika Serikat — Panduan komprehensif berbasis data NCDT 2025 untuk membedah definisi specialty coffee, dinamika konsumen generasi Gen Z hingga Boomers, fenomena Hybrid Consumption, hingga peluang investasi di industri kopi AS. Ditulis oleh Ganjar Satyanagara, Coffee Researcher bersertifikasi Q Grader dengan pengalaman 25+ tahun di consumer research dan 10+ tahun di industri kopi supply.",
         desc_en: "Understanding the U.S. Specialty Coffee Market — A data-driven guide based on the 2025 NCDT report dissecting specialty coffee definitions, generational consumer dynamics from Gen Z to Boomers, the Hybrid Consumption phenomenon, and investment opportunities in the U.S. coffee industry. Written by Ganjar Satyanagara, a Q Grader certified Coffee Researcher with 25+ years in consumer research and 10+ years in coffee supply.",
@@ -1471,6 +1574,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/vgcEMB2.png",
         date: "2026-02-25T05:00:00.000Z",
+        datePublished: "2026-02-25T05:00:00.000Z",
+        dateModified: "2026-02-25T05:00:00.000Z",
         readTime: "5",
         desc_id: "Saya ingin berbicara tentang insight dari perjalanan memasarkan kopi Indonesia di AS. Bukan teori dari ruang rapat, tapi catatan tangan setelah berbulan-bulan keliling dari farmers market di Maryland sampai cupping room di California.",
         desc_en: "I want to talk about insights from my journey marketing Indonesian coffee in the US. Not theories from a boardroom, but handwritten notes after months of traveling from farmers markets in Maryland to cupping rooms in California.",
@@ -1486,6 +1591,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/xmn0Ssm.jpeg",
         date: "2026-04-10T04:00:00.000Z",
+        datePublished: "2026-04-10T04:00:00.000Z",
+        dateModified: "2026-04-10T04:00:00.000Z",
         readTime: "5",
         desc_id: "Dari survei langsung di DMV area (DC-Maryland-Virginia), lebih dari 50% coffee shop sudah didatangi — tapi kopi Indonesia jarang muncul di menu pour over. Artikel ini membongkar kenapa Sumatra Mandheling mendominasi pasar US, perbedaan harga komersial vs specialty, dan fakta menarik: 3 zona lidah Amerika (Northeast bold-dark, Southern iced-premium, West Coast specialty-traceable) adalah pasangan sempurna untuk 68 Indikasi Geografis penghasil kopi Indonesia dengan karakter yang super beragam.",
         desc_en: "From direct surveys across the DMV area (DC-Maryland-Virginia), over 50% of coffee shops have been visited — yet Indonesian coffee rarely appears on pour over menus. This article uncovers why Sumatra Mandheling dominates the US market, commercial vs specialty pricing gaps, and a key insight: America's 3 taste zones (Northeast bold-dark, Southern iced-premium, West Coast specialty-traceable) are a perfect match for Indonesia's 68 Coffee Geographical Indications with wildly diverse character",
@@ -1501,6 +1608,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/rQZwTPX.png",
         date: "6 Mei 2026",
+        datePublished: "2026-05-06T00:00:00Z",
+        dateModified: "2026-05-06T00:00:00Z",
         readTime: "5",
         desc_id: "Giling Basah lahir dari kebutuhan, bukan dari laboratorium. Dari iklim lembap Sumatra hingga warung kopi di setiap sudut Indonesia — ini adalah cerita bagaimana budaya membentuk rasa, dan bagaimana rasa membentuk identitas",
         desc_en: "Giling Basah was born from necessity, not from a lab. From Sumatra's humid climate to the warung kopi on every Indonesian corner — this is the story of how culture shapes taste, and how taste shapes identity",
@@ -1516,6 +1625,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/7lrkCju.jpeg",
         date: "7 Mei 2026",
+        datePublished: "2026-05-07T00:00:00Z",
+        dateModified: "2026-05-07T00:00:00Z",
         readTime: "5",
         desc_id: "Artikel ini membongkar realitas kopi Indonesia di pasar AS melalui lensa empat segmen yang punya pemahaman sangat berbeda: Roasteri (6/10), Rantai ritel (3/10), Peminum specialty gelombang 4 (5/10), dan Peminum reguler (2/10). Selain itu, dijelaskan kenapa Indonesia kesulitan masuk ke festival kopi regional AS — mulai dari butuh jaringan lokal, biaya booth $250–$1.000+, sampai peran krusial distributor/fasilitator. Dilengkapi kalender 10 festival kopi AS sepanjang 2026, tiga masalah nyata yang menghalangi roaster AS (harga mahal untuk pembelian kecil, stok tidak stabil selain Sumatra, dan importir hanya menyediakan stok yang laku), analisis SWOT terupdate, serta tiga langkah konkret: turun ke festival lokal, edukasi berlapis per segmen, dan manfaatkan jaringan roaster independen. Penulis: Ganjar Satyanagara, Q Grader & Coffee Researcher.",
         desc_en: "This article reveals the reality of Indonesian coffee in the US market through the lens of four segments with vastly different understanding: roasteries (6/10), retail chains (3/10), specialty drinkers wave 4 (5/10), and regular consumers (2/10). It also explains why Indonesia struggles to enter US regional coffee festivals — from needing local networks, booth costs of $250–$1,000+, to the crucial role of distributors/facilitators. Includes a calendar of 10 US coffee festivals throughout 2026, three real problems blocking US roasters (expensive for small purchases, unstable stock besides Sumatra, and importers only stocking what sells), updated SWOT analysis, and three concrete steps: attend local festivals, layered education per segment, and leverage independent roaster networks. Author: Ganjar Satyanagara, Q Grader & Coffee Researcher.",
@@ -1531,6 +1642,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/vgcEMB2.png",
         date: "23 September 2026",
+        datePublished: "2026-09-23T00:00:00Z",
+        dateModified: "2026-09-23T00:00:00Z",
         readTime: "10",
         desc_id: "Sample cocok, pesanan besar datang rasanya beda. Bukan soal cupping score — konsistensi rasa kopi ternyata lahir dari hal yang jarang tercatat di dokumen: hubungan prosesor dan petani di hulu.",
         desc_en: "The sample tastes perfect, but the big order arrives different. It's not about the cupping score — flavor consistency is born from something rarely written in documents: the relationship between processors and farmers upstream.",
@@ -1547,6 +1660,8 @@ const defaultArticles = [
         status: "Published",
         image: "https://i.imgur.com/TcU4su0.jpeg",
         date: "23 September 2026",
+        datePublished: "2026-09-23T00:00:00Z",
+        dateModified: "2026-09-23T00:00:00Z",
         readTime: "10",
         desc_id: "THR, hajatan keluarga, dan bantuan alat produksi kini dinilai 2 poin masing-masing. Begini cara kami mengubah relasi prosesor-petani menjadi skor 100 poin yang bisa diverifikasi, bukan sekadar cerita.",
         desc_en: "THR, family weddings, and productive-asset support now earn 2 points each. How we turn processor-farmer relationships into a verifiable 100-point score, not just a story.",
@@ -1967,12 +2082,27 @@ function renderArticles(filter) {
             const catLabel = catLabels[art.category] || art.category;
             const title = currentLang === "id" ? art.title_id : art.title_en;
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
-            return `<article class="card group cursor-pointer" onclick="openArticle(${art.id})">
-            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
-            <div class="p-6"><div class="flex items-center gap-3 mb-3"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
-            <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors">${title}</h3>
-            <p class="text-coffee-600 text-sm line-clamp-3 mb-4">${desc}</p>
-            <div class="flex items-center justify-between"><div class="flex items-center gap-2"><i class="far fa-clock text-coffee-400 text-xs"></i><span class="text-xs text-coffee-400">${art.readTime} menit baca</span></div><div class="flex items-center gap-2 text-coffee-400"><i class="far fa-eye text-xs"></i><span class="text-xs">${(parseInt(art.views) || 0).toLocaleString()}</span></div></div></div>
+            const readMoreText = currentLang === "id" ? "Baca Selengkapnya" : "Read More";
+            return `<article class="card group overflow-hidden">
+            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl cursor-pointer" onclick="openArticle(${art.id})"><img src="${art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
+            <div class="p-6 flex flex-col h-full">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="tag">${catLabel}</span>
+                    <span class="text-xs text-coffee-400"><i class="far fa-calendar mr-1"></i>${art.date}</span>
+                </div>
+                <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors cursor-pointer" onclick="openArticle(${art.id})">${title}</h3>
+                <p class="text-coffee-600 text-sm line-clamp-3 mb-4 flex-1">${desc}</p>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3 text-xs text-coffee-500">
+                        <span><i class="fas fa-user mr-1"></i>Ganjar Satyanagara</span>
+                        <span><i class="far fa-clock mr-1"></i>${art.readTime} ${currentLang === "id" ? "menit baca" : "min read"}</span>
+                    </div>
+                    <span class="text-xs text-coffee-400"><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span>
+                </div>
+                <button type="button" onclick="openArticle(${art.id}); event.stopPropagation();" class="w-full py-2.5 px-4 bg-coffee-600 hover:bg-coffee-700 text-white rounded-lg font-medium text-sm transition-colors">
+                    <i class="fas fa-arrow-right mr-2"></i>${readMoreText}
+                </button>
+            </div>
         </article>`;
         }).join("");
     }
@@ -2051,11 +2181,12 @@ function renderArticlesSidebar() {
         const isActive = featuredId === art.id;
         return `<div class="p-4 border-b border-coffee-50 last:border-0 hover:bg-coffee-50 transition-colors cursor-pointer ${isActive ? 'bg-coffee-50 border-l-4 border-l-coffee-600' : ''}" onclick="showFeaturedArticle(${art.id})">
             <h4 class="font-serif text-sm font-bold text-coffee-900 line-clamp-2 ${isActive ? 'text-coffee-600' : ''} mb-2">${title}</h4>
-            <div class="text-xs text-coffee-400">
-                <span>${art.date}</span>
+            <div class="text-xs text-coffee-400 flex items-center gap-2">
+                <span><i class="far fa-calendar mr-1"></i>${art.date}</span>
+                <span class="flex items-center"><i class="far fa-clock mr-1"></i>${art.readTime} ${currentLang === "id" ? "min" : "min"}</span>
             </div>
         </div>`;
-        }).join("") + (sidebarArticles.length > 5 ? `<button type="button" onclick="toggleSidebarExpand()" class="w-full py-2.5 text-xs font-medium text-coffee-600 hover:bg-coffee-50 transition-colors border-t border-coffee-100">${sidebarExpanded ? "Tutup" : "Lihat semua (" + sidebarArticles.length + ")"}</button>` : "");
+        }).join("") + (sidebarArticles.length > 5 ? `<button type="button" onclick="toggleSidebarExpand()" class="w-full py-2.5 text-xs font-medium text-coffee-600 hover:bg-coffee-50 transition-colors border-t border-coffee-100">${sidebarExpanded ? currentLang === "id" ? "Tutup" : "Close" : (currentLang === "id" ? "Lihat semua" : "View all") + " (" + sidebarArticles.length + ")"}</button>` : "");
 }
 
 function showFeaturedArticle(id) {
@@ -2083,6 +2214,59 @@ function showFeaturedArticle(id) {
     saveToLocalStorage();
     // Refresh views display
     refreshViewsDisplay();
+
+    // Track sidebar article click in GA4
+    const title = currentLang === "id" ? art.title_id : art.title_en;
+    const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
+    const category = catLabels[art.category] || art.category;
+    trackArticleClick(art.id, title, 'sidebar', category);
+    initScrollDepthTracking(art.id, title, category);
+}
+
+// Generate BlogPosting schema markup for SEO
+function generateBlogPostingSchema(art, title, content_html, catLabel) {
+    // Extract description from appropriate language
+    const description = (currentLang === "id" ? art.desc_id : art.desc_en) || "";
+    const shortDesc = description.substring(0, 160) + (description.length > 160 ? "..." : "");
+
+    // Sanitize content for articleBody (remove tags, scripts, styles)
+    const plainText = content_html
+        .replace(/<script[^>]*>.*?<\/script>/gi, '')
+        .replace(/<style[^>]*>.*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const articleBody = plainText.substring(0, 5000);
+
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": title,
+        "description": shortDesc,
+        "image": art.image || "https://i.imgur.com/vgcEMB2.png",
+        "datePublished": art.datePublished || new Date().toISOString(),
+        "dateModified": art.dateModified || new Date().toISOString(),
+        "author": {
+            "@type": "Person",
+            "name": "Ganjar Satyanagara",
+            "url": "https://blog.qcoid.com"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Q Coffee Outlook",
+            "url": "https://blog.qcoid.com",
+            "logo": "https://i.imgur.com/vgcEMB2.png"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": BLOG_BASE_URL + "?article=" + art.id
+        },
+        "articleBody": articleBody,
+        "keywords": [catLabel, "kopi", "coffee", art.category].join(", ")
+    };
+
+    return JSON.stringify(schema);
 }
 
 function renderFeaturedArticle(art) {
@@ -2104,6 +2288,9 @@ function renderFeaturedArticle(art) {
     const shareUrl = BLOG_BASE_URL + "?article=" + art.id;
     const shareText = encodeURIComponent(title);
     const shareUrlEnc = encodeURIComponent(shareUrl);
+
+    // Generate schema markup
+    const schemaJson = generateBlogPostingSchema(art, title, content_html, catLabel);
 
     container.innerHTML = `
         <article data-article-id="${art.id}" class="bg-white rounded-2xl shadow-sm border border-coffee-100 overflow-hidden">
@@ -2156,6 +2343,9 @@ function renderFeaturedArticle(art) {
                     </button>
                 </div>
             </div>
+            <script type="application/ld+json">
+            ${schemaJson}
+            </script>
         </article>
     `;
 }
@@ -2227,6 +2417,14 @@ function openArticle(id) {
     saveToLocalStorage();
     // Refresh views display in all places
     refreshViewsDisplay();
+
+    // Track article click in GA4
+    const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
+    const category = catLabels[art.category] || art.category;
+    trackArticleClick(art.id, title, 'modal', category);
+
+    // Initialize scroll depth tracking for this article
+    initScrollDepthTracking(art.id, title, category);
 }
 
 // Refresh views count display across all UI components
@@ -2862,7 +3060,9 @@ function submitComment(e) {
     const newComment = {
         id: Date.now(), name: form.name.value, email: form.email.value,
         topic: form.topic.value || "", comment: form.comment.value,
-        articleID: "", date: "Baru saja", status: "pending", likes: 0, role: "Visitor"
+        articleID: "", date: "Baru saja",,
+        datePublished: "2026-09-28T00:00:00Z",
+        dateModified: "2026-09-28T00:00:00Z" status: "pending", likes: 0, role: "Visitor"
     };
     commentsData.unshift(newComment);
     saveToLocalStorage();
@@ -2891,7 +3091,9 @@ function submitReply(parentId) {
     const reply = {
         id: Date.now(), parentId: parentId, name: "Ganjar Satyanagara", email: "",
         topic: parent ? (parent.topic || "") : "", comment: ta.value.trim(),
-        articleID: parent ? (parent.articleID || "") : "", date: "Baru saja",
+        articleID: parent ? (parent.articleID || "") : "", date: "Baru saja",,
+        datePublished: "2026-09-28T00:00:00Z",
+        dateModified: "2026-09-28T00:00:00Z"
         status: "approved", likes: 0, role: "Author"
     };
     commentsData.unshift(reply);
@@ -4667,7 +4869,9 @@ function updateUSDADisplay(data) {
 
     // Update executive summary
     if (data.executive) {
-        var prod = document.getElementById("usda-val-production");
+        var prod = document.getElementById(",
+        datePublished: "2026-01-01T00:00:00Z",
+        dateModified: "2026-01-01T00:00:00Z"usda-val-production");
         var exp = document.getElementById("usda-val-export");
         var dom = document.getElementById("usda-val-domestic");
         var end = document.getElementById("usda-val-ending");
