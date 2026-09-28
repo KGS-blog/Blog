@@ -1691,6 +1691,7 @@ let dataLoadState = "loading"; // loading, local, error
 let statsRangeDays = 0; // 0 = all time, 7, 30, 90
 let statsCategoryChart = null;
 let statsActivityChart = null;
+const BLOG_BASE_URL = "https://blog.qcoid.com"; // Define early so generateBlogPostingSchema can use it
 
 // ========== DATA LOADING STATUS UI ==========
 function showDataStatus(status, message) {
@@ -2367,8 +2368,6 @@ function filterArticles(category) {
 // Method 2: Query Param (?article=ID)
 // Method 3: postMessage (for iframe/parent communication)
 // Method 4: URL path component fallback
-
-const BLOG_BASE_URL = "https://blog.qcoid.com";
 
 function getCurrentArticleUrl() {
     const articleId = document.getElementById("modal-title").getAttribute("data-article-id");
