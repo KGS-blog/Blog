@@ -20,6 +20,118 @@ src="https://www.facebook.com/tr?id=1498535007132214&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QEG849B3YY"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-QEG849B3YY');
+
+// GA4 Event Tracking Functions
+window.__scrollEvents = {}; // Track scroll events per article
+
+// Track article clicks from featured, grid, or sidebar
+function trackArticleClick(articleId, articleTitle, section = 'grid', category = 'general') {
+    gtag('event', 'article_click', {
+        'article_id': articleId,
+        'article_title': articleTitle,
+        'section': section,
+        'category': category
+    });
+}
+
+// Track scroll depth (25%, 50%, 75%, 100%)
+function initScrollDepthTracking(articleId, articleTitle, category = 'general') {
+    if (!window.__scrollEvents[articleId]) {
+        window.__scrollEvents[articleId] = {
+            tracked_25: false,
+            tracked_50: false,
+            tracked_75: false,
+            tracked_100: false
+        };
+    }
+
+    const handleScroll = function() {
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (scrollHeight === 0) return;
+
+        const scrollPercent = Math.round((window.scrollY / scrollHeight) * 100);
+        const events = window.__scrollEvents[articleId];
+
+        if (scrollPercent >= 25 && !events.tracked_25) {
+            gtag('event', 'scroll_depth', {
+                'scroll_percentage': 25,
+                'article_id': articleId,
+                'article_title': articleTitle,
+                'category': category
+            });
+            events.tracked_25 = true;
+        }
+        if (scrollPercent >= 50 && !events.tracked_50) {
+            gtag('event', 'scroll_depth', {
+                'scroll_percentage': 50,
+                'article_id': articleId,
+                'article_title': articleTitle,
+                'category': category
+            });
+            events.tracked_50 = true;
+        }
+        if (scrollPercent >= 75 && !events.tracked_75) {
+            gtag('event', 'scroll_depth', {
+                'scroll_percentage': 75,
+                'article_id': articleId,
+                'article_title': articleTitle,
+                'category': category
+            });
+            events.tracked_75 = true;
+        }
+        if (scrollPercent >= 100 && !events.tracked_100) {
+            gtag('event', 'scroll_depth', {
+                'scroll_percentage': 100,
+                'article_id': articleId,
+                'article_title': articleTitle,
+                'category': category
+            });
+            events.tracked_100 = true;
+        }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+}
+
+// Track internal link clicks
+function trackInternalLink(linkTarget, sourceArticle, linkType = 'article') {
+    gtag('event', 'internal_link_click', {
+        'link_target': linkTarget,
+        'source_article': sourceArticle,
+        'link_type': linkType
+    });
+}
+
+// Track external link clicks
+function trackExternalLink(url, sourceArticle) {
+    gtag('event', 'external_link_click', {
+        'url': url,
+        'source_article': sourceArticle
+    });
+}
+
+// Track read time
+function trackReadTime(articleId, timeOnPage, estimatedReadTime, completionPercent = 0) {
+    gtag('event', 'article_read_time', {
+        'article_id': articleId,
+        'time_on_page': timeOnPage,
+        'estimated_read_time': estimatedReadTime,
+        'completion': completionPercent
+    });
+}
+</script>
+<!-- End Google Analytics -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganjar Satyanagara | Coffee Researcher</title>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ganjar Satyanagara | Coffee Researcher</title>
@@ -2101,6 +2213,13 @@ function showFeaturedArticle(id) {
     saveToLocalStorage();
     // Refresh views display
     refreshViewsDisplay();
+
+    // Track sidebar article click in GA4
+    const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
+    const category = catLabels[art.category] || art.category;
+    const title = currentLang === "id" ? art.title_id : art.title_en;
+    trackArticleClick(art.id, title, 'sidebar', category);
+    initScrollDepthTracking(art.id, title, category);
 }
 
 function renderFeaturedArticle(art) {
@@ -2250,6 +2369,14 @@ function openArticle(id) {
     saveToLocalStorage();
     // Refresh views display in all places
     refreshViewsDisplay();
+
+    // Track article click in GA4
+    const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
+    const category = catLabels[art.category] || art.category;
+    trackArticleClick(art.id, title, 'modal', category);
+
+    // Initialize scroll depth tracking for this article
+    initScrollDepthTracking(art.id, title, category);
 }
 
 // Refresh views count display across all UI components
