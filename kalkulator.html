@@ -454,7 +454,7 @@ function renderArticles(filter) {
             const title = currentLang === "id" ? art.title_id : art.title_en;
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
             return `<article class="card group cursor-pointer" onclick="openArticle(${art.id})">
-            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
+            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy"></div>
             <div class="p-6"><div class="flex items-center gap-3 mb-3"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
             <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors">${title}</h3>
             <p class="text-coffee-600 text-sm line-clamp-3 mb-4">${desc}</p>
@@ -565,7 +565,7 @@ function renderFeaturedArticle(art) {
 
     container.innerHTML = `
         <article class="bg-white rounded-2xl shadow-sm border border-coffee-100 overflow-hidden">
-            ${art.image ? `<div class="w-full h-64 md:h-96 overflow-hidden"><img src="${art.image}" alt="${title}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div>` : ''}
+            ${art.image ? `<div class="w-full h-64 md:h-96 overflow-hidden"><img src="${art.image}" alt="${title}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" loading="lazy"></div>` : ''}
             <div class="p-8 md:p-12">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
                     <span class="tag">${catLabel}</span>
@@ -1499,7 +1499,7 @@ function openAllArticlesModal() {
             const title = currentLang === "id" ? art.title_id : art.title_en;
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
             return `<article class="card group cursor-pointer" onclick="closeAllArticlesModal(); setTimeout(() => openArticle(${art.id}), 300);">
-                <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy"></div>
                 <div class="p-5"><div class="flex items-center gap-2 mb-2"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
                 <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors line-clamp-2">${title}</h3>
                 <p class="text-coffee-600 text-sm line-clamp-2 mb-3">${desc}</p>
