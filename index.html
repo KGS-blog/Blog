@@ -538,6 +538,16 @@ main {
 </div>
 </div>
 </nav>
+
+<!-- BREADCRUMB NAVIGATION -->
+<nav class="bg-coffee-50 border-b border-coffee-100 py-3 sticky top-20 z-40" aria-label="Breadcrumb">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <ol class="flex items-center space-x-2 text-sm">
+      <li class="text-coffee-900 font-medium"><i class="fas fa-home mr-1.5"></i>Blog Home</li>
+    </ol>
+  </div>
+</nav>
+
 <!-- HERO -->
 <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
 <div class="absolute inset-0 bg-gradient-to-br from-coffee-950 via-coffee-900 to-coffee-800">
@@ -1038,6 +1048,72 @@ window.__qcoAnLang = function (lang) {
 </div>
 </div>
 </section>
+
+<!-- FEATURED TOOLS & REPORTS SECTION -->
+<section class="py-16 bg-cream border-t border-coffee-100">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="mb-12">
+      <h2 class="font-serif text-4xl font-bold text-coffee-900 mb-3">Featured Tools & Reports</h2>
+      <p class="text-lg text-coffee-600 leading-relaxed">Explore our core tools and market analysis resources for Indonesian coffee data</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- KALKULATOR CARD -->
+      <div class="group bg-white rounded-xl border border-coffee-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <div class="h-32 bg-gradient-to-br from-coffee-800 to-coffee-900 flex items-center justify-center">
+          <i class="fas fa-calculator text-white text-5xl opacity-30"></i>
+        </div>
+        <div class="p-6">
+          <h3 class="font-serif text-2xl font-bold text-coffee-900 mb-2">Kalkulator Harga Kopi FOB</h3>
+          <p class="text-coffee-600 mb-6 text-sm leading-relaxed">Real-time coffee price calculator with automatic ICE C-Market conversion to IDR/kg. Track market differentials and weekly trends instantly.</p>
+          <div class="flex items-center gap-3 text-xs text-coffee-500 mb-4">
+            <span><i class="fas fa-bolt text-orange-500 mr-1"></i>Real-time Data</span>
+            <span><i class="fas fa-calculator text-blue-500 mr-1"></i>Auto Calculation</span>
+            <span><i class="fas fa-chart-line text-green-500 mr-1"></i>Market Analysis</span>
+          </div>
+          <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
+            Open Calculator <i class="fas fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- LAPORAN USDA CARD -->
+      <div class="group bg-white rounded-xl border border-coffee-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <div class="h-32 bg-gradient-to-br from-coffee-700 to-coffee-800 flex items-center justify-center">
+          <i class="fas fa-chart-bar text-white text-5xl opacity-30"></i>
+        </div>
+        <div class="p-6">
+          <h3 class="font-serif text-2xl font-bold text-coffee-900 mb-2">Laporan USDA & Analisis Pasar</h3>
+          <p class="text-coffee-600 mb-6 text-sm leading-relaxed">Comprehensive market analysis with official USDA production data, 800+ auto-clustered news articles, weekly updates, and price trends for global buyers.</p>
+          <div class="flex items-center gap-3 text-xs text-coffee-500 mb-4">
+            <span><i class="fas fa-database text-purple-500 mr-1"></i>USDA PSD Data</span>
+            <span><i class="fas fa-newspaper text-red-500 mr-1"></i>News Clustering</span>
+            <span><i class="fas fa-microscope text-blue-500 mr-1"></i>Market Insights</span>
+          </div>
+          <a href="https://KGS-blog.github.io/Update-Coffee-Data/laporan-usda.html" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
+            View Report <i class="fas fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOPIC CLUSTER INFO -->
+    <div class="mt-12 p-6 bg-white rounded-lg border border-coffee-200">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 bg-coffee-100 rounded-lg flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-link text-coffee-800 text-xl"></i>
+        </div>
+        <div>
+          <h3 class="font-serif font-bold text-coffee-900 mb-1">How These Resources Work Together</h3>
+          <p class="text-sm text-coffee-600">
+            The calculator provides real-time price conversions for market analysis, while the comprehensive USDA report and market intelligence give you the broader context needed for informed trading decisions. Together, they form your complete coffee market intelligence toolkit.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer class="bg-coffee-950 text-coffee-300 py-16">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -2089,7 +2165,7 @@ function renderArticles(filter) {
             const readMoreText = currentLang === "id" ? "Baca Selengkapnya" : "Read More";
             const imageUrl = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
             return `<article class="card group overflow-hidden">
-            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl cursor-pointer" onclick="openArticle(${art.id})"><img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
+            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl cursor-pointer" onclick="openArticle(${art.id})"><img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy"></div>
             <div class="p-6 flex flex-col h-full">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="tag">${catLabel}</span>
@@ -2299,7 +2375,7 @@ function renderFeaturedArticle(art) {
 
     let imageHtml = '';
     if (art.image) {
-        imageHtml = '<div class="w-full h-64 md:h-96 overflow-hidden"><img src="' + art.image + '" alt="' + title + '" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div>';
+        imageHtml = '<div class="w-full h-64 md:h-96 overflow-hidden"><img src="' + art.image + '" alt="' + title + '" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" loading="lazy"></div>';
     }
 
     container.innerHTML = `
@@ -2478,7 +2554,7 @@ function displayRelatedArticles(currentArticleId, category) {
                     const img = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=250&fit=crop';
                     return `
                     <div style="cursor: pointer; border-radius: 12px; overflow: hidden; background: #f5f1eb; transition: transform 0.3s ease;" onclick="openArticle(${art.id})">
-                        <img src="${img}" alt="${relTitle}" style="width: 100%; height: 160px; object-fit: cover;">
+                        <img src="${img}" alt="${relTitle}" style="width: 100%; height: 160px; object-fit: cover;" loading="lazy">
                         <div style="padding: 16px;">
                             <p style="font-size: 0.85rem; color: #b8860b; margin-bottom: 8px; font-weight: 600;">${relTitle.substring(0, 50)}...</p>
                             <p style="font-size: 0.9rem; color: #7d5f3e; line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${relDesc}</p>
@@ -3410,7 +3486,7 @@ function openAllArticlesModal() {
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
             const modalImageUrl = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
             return `<article class="card group cursor-pointer" onclick="closeAllArticlesModal(); setTimeout(() => openArticle(${art.id}), 300);">
-                <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${modalImageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${modalImageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy"></div>
                 <div class="p-5"><div class="flex items-center gap-2 mb-2"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
                 <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors line-clamp-2">${title}</h3>
                 <p class="text-coffee-600 text-sm line-clamp-2 mb-3">${desc}</p>
