@@ -1421,8 +1421,9 @@ window.__qcoAnLang = function (lang) {
         <div class="bg-white rounded-2xl border border-coffee-100 shadow-sm p-6 mb-6">
             <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2"><i class="fas fa-shield-alt text-coffee-600"></i> Backup & Recovery Data</h3>
             <p class="text-sm text-coffee-500 mb-4">Jangan biarkan artikel Anda hilang! Backup secara berkala dan simpan file JSON di komputer/cloud storage.</p>
-            <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div class="grid md:grid-cols-3 gap-4 mb-4">
                 <div class="bg-coffee-50 rounded-xl p-4"><h4 class="font-medium text-coffee-900 mb-2">Export Backup (Download)</h4><p class="text-xs text-coffee-500 mb-3">Download semua data sebagai file JSON.</p><button type="button" onclick="exportAllData()" class="btn-primary w-full"><i class="fas fa-download mr-2"></i>Download Backup JSON</button></div>
+                <div class="bg-coffee-50 rounded-xl p-4"><h4 class="font-medium text-coffee-900 mb-2">Export articles.json</h4><p class="text-xs text-coffee-500 mb-3">Download articles ke GitHub storage.</p><button type="button" onclick="exportArticlesJson()" class="btn-secondary w-full"><i class="fas fa-database mr-2"></i>Download articles.json</button></div>
                 <div class="bg-coffee-50 rounded-xl p-4"><h4 class="font-medium text-coffee-900 mb-2">Import Backup (Restore)</h4><p class="text-xs text-coffee-500 mb-3">Pulihkan data dari file JSON.</p><label class="block"><input type="file" accept=".json" onchange="importAllData(this.files[0])" class="hidden"><span class="btn-secondary w-full block text-center cursor-pointer"><i class="fas fa-upload mr-2"></i>Pilih File JSON</span></label></div>
             </div>
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-4"><h4 class="font-medium text-blue-900 mb-2 flex items-center gap-2"><i class="fas fa-info-circle"></i> Status Penyimpanan</h4><div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm"><div><span class="text-blue-600">Artikel:</span><span id="backup-articles" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Komentar:</span><span id="backup-comments" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Backup Terakhir:</span><span id="backup-last" class="font-bold text-blue-900">-</span></div></div></div>
@@ -1801,7 +1802,32 @@ function showSaveStatus(status, message) {
     }
 }
 
-// ========== DATA LOADING (FIXED ORDER) ==========
+// ========== DATA LOADING (FIXED ORDER - WITH ARTICLES.JSON SUPPORT) ==========
+// Global flag to track if articles.json is available
+let articlesJsonAvailable = false;
+let articlesJsonUrl = "https://KGS-blog.github.io/Blog/articles.json";
+
+// Try to load articles from articles.json (permanent storage in GitHub)
+async function loadArticlesFromJson() {
+    try {
+        const response = await fetch(articlesJsonUrl, { cache: 'no-cache' });
+        if (response.ok) {
+            const data = await response.json();
+            if (data.articles && Array.isArray(data.articles) && data.articles.length > 0) {
+                articlesData = data.articles;
+                articlesJsonAvailable = true;
+                console.log(`✓ Loaded ${articlesData.length} articles from articles.json`);
+                // Ensure views are numbers after loading
+                articlesData.forEach(a => { a.views = parseInt(a.views) || 0; });
+                return true;
+            }
+        }
+    } catch (e) {
+        console.warn("Could not load articles.json:", e.message);
+    }
+    return false;
+}
+
 function loadAllData() {
     // Always start with default data so the blog works even without localStorage
     articlesData = [...defaultArticles];
@@ -1818,6 +1844,7 @@ function loadAllData() {
     try {
         if (!window.localStorage) return;
 
+        // First, try to load articles from localStorage (user edits/new articles)
         let storedArticles = localStorage.getItem("qco_articles_v2") || localStorage.getItem("qco_articles_v2_backup_v2");
         if (storedArticles) {
             let parsed = JSON.parse(storedArticles);
@@ -1889,6 +1916,34 @@ function exportAllData() {
     downloadBackupFile(false);
     try { localStorage.setItem("qco_last_backup_v2", new Date().toISOString()); } catch (e) {}
 }
+
+// ========== ARTICLES.JSON EXPORT (for GitHub storage) ==========
+// Export articles to articles.json format (without comments, subscribers, etc.)
+function downloadArticlesJsonFile() {
+    const articlesJson = {
+        articles: articlesData,
+        version: "2.1",
+        lastUpdated: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(articlesJson, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "articles.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("articles.json berhasil di-download! Upload ke GitHub untuk menyimpan perubahan ke repo.", "success");
+}
+
+// Export articles.json and show instructions for GitHub upload
+function exportArticlesJson() {
+    downloadArticlesJsonFile();
+    // Show message with instructions
+    showToast("📝 Instruksi: Download file articles.json dan upload ke folder Blog di GitHub repository untuk menyimpan artikel secara permanen.", "info");
+}
+
 const AUTO_BACKUP_DAYS = 7;
 function checkAutoBackup() {
     try {
@@ -3619,7 +3674,20 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
         }
 
-        // Step 4.5: Initialize USDA report charts and load cached data
+        // Step 4.5: Async load articles from articles.json (permanent storage in GitHub)
+        // This happens in background and doesn't block initial page render
+        loadArticlesFromJson().then(function(success) {
+            if (success) {
+                console.log("✓ Articles loaded from articles.json");
+                renderArticles();
+                renderArticlesSidebar();
+                showDataStatus("loaded", articlesData.length + " artikel dari GitHub");
+            }
+        }).catch(function(err) {
+            console.warn("articles.json load failed, using localStorage/defaults:", err);
+        });
+
+        // Step 4.6: Initialize USDA report charts and load cached data
         setTimeout(function() { 
             initUSDACharts(); 
             loadUSDACache();
