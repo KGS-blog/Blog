@@ -2,15 +2,18 @@ const SESSION_COOKIE = "qco_blog_admin";
 const SESSION_SECONDS = 4 * 60 * 60;
 const MAX_ARTICLES_BYTES = 900_000;
 const API_BASE = "https://api.github.com/repos";
+const ALLOWED_ORIGINS = new Set(["https://blog.qcoid.com", "https://kgs-blog.github.io"]);
+const CLUSTER_CANDIDATES_URL = "https://raw.githubusercontent.com/KGS-blog/Update-Coffee-Data/main/data/cluster-candidates.json";
+const CLUSTER_DECISIONS_FILE = "kabar-kopi-cluster-decisions.json";
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin");
-  if (origin !== "https://blog.qcoid.com") return { "Vary": "Origin" };
+  if (!ALLOWED_ORIGINS.has(origin)) return { "Vary": "Origin" };
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Max-Age": "600",
     "Vary": "Origin"
   };
@@ -40,10 +43,14 @@ async function createSession(secret) {
   return payload + "." + base64UrlEncode(signature);
 }
 async function validSession(request, secret) {
-  const cookies = request.headers.get("Cookie") || "";
-  const match = cookies.split(";").map(x => x.trim()).find(x => x.startsWith(SESSION_COOKIE + "="));
-  if (!match) return false;
-  const token = match.slice(SESSION_COOKIE.length + 1);
+  const authorization = request.headers.get("Authorization") || "";
+  let token = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
+  if (!token) {
+    const cookies = request.headers.get("Cookie") || "";
+    const match = cookies.split(";").map(x => x.trim()).find(x => x.startsWith(SESSION_COOKIE + "="));
+    if (!match) return false;
+    token = match.slice(SESSION_COOKIE.length + 1);
+  }
   const [payload, signature, extra] = token.split(".");
   if (!payload || !signature || extra) return false;
   try {
@@ -65,30 +72,32 @@ function githubHeaders(env) {
   return headers;
 }
 function githubFileUrl(env) {
-  return `${API_BASE}/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${env.GITHUB_FILE}?ref=${encodeURIComponent(env.GITHUB_BRANCH)}`;
+  return `${API_BASE}/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${encodeURIComponent(env.GITHUB_FILE)}?ref=${encodeURIComponent(env.GITHUB_BRANCH)}`;
 }
-async function readArticles(env) {
-  const response = await fetch(githubFileUrl(env), { headers: githubHeaders(env), cache: "no-store" });
+async function readGithubJson(env, fileName) {
+  const response = await fetch(githubFileUrl({ ...env, GITHUB_FILE: fileName }), { headers: githubHeaders(env), cache: "no-store" });
+  if (response.status === 404) return { data: null, sha: null };
   if (!response.ok) throw new Error(`GitHub read failed (${response.status})`);
   const file = await response.json();
   const compact = String(file.content || "").replace(/\s/g, "");
   const binary = Uint8Array.from(atob(compact), c => c.charCodeAt(0));
   return { data: JSON.parse(new TextDecoder().decode(binary)), sha: file.sha };
 }
+async function readArticles(env) { return readGithubJson(env, env.GITHUB_FILE); }
 function encodeBase64Utf8(value) {
   const bytes = new TextEncoder().encode(value);
   let binary = "";
   for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return btoa(binary);
 }
-async function writeArticles(env, document, sha) {
-  const response = await fetch(githubFileUrl(env).split("?")[0], {
+async function writeGithubJson(env, fileName, document, sha, message) {
+  const response = await fetch(githubFileUrl({ ...env, GITHUB_FILE: fileName }).split("?")[0], {
     method: "PUT",
     headers: { ...githubHeaders(env), "Content-Type": "application/json" },
     body: JSON.stringify({
-      message: "Update articles from blog admin",
+      message,
       content: encodeBase64Utf8(JSON.stringify(document, null, 2) + "\n"),
-      sha,
+      ...(sha ? { sha } : {}),
       branch: env.GITHUB_BRANCH
     })
   });
@@ -96,6 +105,17 @@ async function writeArticles(env, document, sha) {
   if (response.status === 409 || response.status === 422) return { conflict: true };
   if (!response.ok) throw new Error(`GitHub write failed (${response.status})`);
   return { conflict: false, sha: body.content && body.content.sha };
+}
+async function writeArticles(env, document, sha) {
+  return writeGithubJson(env, env.GITHUB_FILE, document, sha, "Update articles from blog admin");
+}
+async function readClusterCandidates() {
+  const response = await fetch(CLUSTER_CANDIDATES_URL, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Cluster candidates unavailable (${response.status})`);
+  return response.json();
+}
+function validDecisionDocument(value) {
+  return value && Array.isArray(value.accepted_candidate_ids) && Array.isArray(value.rejected_candidate_ids);
 }
 async function constantTimePasswordMatch(input, expected) {
   const [actual, target] = await Promise.all([input, expected].map(x => crypto.subtle.digest("SHA-256", new TextEncoder().encode(x))));
@@ -133,23 +153,66 @@ export default {
       }
     }
 
+    if (url.pathname === "/api/cluster-decisions" && request.method === "GET") {
+      try {
+        const current = await readGithubJson(env, CLUSTER_DECISIONS_FILE);
+        return json({ ...(current.data || { version: 1, accepted_candidate_ids: [], rejected_candidate_ids: [] }), sha: current.sha }, 200, {}, request);
+      } catch (_) {
+        return json({ error: "Gagal membaca keputusan klaster." }, 502, {}, request);
+      }
+    }
+
     if (url.pathname === "/api/auth/session" && request.method === "GET") {
       const authenticated = await validSession(request, env.SESSION_SECRET || "");
       return json({ authenticated }, 200, {}, request);
     }
 
     if (url.pathname === "/api/auth/login" && request.method === "POST") {
-      if (request.headers.get("Origin") !== "https://blog.qcoid.com") return json({ error: "Permintaan tidak diizinkan." }, 403, {}, request);
+      if (!ALLOWED_ORIGINS.has(request.headers.get("Origin"))) return json({ error: "Permintaan tidak diizinkan." }, 403, {}, request);
       if (!env.ADMIN_PASSWORD || !env.SESSION_SECRET) return json({ error: "Login backend belum dikonfigurasi." }, 503, {}, request);
       let body;
       try { body = await request.json(); } catch (_) { return json({ error: "Format permintaan tidak valid." }, 400, {}, request); }
       if (!await constantTimePasswordMatch(String(body.password || ""), env.ADMIN_PASSWORD)) return json({ error: "Kata sandi salah." }, 401, {}, request);
-      return json({ authenticated: true }, 200, { "Set-Cookie": cookie(await createSession(env.SESSION_SECRET), SESSION_SECONDS) }, request);
+      const session = await createSession(env.SESSION_SECRET);
+      const responseBody = request.headers.get("Origin") === "https://kgs-blog.github.io" ? { authenticated: true, session } : { authenticated: true };
+      return json(responseBody, 200, { "Set-Cookie": cookie(session, SESSION_SECONDS) }, request);
     }
 
     if (url.pathname === "/api/auth/logout" && request.method === "POST") {
-      if (request.headers.get("Origin") !== "https://blog.qcoid.com") return json({ error: "Permintaan tidak diizinkan." }, 403, {}, request);
+      if (!ALLOWED_ORIGINS.has(request.headers.get("Origin"))) return json({ error: "Permintaan tidak diizinkan." }, 403, {}, request);
       return json({ authenticated: false }, 200, { "Set-Cookie": cookie("", 0) }, request);
+    }
+
+    if (url.pathname === "/api/cluster-decisions" && request.method === "PUT") {
+      if (request.headers.get("Origin") !== "https://kgs-blog.github.io") return json({ error: "Permintaan tidak diizinkan." }, 403, {}, request);
+      if (!env.GITHUB_TOKEN) return json({ error: "Penyimpanan backend belum dikonfigurasi." }, 503, {}, request);
+      if (!await validSession(request, env.SESSION_SECRET || "")) return json({ error: "Sesi editor berakhir. Silakan masuk kembali." }, 401, {}, request);
+      let body;
+      try { body = await request.json(); } catch (_) { return json({ error: "Format permintaan tidak valid." }, 400, {}, request); }
+      const candidateId = String(body.candidate_id || "");
+      const decision = String(body.decision || "");
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(candidateId) || !["accepted", "rejected"].includes(decision)) {
+        return json({ error: "Keputusan klaster tidak valid." }, 400, {}, request);
+      }
+      try {
+        const candidates = await readClusterCandidates();
+        if (!(candidates.candidates || []).some(candidate => candidate.id === candidateId)) {
+          return json({ error: "Kandidat ini sudah tidak tersedia. Muat ulang halaman." }, 404, {}, request);
+        }
+        const latest = await readGithubJson(env, CLUSTER_DECISIONS_FILE);
+        const document = latest.data || { version: 1, accepted_candidate_ids: [], rejected_candidate_ids: [] };
+        if (!validDecisionDocument(document)) return json({ error: "Format keputusan klaster tidak valid." }, 502, {}, request);
+        document.accepted_candidate_ids = document.accepted_candidate_ids.filter(id => id !== candidateId);
+        document.rejected_candidate_ids = document.rejected_candidate_ids.filter(id => id !== candidateId);
+        document[decision === "accepted" ? "accepted_candidate_ids" : "rejected_candidate_ids"].push(candidateId);
+        document.version = 1;
+        document.updated_at = new Date().toISOString();
+        const result = await writeGithubJson(env, CLUSTER_DECISIONS_FILE, document, latest.sha, `Review coffee cluster: ${decision}`);
+        if (result.conflict) return json({ error: "Keputusan lain baru saja tersimpan. Muat ulang halaman dan coba lagi.", conflict: true }, 409, {}, request);
+        return json({ ...document, sha: result.sha }, 200, {}, request);
+      } catch (_) {
+        return json({ error: "Keputusan gagal disimpan. Coba lagi." }, 502, {}, request);
+      }
     }
 
     if (url.pathname === "/api/articles" && request.method === "PUT") {

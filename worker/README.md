@@ -11,7 +11,7 @@ This Worker keeps the public blog static while moving shared article writes to G
    - `SESSION_SECRET`: a random secret with at least 32 bytes of entropy.
 3. Deploy again after setting secrets. Keep secret values out of this repository and out of chat.
 
-The Worker reads and writes only `articles.json` on the `main` branch. It checks the GitHub file SHA before writing so a stale browser cannot overwrite a newer update. If two editors save at once, the later editor must reload before retrying.
+The Worker reads and writes `articles.json` and `kabar-kopi-cluster-decisions.json` on the `main` branch. The latter stores editorial approval or rejection decisions for Kabar Kopi cluster candidates; the portal pipeline reads that public JSON on its next scheduled run. Article writes check the GitHub file SHA before writing so a stale browser cannot overwrite a newer update.
 
 If the GitHub build connection is removed after the initial deployment, the live Worker continues running, but later Worker code changes must be deployed manually.
 
@@ -21,5 +21,7 @@ If the GitHub build connection is removed after the initial deployment, the live
 - `GET /api/auth/session`: checks the signed, HttpOnly admin session.
 - `POST /api/auth/login` and `/api/auth/logout`: start/end the admin session.
 - `PUT /api/articles`: writes the complete article document after authentication and SHA validation.
+- `GET /api/cluster-decisions`: reads public editor decisions for cluster candidates.
+- `PUT /api/cluster-decisions`: stores an authenticated accept/reject decision after checking that the candidate still exists in the Update-Coffee-Data repo.
 
-Only requests from `https://blog.qcoid.com` can use the API. Comments, subscribers, categories, and page copy remain browser-local and are outside this article-sync change.
+Blog article writes are limited to `https://blog.qcoid.com`. Cluster review writes are limited to the Kabar Kopi GitHub Pages origin `https://kgs-blog.github.io`; its login response returns a short-lived signed bearer session for cross-site requests. The existing `GITHUB_TOKEN` still needs access only to `KGS-blog/Blog`, with **Contents: Read and write** permission. Comments, subscribers, categories, and page copy remain browser-local and are outside this article-sync change.
