@@ -4,7 +4,7 @@ This Worker keeps the public blog static while moving shared article writes to G
 
 ## Cloudflare setup
 
-1. Deploy this directory as a Cloudflare Worker (`worker/` is the project root). The Wrangler config creates the custom domain `blog-api.qcoid.com`.
+1. Connect the `KGS-blog/Blog` repository in Cloudflare Workers Builds, set the root directory to `worker/`, and deploy with `npx wrangler deploy`. The Wrangler config creates the custom domain `blog-api.qcoid.com`.
 2. Add these encrypted Worker secrets in **Settings → Variables and Secrets**:
    - `GITHUB_TOKEN`: a fine-grained GitHub token limited to repository `KGS-blog/Blog`, with **Contents: Read and write** permission.
    - `ADMIN_PASSWORD`: a new, unique password for the blog dashboard. Do not reuse a password currently embedded in an older copy of the site.
@@ -12,6 +12,8 @@ This Worker keeps the public blog static while moving shared article writes to G
 3. Deploy again after setting secrets. Keep secret values out of this repository and out of chat.
 
 The Worker reads and writes only `articles.json` on the `main` branch. It checks the GitHub file SHA before writing so a stale browser cannot overwrite a newer update. If two editors save at once, the later editor must reload before retrying.
+
+If the GitHub build connection is removed after the initial deployment, the live Worker continues running, but later Worker code changes must be deployed manually.
 
 ## API
 
