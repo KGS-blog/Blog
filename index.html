@@ -1516,7 +1516,7 @@ window.__qcoAnLang = function (lang) {
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Konten Full (ID) - HTML <span class="text-red-500">*</span></label><textarea id="new-content-id" name="content_id" rows="10" class="input-field resize-none font-mono text-xs" required placeholder="<p>Tulis konten artikel LENGKAP...</p>"></textarea><p class="text-xs text-coffee-400 mt-1">Gunakan tag HTML: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;</p></div>
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Full Content (EN) - HTML <span class="text-red-500">*</span></label><textarea id="new-content-en" name="content_en" rows="10" class="input-field resize-none font-mono text-xs" required placeholder="<p>Write COMPLETE article content...</p>"></textarea><p class="text-xs text-coffee-400 mt-1">Use HTML tags: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;</p></div>
                 </div>
-                <div id="new-article-save-status" class="hidden mb-4 p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-2"><i class="fas fa-spinner fa-spin text-blue-600"></i><span class="text-sm text-blue-700 font-medium">Menyimpan artikel ke localStorage...</span></div>
+                <div id="new-article-save-status" class="hidden mb-4 p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-2"><i class="fas fa-spinner fa-spin text-blue-600"></i><span class="text-sm text-blue-700 font-medium">Menyimpan artikel ke repo bersama...</span></div>
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-coffee-100"><button type="button" onclick="closeAddArticleModal()" class="btn-secondary">Batal</button><button type="submit" class="btn-success" id="btn-save-new-article"><i class="fas fa-save mr-2"></i>Simpan Artikel</button></div>
             </form>
         </div>
@@ -1549,7 +1549,7 @@ window.__qcoAnLang = function (lang) {
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Konten Full (ID) - HTML <span class="text-red-500">*</span></label><textarea id="edit-content-id" rows="10" class="input-field resize-none font-mono text-xs" required></textarea><p class="text-xs text-coffee-400 mt-1">Gunakan tag HTML: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;</p></div>
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Full Content (EN) - HTML <span class="text-red-500">*</span></label><textarea id="edit-content-en" rows="10" class="input-field resize-none font-mono text-xs" required></textarea><p class="text-xs text-coffee-400 mt-1">Use HTML tags: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;</p></div>
                 </div>
-                <div id="edit-article-save-status" class="hidden mb-4 p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-2"><i class="fas fa-spinner fa-spin text-blue-600"></i><span class="text-sm text-blue-700 font-medium">Mengupdate artikel di localStorage...</span></div>
+                <div id="edit-article-save-status" class="hidden mb-4 p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-2"><i class="fas fa-spinner fa-spin text-blue-600"></i><span class="text-sm text-blue-700 font-medium">Menyimpan perubahan ke repo bersama...</span></div>
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-coffee-100"><button type="button" onclick="closeEditArticleModal()" class="btn-secondary">Batal</button><button type="submit" class="btn-success" id="btn-update-article"><i class="fas fa-save mr-2"></i>Update Artikel</button></div>
             </form>
         </div>
@@ -1744,6 +1744,10 @@ const defaultCategories = [
 
 // ========== DATA STORE ==========
 let articlesData = [];
+let articlesFileSha = "";
+let articlesDataSource = "default";
+let adminSessionActive = false;
+const BLOG_SYNC_API = "https://blog-api.qcoid.com/api";
 let commentsData = [];
 let subscribersData = [];
 let categoriesData = [];
@@ -1803,7 +1807,7 @@ function showSaveStatus(status, message) {
 
 // ========== DATA LOADING (FIXED ORDER) ==========
 function loadAllData() {
-    // Always start with default data so the blog works even without localStorage
+    // Article content is shared through articles.json; browser storage is only for per-device preferences and legacy data.
     articlesData = [...defaultArticles];
     commentsData = [];
     subscribersData = [];
@@ -1817,16 +1821,6 @@ function loadAllData() {
     // Wrap in try-catch so defaults are preserved if localStorage fails
     try {
         if (!window.localStorage) return;
-
-        let storedArticles = localStorage.getItem("qco_articles_v2") || localStorage.getItem("qco_articles_v2_backup_v2");
-        if (storedArticles) {
-            let parsed = JSON.parse(storedArticles);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                articlesData = parsed;
-                // Ensure views are numbers after loading from storage
-                articlesData.forEach(a => { a.views = parseInt(a.views) || 0; });
-            }
-        }
 
         let storedComments = localStorage.getItem("qco_comments_v2") || localStorage.getItem("qco_comments_v2_backup_v2");
         if (storedComments) {
@@ -1851,10 +1845,78 @@ function loadAllData() {
     }
 }
 
+async function loadSharedArticles() {
+    const candidates = location.protocol === "file:"
+        ? ["https://blog.qcoid.com/articles.json?sync=" + Date.now()]
+        : [BLOG_SYNC_API + "/articles", "./articles.json?sync=" + Date.now()];
+    let lastError = null;
+    for (const url of candidates) {
+        try {
+            // Public article reads do not need cookies; omit them so local file previews can
+            // read the public GitHub Pages JSON without credentialed-CORS restrictions.
+            const response = await fetch(url, { cache: "no-store", credentials: "omit" });
+            if (!response.ok) throw new Error("HTTP " + response.status);
+            const data = await response.json();
+            if (!data || !Array.isArray(data.articles)) throw new Error("Format articles.json tidak valid");
+            articlesData = data.articles;
+            articlesData.forEach(a => {
+                a.views = parseInt(a.views) || 0;
+                if (a.content_id) a.content_id = cleanHtmlContent(a.content_id);
+                if (a.content_en) a.content_en = cleanHtmlContent(a.content_en);
+            });
+            articlesFileSha = String(data.sha || "");
+            articlesDataSource = data.sha ? "backend" : "shared-file";
+            return true;
+        } catch (error) { lastError = error; }
+    }
+    articlesDataSource = "default";
+    console.error("Gagal memuat articles.json bersama:", lastError);
+    return false;
+}
+
+async function saveSharedArticles() {
+    if (location.protocol === "file:") throw new Error("Buka blog.qcoid.com untuk menyimpan artikel bersama.");
+    if (!articlesFileSha) throw new Error("Backend sinkronisasi belum aktif. Perubahan belum disimpan.");
+    articlesData = articlesData.map(article => ({
+        ...article,
+        content_id: cleanHtmlContent(article.content_id || ""),
+        content_en: cleanHtmlContent(article.content_en || "")
+    }));
+    const response = await fetch(BLOG_SYNC_API + "/articles", {
+        method: "PUT",
+        credentials: "include",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ version: 1, sha: articlesFileSha, articles: articlesData })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        if (response.status === 401) { adminSessionActive = false; checkAdminAuth(); }
+        const error = new Error(data.error || "Artikel gagal disimpan.");
+        error.conflict = response.status === 409 && !!data.conflict;
+        throw error;
+    }
+    articlesFileSha = String(data.sha || "");
+    articlesDataSource = "backend";
+}
+
+async function restoreArticlesAfterFailure(previousArticles, error) {
+    articlesData = previousArticles;
+    if (error && error.conflict) await loadSharedArticles();
+    refreshArticleViews();
+}
+
+function refreshArticleViews() {
+    renderArticles();
+    renderArticlesSidebar();
+    renderDashboardStatistics();
+    renderDashboardArticles();
+    renderDashboardOverview();
+}
+
 function saveToLocalStorage() {
     try {
         if (window.localStorage) {
-            localStorage.setItem("qco_articles_v2", JSON.stringify(articlesData));
             localStorage.setItem("qco_comments_v2", JSON.stringify(commentsData));
             localStorage.setItem("qco_subscribers_v2", JSON.stringify(subscribersData));
             localStorage.setItem("qco_blog_categories_v2", JSON.stringify(categoriesData));
@@ -1864,7 +1926,6 @@ function saveToLocalStorage() {
 function saveBackup() {
     try {
         if (window.localStorage) {
-            localStorage.setItem("qco_articles_v2_backup_v2", JSON.stringify(articlesData));
             localStorage.setItem("qco_comments_v2_backup_v2", JSON.stringify(commentsData));
             localStorage.setItem("qco_subscribers_v2_backup_v2", JSON.stringify(subscribersData));
             localStorage.setItem("qco_blog_categories_v2_backup_v2", JSON.stringify(categoriesData));
@@ -1889,22 +1950,17 @@ function exportAllData() {
     downloadBackupFile(false);
     try { localStorage.setItem("qco_last_backup_v2", new Date().toISOString()); } catch (e) {}
 }
-const AUTO_BACKUP_DAYS = 7;
-function checkAutoBackup() {
-    try {
-        const last = Date.parse(localStorage.getItem("qco_last_backup_v2") || "") || 0;
-        if (Date.now() - last >= AUTO_BACKUP_DAYS * 864e5) {
-            downloadBackupFile(true);
-            localStorage.setItem("qco_last_backup_v2", new Date().toISOString());
-        }
-    } catch (e) {}
-}
 function importAllData(file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
         try {
             const data = JSON.parse(e.target.result);
-            if (data.articles) articlesData = data.articles;
+            if (data.articles) {
+                const previousArticles = articlesData.map(a => ({ ...a }));
+                articlesData = data.articles;
+                try { await saveSharedArticles(); }
+                catch (error) { await restoreArticlesAfterFailure(previousArticles, error); throw error; }
+            }
             if (data.comments) commentsData = data.comments;
             if (data.subscribers) subscribersData = data.subscribers;
             if (data.categories) categoriesData = data.categories;
@@ -1914,8 +1970,8 @@ function importAllData(file) {
         renderArticlesSidebar(); renderDashboardStatistics(); renderDashboardArticles(); renderDashboardOverview();
             renderComments(); renderDashboardComments(); renderDashboardSubscribers();
             renderDashboardCategories(); renderNewsletterStats();
-            showToast("Data berhasil di-import! " + data.articles.length + " artikel dipulihkan.", "success");
-        } catch (err) { showToast("Gagal import file! Format tidak valid.", "error"); }
+            showToast("Data berhasil di-import! " + (Array.isArray(data.articles) ? data.articles.length + " artikel dipulihkan." : "Data dipulihkan."), "success");
+        } catch (err) { showToast(err.message || "Gagal import file! Format tidak valid.", "error"); }
     };
     reader.readAsText(file);
 }
@@ -2769,14 +2825,30 @@ function closeAddArticleModal() {
 }
 function cleanHtmlContent(html) {
     if (!html) return "";
+    let content = html;
     if (html.includes("<!DOCTYPE html>") || html.includes("<html")) {
         const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-        if (bodyMatch && bodyMatch[1]) return bodyMatch[1].trim();
-        return html.replace(/<!DOCTYPE[^>]*>/gi, "").replace(/<html[^>]*>/gi, "").replace(/<\/html>/gi, "").replace(/<head>[\s\S]*?<\/head>/gi, "").replace(/<body[^>]*>/gi, "").replace(/<\/body>/gi, "").trim();
+        if (bodyMatch && bodyMatch[1]) content = bodyMatch[1].trim();
+        else content = html.replace(/<!DOCTYPE[^>]*>/gi, "").replace(/<html[^>]*>/gi, "").replace(/<\/html>/gi, "").replace(/<head>[\s\S]*?<\/head>/gi, "").replace(/<body[^>]*>/gi, "").replace(/<\/body>/gi, "").trim();
     }
-    return html;
+    try {
+        const parsed = new DOMParser().parseFromString(content, "text/html");
+        parsed.querySelectorAll("script,style,iframe,object,embed,form,input,button,textarea,select,option,base,meta,link,svg,math").forEach(node => node.remove());
+        parsed.querySelectorAll("*").forEach(node => {
+            [...node.attributes].forEach(attribute => {
+                const name = attribute.name.toLowerCase();
+                const value = attribute.value.trim();
+                const compactValue = value.replace(/[\u0000-\u0020]+/g, "").toLowerCase();
+                if (name.startsWith("on") || ["srcdoc", "srcset", "formaction", "xlink:href"].includes(name)) { node.removeAttribute(attribute.name); return; }
+                if (["href", "src", "poster"].includes(name) && /^(?:javascript|vbscript|data):/.test(compactValue)) { node.removeAttribute(attribute.name); return; }
+                if (name === "style" && /(?:url\s*\(|expression\s*\(|@import|javascript:)/i.test(value)) node.removeAttribute(attribute.name);
+            });
+            if (node.getAttribute("target") === "_blank") node.setAttribute("rel", "noopener noreferrer");
+        });
+        return parsed.body.innerHTML;
+    } catch (_) { return content; }
 }
-function submitNewArticle(e) {
+async function submitNewArticle(e) {
     e.preventDefault();
     if (isSaving) return;
     const form = e.target;
@@ -2792,7 +2864,7 @@ function submitNewArticle(e) {
     const statusDiv = document.getElementById("new-article-save-status");
     btn.disabled = true; btn.innerHTML = "<i class='fas fa-spinner fa-spin mr-2'></i>Menyimpan...";
     statusDiv.classList.remove("hidden");
-    showSaveStatus("saving", "Menyimpan artikel ke localStorage...");
+    showSaveStatus("saving", "Menyimpan artikel ke repo bersama...");
     const newArticle = {
         id: Date.now(), title_id, title_en, category: form.category.value, status: form.status.value,
         image: form.image.value.trim() || "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop",
@@ -2800,8 +2872,19 @@ function submitNewArticle(e) {
         readTime: "5", desc_id: form.desc_id.value.trim(), desc_en: form.desc_en.value.trim(),
         content_id: cleanHtmlContent(content_id), content_en: cleanHtmlContent(content_en), views: 0
     };
-    articlesData.unshift(newArticle);
-    saveToLocalStorage(); saveBackup();
+    const previousArticles = articlesData;
+    articlesData = [newArticle, ...articlesData];
+    try {
+        await saveSharedArticles();
+    } catch (error) {
+        await restoreArticlesAfterFailure(previousArticles, error);
+        showSaveStatus("error", error.message);
+        statusDiv.className = "mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2";
+        statusDiv.textContent = error.message;
+        showToast(error.message, "error");
+        isSaving = false; btn.disabled = false; btn.innerHTML = "<i class='fas fa-save mr-2'></i>Simpan Artikel";
+        return;
+    }
     showSaveStatus("saved", "Artikel berhasil disimpan!");
     statusDiv.innerHTML = "<i class='fas fa-check-circle text-green-600'></i><span class='text-sm text-green-700 font-medium'>Artikel berhasil disimpan!</span>";
     statusDiv.className = "mb-4 p-3 rounded-xl bg-green-50 border border-green-200 flex items-center gap-2";
@@ -2834,7 +2917,7 @@ function closeEditArticleModal() {
     document.getElementById("edit-article-save-status").classList.add("hidden");
     document.body.style.overflow = "";
 }
-function updateArticle(e) {
+async function updateArticle(e) {
     e.preventDefault();
     if (isSaving) return;
     const id = parseInt(document.getElementById("edit-article-id").value);
@@ -2842,11 +2925,12 @@ function updateArticle(e) {
     const statusDiv = document.getElementById("edit-article-save-status");
     isSaving = true; btn.disabled = true; btn.innerHTML = "<i class='fas fa-spinner fa-spin mr-2'></i>Mengupdate...";
     statusDiv.classList.remove("hidden");
-    showSaveStatus("saving", "Mengupdate artikel di localStorage...");
+    showSaveStatus("saving", "Menyimpan perubahan ke repo bersama...");
     const idx = articlesData.findIndex(a => a.id == id);
     if (idx === -1) { showToast("Artikel tidak ditemukan!", "error"); isSaving = false; btn.disabled = false; btn.innerHTML = "<i class='fas fa-save mr-2'></i>Update Artikel"; return; }
     const newContentEn = document.getElementById("edit-content-en").value.trim();
     if (!newContentEn || newContentEn.length < 50) { showToast("Konten EN wajib diisi minimal 50 karakter!", "error"); isSaving = false; btn.disabled = false; btn.innerHTML = "<i class='fas fa-save mr-2'></i>Update Artikel"; return; }
+    const previousArticles = articlesData.map(a => ({ ...a }));
     const updatedArticle = {
         ...articlesData[idx],
         title_id: document.getElementById("edit-title-id").value.trim(),
@@ -2861,7 +2945,17 @@ function updateArticle(e) {
         date: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
     };
     articlesData[idx] = updatedArticle;
-    saveToLocalStorage(); saveBackup();
+    try {
+        await saveSharedArticles();
+    } catch (error) {
+        await restoreArticlesAfterFailure(previousArticles, error);
+        showSaveStatus("error", error.message);
+        statusDiv.className = "mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2";
+        statusDiv.textContent = error.message;
+        showToast(error.message, "error");
+        isSaving = false; btn.disabled = false; btn.innerHTML = "<i class='fas fa-save mr-2'></i>Update Artikel";
+        return;
+    }
     showSaveStatus("saved", "Artikel berhasil diupdate!");
     statusDiv.innerHTML = "<i class='fas fa-check-circle text-green-600'></i><span class='text-sm text-green-700 font-medium'>Artikel berhasil diupdate!</span>";
     statusDiv.className = "mb-4 p-3 rounded-xl bg-green-50 border border-green-200 flex items-center gap-2";
@@ -2873,22 +2967,24 @@ function updateArticle(e) {
         isSaving = false; btn.disabled = false; btn.innerHTML = "<i class='fas fa-save mr-2'></i>Update Artikel";
     }, 1000);
 }
-function deleteArticle(id) {
+async function deleteArticle(id) {
     const art = articlesData.find(a => a.id == id);
     const title = art ? (currentLang === "id" ? art.title_id : art.title_en) : "Artikel ini";
+    const previousArticles = articlesData;
     articlesData = articlesData.filter(a => a.id != id);
-    saveToLocalStorage(); saveBackup();
-    renderArticles();
-        renderArticlesSidebar(); renderDashboardStatistics(); renderDashboardArticles(); renderDashboardOverview();
+    try { await saveSharedArticles(); }
+    catch (error) { await restoreArticlesAfterFailure(previousArticles, error); showToast(error.message, "error"); return; }
+    refreshArticleViews();
     showToast("Artikel '" + title + "' dihapus!", "success");
 }
-function toggleArticleStatus(id) {
+async function toggleArticleStatus(id) {
     const art = articlesData.find(a => a.id == id);
     if (!art) return;
+    const previousArticles = articlesData.map(a => ({ ...a }));
     art.status = art.status === "Published" ? "Draft" : "Published";
-    saveToLocalStorage();
-    renderDashboardStatistics(); renderDashboardArticles(); renderArticles();
-        renderArticlesSidebar(); renderDashboardOverview();
+    try { await saveSharedArticles(); }
+    catch (error) { await restoreArticlesAfterFailure(previousArticles, error); showToast(error.message, "error"); return; }
+    refreshArticleViews();
     showToast("Status artikel diubah menjadi: " + art.status, "success");
 }
 
@@ -3270,14 +3366,20 @@ function submitNewCategory(e) {
     showToast("Kategori berhasil ditambahkan!", "success");
     closeAddCategoryModal();
 }
-function deleteCategory(key) {
+async function deleteCategory(key) {
     const cat = categoriesData.find(c => c.key === key);
     if (!cat) return;
     const usedInArticles = articlesData.filter(a => a.category === key).length;
+    const previousArticles = articlesData.map(a => ({ ...a }));
+    const previousCategories = categoriesData;
     if (usedInArticles > 0) {
         articlesData.forEach(a => { if (a.category === key) a.category = "kopi-indonesia"; });
     }
     categoriesData = categoriesData.filter(c => c.key !== key);
+    if (usedInArticles > 0) {
+        try { await saveSharedArticles(); }
+        catch (error) { categoriesData = previousCategories; await restoreArticlesAfterFailure(previousArticles, error); showToast(error.message, "error"); return; }
+    }
     saveToLocalStorage(); renderDashboardCategories(); renderArticles();
         renderArticlesSidebar(); renderDashboardArticles();
     showToast("Kategori dihapus!", "success");
@@ -3315,9 +3417,19 @@ function searchDashboardSubscribers() {
     rows.forEach(row => { row.style.display = row.textContent.toLowerCase().includes(query) ? "" : "none"; });
 }
 // ========== DASHBOARD NAVIGATION ==========
-function showDashboard() {
-    const auth = sessionStorage.getItem("qco_admin_auth");
-    if (!auth) {
+async function showDashboard() {
+    if (location.protocol === "file:") {
+        document.getElementById("password-modal").classList.remove("hidden");
+        document.getElementById("password-error").textContent = "Untuk mengelola artikel, buka https://blog.qcoid.com agar koneksi aman.";
+        document.getElementById("password-error").classList.remove("hidden");
+        return;
+    }
+    try {
+        const response = await fetch(BLOG_SYNC_API + "/auth/session", { cache: "no-store", credentials: "include" });
+        const data = await response.json();
+        adminSessionActive = !!data.authenticated;
+    } catch (_) { adminSessionActive = false; }
+    if (!adminSessionActive) {
         document.getElementById("password-modal").classList.remove("hidden");
         document.getElementById("admin-password").value = "";
         document.getElementById("password-error").classList.add("hidden");
@@ -3329,14 +3441,27 @@ function showDashboard() {
 function closePasswordModal() {
     document.getElementById("password-modal").classList.add("hidden");
 }
-function submitPassword(e) {
+async function submitPassword(e) {
     e.preventDefault();
+    if (location.protocol === "file:") {
+        document.getElementById("password-error").textContent = "Masuk melalui situs live untuk mengelola artikel bersama.";
+        document.getElementById("password-error").classList.remove("hidden");
+        return;
+    }
     const pw = document.getElementById("admin-password").value;
-    if (pw === "qco2026") {
-        sessionStorage.setItem("qco_admin_auth", "1");
+    try {
+        const response = await fetch(BLOG_SYNC_API + "/auth/login", {
+            method: "POST", credentials: "include", cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: pw })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Login gagal.");
+        adminSessionActive = true;
         closePasswordModal();
         enterDashboard();
-    } else {
+    } catch (error) {
+        document.getElementById("password-error").textContent = error.message;
         document.getElementById("password-error").classList.remove("hidden");
         document.getElementById("admin-password").value = "";
         document.getElementById("admin-password").focus();
@@ -3351,7 +3476,8 @@ function enterDashboard() {
     checkAdminAuth();
 }
 function adminLogout() {
-    sessionStorage.removeItem("qco_admin_auth");
+    fetch(BLOG_SYNC_API + "/auth/logout", { method: "POST", credentials: "include", cache: "no-store" }).catch(() => {});
+    adminSessionActive = false;
     checkAdminAuth();
     showPublic();
     showToast("Logged out successfully", "success");
@@ -3533,8 +3659,7 @@ function refreshComments() {
 }
 
 // ========== INIT (FIXED ORDER) ==========
-document.addEventListener("DOMContentLoaded", function() {
-        checkAutoBackup();
+document.addEventListener("DOMContentLoaded", async function() {
     // TRIPLE-REDUNDANCY EVENT BINDING for Google Sites iframe compatibility
     (function bindEvents() {
         var bid = document.getElementById('btn-id');
@@ -3600,8 +3725,9 @@ document.addEventListener("DOMContentLoaded", function() {
         // Step 1: Show skeleton loading state
         showDataStatus("loading", "Memuat data...");
 
-        // Step 2: Load local data IMMEDIATELY (from localStorage)
+        // Step 2: Load shared article data; keep comments and categories local for now.
         loadAllData();
+        const sharedArticlesLoaded = await loadSharedArticles();
 
         // Step 3: Render with whatever we have (empty or local data)
         setLanguage("id");
@@ -3613,10 +3739,19 @@ document.addEventListener("DOMContentLoaded", function() {
         checkAdminAuth();
 
         // Step 4: Show appropriate status based on what we loaded
-        if (articlesData.length > 0) {
-            showDataStatus("loaded", articlesData.length + " artikel siap");
-            dataLoadState = "local";
+        if (articlesData.length > 0 && sharedArticlesLoaded) {
+            showDataStatus("loaded", articlesData.length + " artikel bersama siap");
+            dataLoadState = "shared";
+        } else if (articlesData.length > 0) {
+            showDataStatus("error", "Data bersama gagal dimuat; menampilkan cadangan halaman");
+            dataLoadState = "error";
         } else {
+        }
+        if (location.protocol !== "file:") {
+            fetch(BLOG_SYNC_API + "/auth/session", { cache: "no-store", credentials: "include" })
+                .then(response => response.json())
+                .then(data => { adminSessionActive = !!data.authenticated; checkAdminAuth(); })
+                .catch(() => { adminSessionActive = false; checkAdminAuth(); });
         }
 
         // Step 4.5: Initialize USDA report charts and load cached data
@@ -3644,7 +3779,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function checkAdminAuth() {
-    const isAuth = sessionStorage.getItem("qco_admin_auth") === "1";
+    const isAuth = adminSessionActive;
     const navBtn = document.getElementById("nav-admin-btn");
     const mobileBtn = document.getElementById("mobile-admin-btn");
     const footerBtn = document.getElementById("footer-admin-btn");
