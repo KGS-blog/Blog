@@ -1,0 +1,14 @@
+name = "qco-blog-sync"
+main = "src/index.js"
+compatibility_date = "2026-10-03"
+workers_dev = false
+
+routes = [
+  { pattern = "blog-api.qcoid.com", custom_domain = true }
+]
+
+[vars]
+GITHUB_OWNER = "KGS-blog"
+GITHUB_REPO = "Blog"
+GITHUB_BRANCH = "main"
+GITHUB_FILE = "articles.json"
