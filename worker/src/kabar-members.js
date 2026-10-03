@@ -328,6 +328,15 @@ async function syncPremium(request, env) {
     for (const language of ["id", "en"]) {
       const article = language === "en" ? item.article_en : item.article;
       if (!article?.title) continue;
+      const storedArticle = {
+        ...article,
+        cluster_id: String(item.cluster_id),
+        cluster_name: String(item.cluster_name || item.cluster_id),
+        period_days: Number(item.period_days) || 14,
+        generated_at: String(item.generated_at || doc.generated_at || timestamp),
+        feed_fetched: String(doc.feed_fetched || ""),
+        input_sources: Array.isArray(item.input_sources) ? item.input_sources : []
+      };
       const slugBase = String(item.cluster_id).toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
       const slug = `${slugBase}-${language}`;
       const articleId = `${item.cluster_id}:${language}`;
@@ -338,7 +347,7 @@ async function syncPremium(request, env) {
         ON CONFLICT(slug) DO UPDATE SET title=excluded.title, teaser=excluded.teaser,
         article_json=excluded.article_json, status='published', source_batch_id=excluded.source_batch_id,
         updated_at=excluded.updated_at, published_at=excluded.published_at`)
-        .bind(articleId, slug, language, String(article.title).slice(0, 240), teaser, JSON.stringify(article), String(doc.generated_at || "").slice(0, 80), timestamp, timestamp, timestamp));
+        .bind(articleId, slug, language, String(article.title).slice(0, 240), teaser, JSON.stringify(storedArticle), String(doc.generated_at || "").slice(0, 80), timestamp, timestamp, timestamp));
     }
   }
   if (!statements.length) return response(request, { synced: 0 });
