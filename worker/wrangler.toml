@@ -3,6 +3,12 @@ main = "src/index.js"
 compatibility_date = "2026-10-02"
 workers_dev = false
 
+[[d1_databases]]
+binding = "DB"
+database_name = "kabar-kopi-members"
+database_id = "eed08525-a963-44ee-bca2-7d7f12cec8e1"
+migrations_dir = "migrations"
+
 routes = [
   { pattern = "blog-api.qcoid.com", custom_domain = true }
 ]
