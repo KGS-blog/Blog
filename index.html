@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- QFin Blog HTML - v2026.09.26-6 | menu Tentang dihapus (gabung Beranda), CTA hero = Berita Kopi Terkini ke laporan-usda.html#berita -->
+<!-- QFin Blog HTML - v2026.09.26-6 | menu Tentang dihapus (gabung Beranda), CTA hero = Berita Kopi Terkini ke Kabar Kopi -->
 <html lang="id" class="scroll-smooth">
 <head>
 <!-- Meta Pixel Code -->
@@ -131,10 +131,11 @@ function trackReadTime(articleId, timeOnPage, estimatedReadTime, completionPerce
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ganjar Satyanagara | Coffee Researcher</title>
+<title>Kopi Indonesia: Riset, Data Pasar & Panduan Ekspor | Q.co</title>
+<link rel="canonical" href="https://blog.qcoid.com/">
 
 <!-- ===== SEO & SOCIAL META (v2026.09.26-5) ===== -->
-<meta name="description" content="Referensi data pasar kopi Indonesia: analisis live USDA, berita terkini, kalkulator FOB real-time, dan panduan sourcing kopi specialty untuk pembeli global.">
+<meta name="description" content="Riset kopi Indonesia untuk pelaku usaha dan buyer global: data pasar, panduan ekspor dan sourcing, artikel lapangan, serta kalkulator harga FOB kopi.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Q Coffee Outlook - Blog Riset Kopi">
@@ -148,13 +149,16 @@ function trackReadTime(articleId, timeOnPage, estimatedReadTime, completionPerce
 <meta name="twitter:title" content="Ganjar Satyanagara | Data & Analisis Pasar Kopi Indonesia">
 <meta name="twitter:description" content="Live USDA & Yahoo data, news analysis, Indonesian coffee market share and products for global buyers.">
 <meta name="twitter:image" content="https://i.imgur.com/vgcEMB2.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Q Coffee Outlook","url":"https://blog.qcoid.com/","inLanguage":["id","en"],"publisher":{"@type":"Person","name":"Ganjar Satyanagara","url":"https://blog.qcoid.com/"}}
+</script>
 <!-- Article Publication Meta Tags (updated dynamically) -->
 <meta property="article:published_time" content="2026-09-26T00:00:00Z">
 <meta property="article:modified_time" content="2026-09-29T00:00:00Z">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- EARLY REFERRER CAPTURE - Must run before anything else -->
 <script>
 // Capture referrer and URL info ASAP - Google Sites iframe sandbox may change/hide these
@@ -511,10 +515,10 @@ main {
     </button>
     <!-- DESKTOP NAV: urutan di HTML = Beranda, Tentang, Artikel, Kalkulator, Data dan Berita Kopi Indonesia -->
     <div class="hidden sm:flex items-center gap-6">
-        <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="nav-link">Beranda</a>
+        <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="nav-link">Kabar Kopi</a>
         <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
         <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="nav-link">Kalkulator</a>
-        <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="nav-link">Data dan Berita Kopi Indonesia</a>
+        <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="nav-link">Data dan Berita Kopi Indonesia</a>
     </div>
     <div class="flex items-center gap-3">
         <!-- Admin button - only visible when logged in -->
@@ -530,10 +534,10 @@ main {
 <!-- MOBILE NAV: urutan harus SAMA PERSIS dengan desktop nav -->
 <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-lg border-t border-coffee-100 z-40 relative">
 <div class="px-6 py-4 space-y-3">
-    <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="block nav-link py-2 text-left w-full">Beranda</a>
+    <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="block nav-link py-2 text-left w-full">Kabar Kopi</a>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="articles" data-mobile="1">Artikel</button>
     <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
-    <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="block nav-link py-2 text-left w-full">Data dan Berita Kopi Indonesia</a>
+    <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="block nav-link py-2 text-left w-full">Data dan Berita Kopi Indonesia</a>
     <button type="button" id="mobile-admin-btn" onclick="showDashboard(); toggleMobileMenu();" class="hidden w-full text-left nav-link py-2 flex items-center gap-2"><i class="fas fa-lock text-xs"></i> Dashboard Admin</button>
 </div>
 </div>
@@ -568,7 +572,7 @@ main {
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <button type="button" class="btn-primary text-lg" data-nav="articles" data-editable="hero_cta1"><i class="fas fa-book-open mr-2"></i>Jelajahi Artikel</button>
-        <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="inline-block px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-editable="hero_cta2"><i class="fas fa-newspaper mr-2"></i>Berita Kopi Terkini</a>
+        <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="inline-block px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-editable="hero_cta2"><i class="fas fa-newspaper mr-2"></i>Berita Kopi Terkini</a>
     </div>
 
     <!-- TENTANG PENULIS BOX -->
@@ -622,7 +626,7 @@ main {
       <div id="qco-mw-kurs" style="font-size:1.15rem;font-weight:800;color:#e0d5c5;font-family:monospace;">&mdash;</div>
       <div id="qco-mw-kurs-chg" style="font-size:.6rem;color:#9a8b76;"></div>
     </div>
-    <a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" id="qco-mw-ekspor-tile" style="display:block;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;text-decoration:none;color:inherit;">
+    <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" id="qco-mw-ekspor-tile" style="display:block;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;text-decoration:none;color:inherit;">
       <div style="font-size:.58rem;color:#9a8b76;text-transform:uppercase;">Data BPS</div>
       <div id="qco-mw-ekspor" style="font-size:.68rem;font-weight:700;color:#fcd34d;line-height:1.35;">&mdash;</div>
       <div style="font-size:.58rem;color:#b09473;">klik untuk lihat</div>
@@ -1090,7 +1094,7 @@ window.__qcoAnLang = function (lang) {
             <span><i class="fas fa-newspaper text-red-500 mr-1"></i>News Clustering</span>
             <span><i class="fas fa-microscope text-blue-500 mr-1"></i>Market Insights</span>
           </div>
-          <a href="https://KGS-blog.github.io/Update-Coffee-Data/laporan-usda.html" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
+          <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
             View Report <i class="fas fa-arrow-right ml-2"></i>
           </a>
         </div>
@@ -1132,7 +1136,7 @@ window.__qcoAnLang = function (lang) {
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_home" data-nav="hero">Beranda</button></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" data-nav="articles">Artikel</button></li>
             <li><a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
-            <li><a href="https://KGS-blog.github.io/Update-Coffee-Data/gateway.html" class="hover:text-white transition-colors">Data dan Berita Kopi Indonesia</a></li>
+            <li><a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="hover:text-white transition-colors">Kabar Kopi</a></li>
         </ul>
     </div>
     <div>
@@ -1729,7 +1733,7 @@ const defaultArticles = [
         desc_id: "THR, hajatan keluarga, dan bantuan alat produksi kini dinilai 2 poin masing-masing. Begini cara kami mengubah relasi prosesor-petani menjadi skor 100 poin yang bisa diverifikasi, bukan sekadar cerita.",
         desc_en: "THR, family weddings, and productive-asset support now earn 2 points each. How we turn processor-farmer relationships into a verifiable 100-point score, not just a story.",
         content_id: "<div style=\"font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 2.0; color: #2d2d2d; background: #fdfbf7; max-width: 720px; margin: 0 auto; padding: 32px 20px;\"><h1 style=\"font-size: 1.85rem; line-height: 1.35; color: #6F4E37; margin-bottom: 10px; font-weight: 800;\">Dari Hajatan sampai THR: Cara Kami Menilai Prosesor Kopi</h1><div style=\"font-size: 0.9rem; color: #666; margin-bottom: 36px; font-style: italic;\">Oleh: Ganjar Satyanagara</div><p style=\"margin-bottom: 26px; text-align: justify;\">Setiap kali saya bicara soal ikatan dan konsistensi rasa, selalu ada yang menimpali dengan pertanyaan yang sama: oke, relasi memang penting. Terus bagaimana cara menilainya? Kalau jawabannya hanya bisa diucapkan, argumen ini memang gampang dicap perasaan.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Saya paham keberatan itu. Selama lima tahun, dari 2021 sampai 2025, saya bolak-balik ke Gayo, Toraja, Flores, Jawa Barat, dan Papua. Bicara dengan 25 prosesor, lalu duduk santai dengan 12 petani yang dipilih tanpa sepengetahuan prosesornya. Polanya sama di mana-mana: petani yang berrelasi baik dengan prosesornya lebih telaten menjaga standar. Masalahnya, pola yang “kelihatannya konsisten” tidak cukup untuk pasar. Pasar butuh angka. Dan angka harus punya cara hitung yang susah dibohongi.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Dari situlah Qbridge lahir. Kami menamainya framework penilaian prosesor 100 poin. Versi formalnya saya bawakan di International Coffee Convention 2026 di Trieste; di sini saya tulis versi lapangannya saja.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">Dua Jenis Prosesor</h2><p style=\"margin-bottom: 26px; text-align: justify;\">Di lapangan saya selalu ketemu dua jenis prosesor. Ada yang benar-benar datang saat keluarga petaninya menikah atau berduka. Ada juga yang pandai sekali menceritakan kedatangannya. Di atas kertas, dua-duanya rapi. Itulah masalahnya.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Jadi kami putuskan menilai perilaku, bukan cerita. Kalau perbuatannya bisa diamati dan dikonfirmasi ke petani, ceritanya tidak penting lagi.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Dari pengamaman berulang, kami pilih tujuh perilaku yang paling sering muncul bersamaan dengan kepatuhan SOP. Masing-masing bernilai 2 poin:</p><ol style=\"padding-left: 22px; margin-bottom: 26px;\"><li style=\"margin-bottom: 10px;\">Uang muka untuk kebutuhan mendesak keluarga petani.</li><li style=\"margin-bottom: 10px;\">Dukungan saat peristiwa besar: kelahiran, pernikahan, sakit, kematian.</li><li style=\"margin-bottom: 10px;\">Silaturahmi yang berjalan terus, bukan cuma saat musim jual beli.</li><li style=\"margin-bottom: 10px;\">Kegiatan kelompok tani yang dihadiri rutin, panen atau bukan.</li><li style=\"margin-bottom: 10px;\">Berbagi ilmu teknis: pelatihan budidaya dan pascapanen.</li><li style=\"margin-bottom: 10px;\">Bantuan alat atau sarana yang menaikkan kapasitas produksi petani.</li><li style=\"margin-bottom: 10px;\">Program yang melibatkan perempuan petani.</li></ol><p style=\"margin-bottom: 26px; text-align: justify;\">Ada tiga aturan penjaga supaya indikator ini tidak dimainkan. Pertama, uang muka kebutuhan keluarga kami pisahkan dari ijon. Keduanya sering disamarkan, padahal beda: ijon mengikat panen masa depan petani. Itu jebakan, bukan perawatan relasi. Kedua, satu peristiwa tidak boleh dihitung dua kali di dua indikator. Ketiga, dukungan menjelang hari raya (THR dan biaya mudik) kami perlakukan sebagai satu paket, senilai 10 poin.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Soal tokoh, saya perlu jelas. Di banyak kampung, prosesor yang dipercaya memang tokoh masyarakat. Tapi status tokoh bisa dipoles untuk dagang atau politik. Kami tidak menilai statusnya. Kami menilai perbuatannya.</p>",
-        content_en: "<div style=\"font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 2.0; color: #2d2d2d; background: #fdfbf7; max-width: 720px; margin: 0 auto; padding: 32px 20px;\"><h1 style=\"font-size: 1.85rem; line-height: 1.35; color: #6F4E37; margin-bottom: 10px; font-weight: 800;\">From Weddings to THR: How We Score Coffee Processors</h1><div style=\"font-size: 0.9rem; color: #666; margin-bottom: 36px; font-style: italic;\">By: Ganjar Satyanagara</div><p style=\"margin-bottom: 26px; text-align: justify;\">Some time ago I wrote that coffee flavor consistency is born of bonds, not just paperwork. Since that piece came out, one question has kept arriving — from buyers, from processors, even from fellow researchers: if relationships really drive compliance, <strong>how do you assess them objectively?</strong> Without an auditable answer, “relationships matter” is easily dismissed as sentiment. This article is my answer.</p><p style=\"margin-bottom: 26px; text-align: justify;\">The foundation is still the field: five years (2021–2025) across Gayo, Toraja, Flores, West Java, and Papua, with 25 processors and 12 farmers. But I will not retell the journey — that is already written in <em>“What Keeps Coffee Flavor Consistent”</em>. What I discuss here is what we did with the findings: turning them into numbers that a third party can verify. The result is Qbridge, a 100-point processor-assessment framework I presented at the International Coffee Convention 2026 in Trieste — rewritten here in field language.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">From Behaviour to Indicators</h2><p style=\"margin-bottom: 26px; text-align: justify;\">The first step turned out to be the hardest: separating genuine relationships from theatre. In the field we meet two kinds of processors. The first genuinely shows up in their farmers’ lives. The second is skilled at telling stories about showing up. On paper they can look identical — and that is precisely the problem.</p><p style=\"margin-bottom: 26px; text-align: justify;\">We chose a simple path: score observable behaviour, not unreadable motive. From the patterns that kept repeating in the field, seven behaviours were selected as indicators, each worth 2 points:</p><ol style=\"padding-left: 22px; margin-bottom: 26px;\"><li style=\"margin-bottom: 10px;\"><strong>Cash advances for family needs</strong> — small, short-term loans for urgent household needs.</li><li style=\"margin-bottom: 10px;\"><strong>Support around major life events</strong> — births, weddings, illness, or deaths in the farmer’s family.</li><li style=\"margin-bottom: 10px;\"><strong>Interaction beyond coffee transactions</strong> — the relationship continues outside the buying season.</li><li style=\"margin-bottom: 10px;\"><strong>Regular collective activities</strong> — farmer-group meetings attended even when nothing is being sold.</li><li style=\"margin-bottom: 10px;\"><strong>Technical knowledge sharing</strong> — training or mentoring in cultivation and post-harvest.</li><li style=\"margin-bottom: 10px;\"><strong>Productive-asset assistance</strong> — support for tools or facilities that raise production capacity.</li><li style=\"margin-bottom: 10px;\"><strong>Women-focused programmes</strong> — initiatives specifically involving women farmers.</li></ol><p style=\"margin-bottom: 26px; text-align: justify;\">Three rules protect these indicators from abuse. First, <strong>the distinction from ijon</strong>: family-need advances are deliberately separated from financing tied to the farmer’s future crop — ijon traps farmers rather than sustaining relationships. Second, <strong>no double counting</strong>: one event or one payment cannot be claimed under two indicators. Third, <strong>THR and mudik support</strong> (10 points) is treated as a single holiday-cycle package, not two separate claims.</p><p style=\"margin-bottom: 26px; text-align: justify;\">A note on tokoh. In many coffee villages, the trusted processor is a tokoh: not because of a title, but because their presence is regarded as trustworthy by the community. We do not score tokoh status — status can be built for political or commercial ends. Only observed behaviour is scored.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">The 100-Point Structure</h2><p style=\"margin-bottom: 26px; text-align: justify;\">Those seven indicators sit inside a framework with two companion domains — because relationships without legal standing are mere personal kindness, and legal standing without commercial commitment is just a piece of paper:</p><table style=\"width:100%;border-collapse:collapse;font-size:0.92rem;margin-bottom:26px;\">\n<tr style=\"background:#6F4E37;color:#fff;\"><th style=\"padding:10px 12px;text-align:left;\">Domain</th><th style=\"padding:10px 12px;text-align:left;\">Komponen</th><th style=\"padding:10px 12px;text-align:center;\">Poin</th></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\" rowspan=\"3\"><strong>Documentation &amp; Accountability</strong></td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Legal standing (registered business entity)</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">30</td></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Identity &amp; responsible person</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">10</td></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Processing SOP &amp; operational records</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">10</td></tr>\n<tr style=\"background:#faf6ee;\"><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\" rowspan=\"2\"><strong>Commercial Compliance</strong></td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Price transparency</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">8</td></tr>\n<tr style=\"background:#faf6ee;\"><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Payment timeliness</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">8</td></tr>\n<tr><td style=\"padding:9px 12px;\" rowspan=\"4\"><strong>Cultural-Welfare Relationships</strong></td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">THR &amp; mudik holiday-cycle support</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">10</td></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">7 farmer-relationship behaviours (2 pts each)</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">14</td></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Quality incentive for farmers</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">6</td></tr>\n<tr><td style=\"padding:9px 12px;\">Written contract compliance</td><td style=\"padding:9px 12px;text-align:center;\">4</td></tr>\n</table><p style=\"margin-bottom: 26px; text-align: justify;\">The threshold is deliberate: the 30-point legal-standing component is a <strong>minimum requirement for buyer visibility</strong>. Processors below it may register and receive guidance — but are not shown to buyers until their business entity is in order. The score is not just a comparison tool; it is also a gate.</p><p style=\"margin-bottom: 26px; text-align: justify;\">The framework is neutral on organisational form: PT, CV, cooperatives, foundations, and individual enterprises are asked the same questions — is their legal existence clear, who is accountable, and is their operational evidence consistent.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">Numbers Alone Are Not Enough: Three Layers of Verification</h2><p style=\"margin-bottom: 26px; text-align: justify;\">Welfare scores based on the processor’s own stories would be easy to game. So verification is designed separately from the interests being scored:</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>First, farmer confirmation without the processor’s knowledge.</strong> Interviewed farmers are randomly selected by the platform admin from the recorded supply list. The processor does not know who will be asked or what will be asked — there is no opportunity to prepare witnesses.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Second, separation of assessor roles.</strong> Coffee quality is verified by Q Grader-certified personnel, technical processing claims by Q Processing-certified personnel, and organisational documents by administrative staff. No single party assesses everything, so there is no single point of failure to bribe.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Third, an audit trail.</strong> Every data entry and change is permanently logged. If farmer corroboration is unavailable, the indicator is flagged <em>unverified</em> — not recorded as a negative finding — so scores stay fair and comparable across processors.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">Honest Notes</h2><p style=\"margin-bottom: 26px; text-align: justify;\">As a practitioner, three things belong in the open. First, this is Version 1.0 — an initial model from field observation; the 50/16/34 weighting remains provisional and awaits longitudinal validation. We are publishing it precisely so it can be tested further.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Second, Qbridge does not replace certification, does not guarantee coffee quality, and does not fulfil EUDR. It is a processor-readiness layer that complements conventional documentation.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Third, transparency of interest: I am the founder of Q.co, the company developing Qbridge. That is exactly why I have written this limitations section as honestly as I can — a framework like this is only useful if it survives auditing by others.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">What It Means for Buyers and Processors</h2><p style=\"margin-bottom: 26px; text-align: justify;\">For buyers, the change is concrete: there is a sharper question than “what’s the cupping score?” — a supplier who is comfortable being asked about farmer relationships, and can show evidence, is a supplier worth a long-term contract. Combine it with the small repeat-order consistency tests I have written about.</p><p style=\"margin-bottom: 26px; text-align: justify;\">For processors, the 34 welfare points are not a social burden but an investment you can show buyers alongside legal documents. Farmers who feel valued maintain standards without being told — and that standard is the real product you are selling.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Once relationships and quality hold, make sure the numbers stand: use our <a href=\"kalkulator.html\" style=\"color:#6F4E37;font-weight:600;\">FOB calculator</a>, and read market direction from our monthly <a href=\"laporan-usda.html\" style=\"color:#6F4E37;font-weight:600;\">USDA report summaries</a>.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">FAQ</h2><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Does Qbridge replace certifications like organic or fair trade?</strong><br>No. It is an additional layer assessing processor readiness and relationships; certifications continue under their own standards.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>How is score manipulation prevented?</strong><br>Three layers: independent certified verifiers, random farmer confirmation without the processor’s knowledge, and an audit trail on every data change.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Do the THR and tokoh indicators apply in every coffee region?</strong><br>Not necessarily. THR, mudik, and tokoh are local Indonesian mechanisms. What can travel to other origins is the approach: find locally relevant relational mechanisms, turn them into observable indicators, and set evidence and verification rules.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Can buyers use Qbridge scores now?</strong><br>The platform is in final testing. The 25 processors involved in its development will be the first live-scoring batch, examined longitudinally before any claims are made.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">Closing Thoughts</h2><p style=\"margin-bottom: 26px; text-align: justify;\">A good bond cannot remain merely felt — at some point it must be measurable, verifiable, and auditable. Not to replace trust, but to protect it: so honest buyers are not deceived by theatre, and processors who genuinely maintain relationships receive a fair price for that care.</p><p style=\"margin-bottom: 26px; text-align: justify;\">That is why Qbridge exists. Not to say “trust us”, but to give the market a question that cannot be faked.</p></div>",
+        content_en: "<div style=\"font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 2.0; color: #2d2d2d; background: #fdfbf7; max-width: 720px; margin: 0 auto; padding: 32px 20px;\"><h1 style=\"font-size: 1.85rem; line-height: 1.35; color: #6F4E37; margin-bottom: 10px; font-weight: 800;\">From Weddings to THR: How We Score Coffee Processors</h1><div style=\"font-size: 0.9rem; color: #666; margin-bottom: 36px; font-style: italic;\">By: Ganjar Satyanagara</div><p style=\"margin-bottom: 26px; text-align: justify;\">Some time ago I wrote that coffee flavor consistency is born of bonds, not just paperwork. Since that piece came out, one question has kept arriving — from buyers, from processors, even from fellow researchers: if relationships really drive compliance, <strong>how do you assess them objectively?</strong> Without an auditable answer, “relationships matter” is easily dismissed as sentiment. This article is my answer.</p><p style=\"margin-bottom: 26px; text-align: justify;\">The foundation is still the field: five years (2021–2025) across Gayo, Toraja, Flores, West Java, and Papua, with 25 processors and 12 farmers. But I will not retell the journey — that is already written in <em>“What Keeps Coffee Flavor Consistent”</em>. What I discuss here is what we did with the findings: turning them into numbers that a third party can verify. The result is Qbridge, a 100-point processor-assessment framework I presented at the International Coffee Convention 2026 in Trieste — rewritten here in field language.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">From Behaviour to Indicators</h2><p style=\"margin-bottom: 26px; text-align: justify;\">The first step turned out to be the hardest: separating genuine relationships from theatre. In the field we meet two kinds of processors. The first genuinely shows up in their farmers’ lives. The second is skilled at telling stories about showing up. On paper they can look identical — and that is precisely the problem.</p><p style=\"margin-bottom: 26px; text-align: justify;\">We chose a simple path: score observable behaviour, not unreadable motive. From the patterns that kept repeating in the field, seven behaviours were selected as indicators, each worth 2 points:</p><ol style=\"padding-left: 22px; margin-bottom: 26px;\"><li style=\"margin-bottom: 10px;\"><strong>Cash advances for family needs</strong> — small, short-term loans for urgent household needs.</li><li style=\"margin-bottom: 10px;\"><strong>Support around major life events</strong> — births, weddings, illness, or deaths in the farmer’s family.</li><li style=\"margin-bottom: 10px;\"><strong>Interaction beyond coffee transactions</strong> — the relationship continues outside the buying season.</li><li style=\"margin-bottom: 10px;\"><strong>Regular collective activities</strong> — farmer-group meetings attended even when nothing is being sold.</li><li style=\"margin-bottom: 10px;\"><strong>Technical knowledge sharing</strong> — training or mentoring in cultivation and post-harvest.</li><li style=\"margin-bottom: 10px;\"><strong>Productive-asset assistance</strong> — support for tools or facilities that raise production capacity.</li><li style=\"margin-bottom: 10px;\"><strong>Women-focused programmes</strong> — initiatives specifically involving women farmers.</li></ol><p style=\"margin-bottom: 26px; text-align: justify;\">Three rules protect these indicators from abuse. First, <strong>the distinction from ijon</strong>: family-need advances are deliberately separated from financing tied to the farmer’s future crop — ijon traps farmers rather than sustaining relationships. Second, <strong>no double counting</strong>: one event or one payment cannot be claimed under two indicators. Third, <strong>THR and mudik support</strong> (10 points) is treated as a single holiday-cycle package, not two separate claims.</p><p style=\"margin-bottom: 26px; text-align: justify;\">A note on tokoh. In many coffee villages, the trusted processor is a tokoh: not because of a title, but because their presence is regarded as trustworthy by the community. We do not score tokoh status — status can be built for political or commercial ends. Only observed behaviour is scored.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">The 100-Point Structure</h2><p style=\"margin-bottom: 26px; text-align: justify;\">Those seven indicators sit inside a framework with two companion domains — because relationships without legal standing are mere personal kindness, and legal standing without commercial commitment is just a piece of paper:</p><table style=\"width:100%;border-collapse:collapse;font-size:0.92rem;margin-bottom:26px;\">\n<tr style=\"background:#6F4E37;color:#fff;\"><th style=\"padding:10px 12px;text-align:left;\">Domain</th><th style=\"padding:10px 12px;text-align:left;\">Komponen</th><th style=\"padding:10px 12px;text-align:center;\">Poin</th></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\" rowspan=\"3\"><strong>Documentation &amp; Accountability</strong></td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Legal standing (registered business entity)</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">30</td></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Identity &amp; responsible person</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">10</td></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Processing SOP &amp; operational records</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">10</td></tr>\n<tr style=\"background:#faf6ee;\"><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\" rowspan=\"2\"><strong>Commercial Compliance</strong></td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Price transparency</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">8</td></tr>\n<tr style=\"background:#faf6ee;\"><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Payment timeliness</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">8</td></tr>\n<tr><td style=\"padding:9px 12px;\" rowspan=\"4\"><strong>Cultural-Welfare Relationships</strong></td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">THR &amp; mudik holiday-cycle support</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">10</td></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">7 farmer-relationship behaviours (2 pts each)</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">14</td></tr>\n<tr><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;\">Quality incentive for farmers</td><td style=\"padding:9px 12px;border-bottom:1px solid #e5ddcf;text-align:center;\">6</td></tr>\n<tr><td style=\"padding:9px 12px;\">Written contract compliance</td><td style=\"padding:9px 12px;text-align:center;\">4</td></tr>\n</table><p style=\"margin-bottom: 26px; text-align: justify;\">The threshold is deliberate: the 30-point legal-standing component is a <strong>minimum requirement for buyer visibility</strong>. Processors below it may register and receive guidance — but are not shown to buyers until their business entity is in order. The score is not just a comparison tool; it is also a gate.</p><p style=\"margin-bottom: 26px; text-align: justify;\">The framework is neutral on organisational form: PT, CV, cooperatives, foundations, and individual enterprises are asked the same questions — is their legal existence clear, who is accountable, and is their operational evidence consistent.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">Numbers Alone Are Not Enough: Three Layers of Verification</h2><p style=\"margin-bottom: 26px; text-align: justify;\">Welfare scores based on the processor’s own stories would be easy to game. So verification is designed separately from the interests being scored:</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>First, farmer confirmation without the processor’s knowledge.</strong> Interviewed farmers are randomly selected by the platform admin from the recorded supply list. The processor does not know who will be asked or what will be asked — there is no opportunity to prepare witnesses.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Second, separation of assessor roles.</strong> Coffee quality is verified by Q Grader-certified personnel, technical processing claims by Q Processing-certified personnel, and organisational documents by administrative staff. No single party assesses everything, so there is no single point of failure to bribe.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Third, an audit trail.</strong> Every data entry and change is permanently logged. If farmer corroboration is unavailable, the indicator is flagged <em>unverified</em> — not recorded as a negative finding — so scores stay fair and comparable across processors.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">Honest Notes</h2><p style=\"margin-bottom: 26px; text-align: justify;\">As a practitioner, three things belong in the open. First, this is Version 1.0 — an initial model from field observation; the 50/16/34 weighting remains provisional and awaits longitudinal validation. We are publishing it precisely so it can be tested further.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Second, Qbridge does not replace certification, does not guarantee coffee quality, and does not fulfil EUDR. It is a processor-readiness layer that complements conventional documentation.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Third, transparency of interest: I am the founder of Q.co, the company developing Qbridge. That is exactly why I have written this limitations section as honestly as I can — a framework like this is only useful if it survives auditing by others.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">What It Means for Buyers and Processors</h2><p style=\"margin-bottom: 26px; text-align: justify;\">For buyers, the change is concrete: there is a sharper question than “what’s the cupping score?” — a supplier who is comfortable being asked about farmer relationships, and can show evidence, is a supplier worth a long-term contract. Combine it with the small repeat-order consistency tests I have written about.</p><p style=\"margin-bottom: 26px; text-align: justify;\">For processors, the 34 welfare points are not a social burden but an investment you can show buyers alongside legal documents. Farmers who feel valued maintain standards without being told — and that standard is the real product you are selling.</p><p style=\"margin-bottom: 26px; text-align: justify;\">Once relationships and quality hold, make sure the numbers stand: use our <a href=\"kalkulator.html\" style=\"color:#6F4E37;font-weight:600;\">FOB calculator</a>, and read market direction from our monthly <a href=\"https://kgs-blog.github.io/Update-Coffee-Data/kabar-kopi.html\" style=\"color:#6F4E37;font-weight:600;\">USDA report summaries</a>.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">FAQ</h2><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Does Qbridge replace certifications like organic or fair trade?</strong><br>No. It is an additional layer assessing processor readiness and relationships; certifications continue under their own standards.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>How is score manipulation prevented?</strong><br>Three layers: independent certified verifiers, random farmer confirmation without the processor’s knowledge, and an audit trail on every data change.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Do the THR and tokoh indicators apply in every coffee region?</strong><br>Not necessarily. THR, mudik, and tokoh are local Indonesian mechanisms. What can travel to other origins is the approach: find locally relevant relational mechanisms, turn them into observable indicators, and set evidence and verification rules.</p><p style=\"margin-bottom: 26px; text-align: justify;\"><strong>Can buyers use Qbridge scores now?</strong><br>The platform is in final testing. The 25 processors involved in its development will be the first live-scoring batch, examined longitudinally before any claims are made.</p><h2 style=\"font-size: 1.2rem; color: #8B6914; margin-top: 40px; margin-bottom: 18px; font-weight: 700;\">Closing Thoughts</h2><p style=\"margin-bottom: 26px; text-align: justify;\">A good bond cannot remain merely felt — at some point it must be measurable, verifiable, and auditable. Not to replace trust, but to protect it: so honest buyers are not deceived by theatre, and processors who genuinely maintain relationships receive a fair price for that care.</p><p style=\"margin-bottom: 26px; text-align: justify;\">That is why Qbridge exists. Not to say “trust us”, but to give the market a question that cannot be faked.</p></div>",
         views: 0
     }
 ];
@@ -2138,6 +2142,12 @@ function updateStaticContent() {
 }
 
 // ========== ARTICLES (WITH SKELETON LOADING) ==========
+function publicArticleUrl(art, language = currentLang) {
+    const slug = String(art.title_id || "artikel-kopi").normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase().replace(/&/g, " dan ").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 70) || "artikel-kopi";
+    return BLOG_BASE_URL + "/artikel/" + slug + "-" + (language === "en" ? "en" : "id") + "-" + art.id + ".html";
+}
+
 function renderArticles(filter) {
     const grid = document.getElementById("articles-grid");
     const featured = document.getElementById("featured-article");
@@ -2204,14 +2214,15 @@ function renderArticles(filter) {
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
             const readMoreText = currentLang === "id" ? "Baca Selengkapnya" : "Read More";
             const imageUrl = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
+            const articleUrl = publicArticleUrl(art);
             return `<article class="card group overflow-hidden">
-            <div class="aspect-[16/10] overflow-hidden rounded-t-2xl cursor-pointer" onclick="openArticle(${art.id})"><img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy"></div>
+            <a href="${articleUrl}" class="aspect-[16/10] overflow-hidden rounded-t-2xl block"><img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy"></a>
             <div class="p-6 flex flex-col h-full">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="tag">${catLabel}</span>
                     <span class="text-xs text-coffee-400"><i class="far fa-calendar mr-1"></i>${art.date}</span>
                 </div>
-                <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors cursor-pointer" onclick="openArticle(${art.id})">${title}</h3>
+                <h3 class="font-serif text-xl font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors"><a class="text-inherit no-underline hover:underline" href="${articleUrl}">${title}</a></h3>
                 <p class="text-coffee-600 text-sm line-clamp-3 mb-4 flex-1">${desc}</p>
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3 text-xs text-coffee-500">
@@ -2220,9 +2231,9 @@ function renderArticles(filter) {
                     </div>
                     <span class="text-xs text-coffee-400"><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span>
                 </div>
-                <button type="button" onclick="openArticle(${art.id}); event.stopPropagation();" class="w-full py-2.5 px-4 bg-coffee-600 hover:bg-coffee-700 text-white rounded-lg font-medium text-sm transition-colors">
+                <a href="${articleUrl}" class="block w-full py-2.5 px-4 bg-coffee-600 hover:bg-coffee-700 text-white rounded-lg font-medium text-sm transition-colors text-center no-underline">
                     <i class="fas fa-arrow-right mr-2"></i>${readMoreText}
-                </button>
+                </a>
             </div>
         </article>`;
         }).join("");
@@ -2381,7 +2392,7 @@ function generateBlogPostingSchema(art, title, content_html, catLabel) {
         },
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": BLOG_BASE_URL + "?article=" + art.id
+            "@id": publicArticleUrl(art)
         },
         "articleBody": articleBody,
         "keywords": [catLabel, "kopi", "coffee", art.category].join(", ")
@@ -2393,87 +2404,12 @@ function generateBlogPostingSchema(art, title, content_html, catLabel) {
 function renderFeaturedArticle(art) {
     const container = document.getElementById("featured-article");
     if (!container) return;
-
-    const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
-    const catLabel = catLabels[art.category] || art.category;
-    const title = currentLang === "id" ? art.title_id : art.title_en;
-    let content_html = currentLang === "id" ? (art.content_id || "") : (art.content_en || "");
-
-    if (!content_html || content_html.trim().length === 0) {
-        content_html = currentLang === "id" ? (art.content_en || "") : (art.content_id || "");
-    }
-    if (!content_html || content_html.trim().length === 0) {
-        content_html = '<p class="text-coffee-400 italic">' + (currentLang === "id" ? "Konten tidak tersedia dalam bahasa ini." : "Content not available in this language.") + '</p>';
-    }
-
-    const shareUrl = BLOG_BASE_URL + "?article=" + art.id;
-    const shareText = encodeURIComponent(title);
-    const shareUrlEnc = encodeURIComponent(shareUrl);
-
-    // Generate schema markup
-    const schemaJson = generateBlogPostingSchema(art, title, content_html, catLabel);
-
-    let imageHtml = '';
-    if (art.image) {
-        imageHtml = '<div class="w-full h-64 md:h-96 overflow-hidden"><img src="' + art.image + '" alt="' + title + '" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" loading="lazy"></div>';
-    }
-
-    container.innerHTML = `
-        <article data-article-id="${art.id}" class="bg-white rounded-2xl shadow-sm border border-coffee-100 overflow-hidden">
-            ${imageHtml}
-            <div class="p-5 md:p-12">
-                <div class="flex flex-wrap items-center gap-3 mb-4">
-                    <span class="tag">${catLabel}</span>
-                    <span class="text-sm text-coffee-400"><i class="far fa-calendar mr-1"></i>${art.date}</span>
-                    <span class="text-sm text-coffee-400"><i class="far fa-clock mr-1"></i>${art.readTime} min read</span>
-                    <span class="text-sm text-coffee-400"><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()} views</span>
-                </div>
-                <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-coffee-900 mb-6 leading-tight">${title}</h2>
-
-                <!-- SHARE BAR -->
-                <div class="mb-8 pb-6 border-b border-coffee-100">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-sm font-medium text-coffee-600">${currentLang === "id" ? "Bagikan artikel:" : "Share article:"}</span>
-                        <input type="text" value="${shareUrl}" readonly
-                               class="flex-1 ml-2 px-3 py-1.5 text-xs bg-coffee-50 border border-coffee-200 rounded-lg text-coffee-700 font-mono cursor-pointer"
-                               onclick="this.select()" title="${currentLang === "id" ? "Klik untuk menyalin" : "Click to copy"}">
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=${shareUrlEnc}', '_blank', 'width=600,height=400')" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1877F2] text-white hover:bg-[#166fe5] transition-all text-sm font-medium">
-                            <i class="fab fa-facebook-f"></i> Facebook
-                        </button>
-                        <button type="button" onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url=${shareUrlEnc}', '_blank', 'width=600,height=400')" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0A66C2] text-white hover:bg-[#0958a8] transition-all text-sm font-medium">
-                            <i class="fab fa-linkedin-in"></i> LinkedIn
-                        </button>
-                        <button type="button" onclick="window.open('https://wa.me/?text=${shareText}%20%0A%0A${shareUrlEnc}', '_blank')" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25D366] text-white hover:bg-[#1fb956] transition-all text-sm font-medium">
-                            <i class="fab fa-whatsapp"></i> WhatsApp
-                        </button>
-                        <button type="button" onclick="window.open('https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrlEnc}', '_blank', 'width=600,height=400')" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 transition-all text-sm font-medium">
-                            <i class="fab fa-x-twitter"></i> X / Twitter
-                        </button>
-                        <button type="button" onclick="copyFeaturedLink(${art.id})" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-all text-sm font-medium">
-                            <i class="fas fa-link"></i> ${currentLang === "id" ? "Copy Link" : "Copy Link"}
-                        </button>
-                    </div>
-                </div>
-
-                <div class="featured-article-content">
-                    ${content_html}
-                </div>
-                <div class="mt-10 pt-6 border-t border-coffee-100 flex items-center justify-between">
-                    <div class="text-sm text-coffee-500">
-                        <i class="fas fa-user mr-1"></i> Ganjar Satyanagara
-                    </div>
-                    <button type="button" onclick="event.stopPropagation(); openArticle(${art.id})" class="text-coffee-600 hover:text-coffee-900 font-medium text-sm flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-coffee-50 transition-all">
-                        <i class="fas fa-expand"></i> ${currentLang === "id" ? "Buka di Modal" : "Open in Modal"}
-                    </button>
-                </div>
-            </div>
-            <script type="application/ld+json">
-            ${schemaJson}
-            <\/script>
-        </article>
-    `;
+    const title = currentLang === "id" ? (art.title_id || art.title_en) : (art.title_en || art.title_id);
+    const description = currentLang === "id" ? (art.desc_id || "") : (art.desc_en || art.desc_id || "");
+    const category = ({ "kopi-indonesia": currentLang === "id" ? "Kopi Indonesia" : "Indonesian Coffee", "perjalanan": currentLang === "id" ? "Perjalanan" : "Field Notes", "riset-pasar": currentLang === "id" ? "Riset & Pasar" : "Research & Markets", "pemasaran": currentLang === "id" ? "Pemasaran" : "Marketing", "pengalaman": currentLang === "id" ? "Pengalaman" : "Experience" })[art.category] || art.category;
+    const url = publicArticleUrl(art);
+    const image = art.image ? `<a href="${url}" class="block overflow-hidden"><img src="${art.image}" alt="${title}" class="w-full max-h-[440px] object-cover" loading="lazy"></a>` : "";
+    container.innerHTML = `<article class="bg-white rounded-2xl shadow-sm border border-coffee-100 overflow-hidden">${image}<div class="p-5 md:p-10"><div class="flex flex-wrap items-center gap-3 mb-4"><span class="tag">${category}</span><span class="text-sm text-coffee-400">${art.date || ""}</span><span class="text-sm text-coffee-400">${art.readTime || ""} ${currentLang === "id" ? "menit baca" : "min read"}</span></div><h2 class="font-serif text-3xl md:text-4xl font-bold text-coffee-900 mb-4 leading-tight"><a class="text-inherit no-underline hover:underline" href="${url}">${title}</a></h2><p class="text-coffee-700 text-lg leading-relaxed mb-6">${description}</p><div class="flex flex-wrap items-center justify-between gap-4 border-t border-coffee-100 pt-5"><span class="text-sm text-coffee-500">Ganjar Satyanagara</span><a href="${url}" class="inline-flex items-center gap-2 rounded-lg bg-coffee-700 px-5 py-3 text-white font-medium no-underline hover:bg-coffee-800">${currentLang === "id" ? "Baca artikel" : "Read article"}<i class="fas fa-arrow-right"></i></a></div></div></article>`;
 }
 
 function filterArticles(category) {
@@ -2497,8 +2433,8 @@ function filterArticles(category) {
 function getCurrentArticleUrl() {
     const articleId = document.getElementById("modal-title").getAttribute("data-article-id");
     if (!articleId) return BLOG_BASE_URL;
-    // Use BOTH hash AND query param for maximum compatibility
-    return BLOG_BASE_URL + "?article=" + articleId;
+    const article = articlesData.find(item => String(item.id) === String(articleId));
+    return article ? publicArticleUrl(article) : BLOG_BASE_URL;
 }
 
 function getCurrentArticleTitle() {
@@ -3623,7 +3559,8 @@ function searchAllArticles() {
 }
 
 function copyFeaturedLink(articleId) {
-    const url = BLOG_BASE_URL + "?article=" + articleId;
+    const article = articlesData.find(item => String(item.id) === String(articleId));
+    const url = article ? publicArticleUrl(article) : BLOG_BASE_URL;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(() => {
             showToast(currentLang === "id" ? "Link disalin!" : "Link copied!", "success");
