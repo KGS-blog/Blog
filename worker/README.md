@@ -26,13 +26,17 @@ If the GitHub build connection is removed after the initial deployment, the live
 
 Blog article writes are limited to `https://blog.qcoid.com`. Cluster review writes are limited to the Kabar Kopi origins `https://kgs-blog.github.io` and `https://kabarkopi.qcoid.com`; its login response returns a short-lived signed bearer session for cross-site requests. The existing `GITHUB_TOKEN` still needs access only to `KGS-blog/Blog`, with **Contents: Read and write** permission. Comments, subscribers, categories, and page copy remain browser-local and are outside this article-sync change.
 
-## Kabar Kopi free member foundation
+## Kabar Kopi members, community submissions, and MEVO reports
 
-The `/api/member/*`, `/api/premium/*`, and `/api/field-*` endpoints are a separate free-beta member system. They do not process payments. One `kabar-kopi-member` membership record is created with `access_source=free_beta`; both feature gates default to `false` so premium reading and field submissions remain open during the traffic-measurement phase.
+The Kabar Kopi public editorial feed remains static and crawlable in `Update-Coffee-Data/data/editorial-current.json` and its generated article pages. It is separate from **Report by MEVO**, which is stored in D1 and only served to signed-in members. The MEVO report upload endpoint accepts report payloads only; it is not a news collection or clustering endpoint. Reports uploaded by the MEVO process enter as drafts and must be published by an admin. Beta access is free; no payment flow is included.
 
-The D1 schema is in `migrations/0001_kabar_kopi_membership.sql`. These routes return unavailable responses until D1 is provisioned and attached. In Cloudflare, create a D1 database named `kabar-kopi-members`, add a D1 binding named `DB` to the production `qco-blog-sync` Worker, and apply the migration with Wrangler from this directory (`npx wrangler d1 execute kabar-kopi-members --remote --file=migrations/0001_kabar_kopi_membership.sql`) or the D1 console. Then redeploy the Worker.
+Reader submissions are stored in the existing `field_submissions` table and admin queue for backward compatibility. Product-facing labels call this **Suara Komunitas**. Published submissions alone appear in the public feed. Existing stored submissions are retained.
 
-Email-link login needs the encrypted Worker secret `RESEND_API_KEY` and the variable `MEMBER_EMAIL_FROM` (a sender address on a verified domain). Google Sign-In needs `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` set to `https://blog-api.qcoid.com/api/member/auth/google/callback`; register that exact callback URL in the Google OAuth client. Keep OAuth client secrets out of GitHub and chat. `MEVO_SYNC_SECRET` must also be set as a Worker secret and as a repository Actions secret of the same name; the Update-Coffee-Data workflow syncs generated articles only when this secret is present. This sync keeps the member API's copy current; the existing editorial pages remain public during the free beta.
+One `kabar-kopi-member` membership record is created with `access_source=free_beta`.
+
+The D1 schema is in `migrations/0001_kabar_kopi_membership.sql` and the new report table is added by `migrations/0002_mevo_member_reports.sql`. If the first migration is already applied, apply only migration 0002 in Cloudflare D1 or run `npx wrangler d1 execute kabar-kopi-members --remote --file=migrations/0002_mevo_member_reports.sql` from this directory. If D1 is not yet provisioned, create the `kabar-kopi-members` database, add a D1 binding named `DB` to production `qco-blog-sync`, then apply both migrations in order and deploy the Worker.
+
+Email-link login needs the encrypted Worker secret `RESEND_API_KEY` and the variable `MEMBER_EMAIL_FROM` (a sender address on a verified domain). Google Sign-In needs `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` set to `https://blog-api.qcoid.com/api/member/auth/google/callback`; register that exact callback URL in the Google OAuth client. Keep OAuth client secrets out of GitHub and chat. Report upload needs `MEVO_SYNC_SECRET` as a Worker secret and in the trusted report-producing process. It is not used by the coffee news feed workflow. Send JSON shaped like `{"batch_id":"...","reports":[{"slug":"sample-report-id","language":"id","title":"...","teaser":"...","report":{"summary":"...","sections":[],"conclusion":"...","recommendations":[],"sources":[]}}]}` to the report sync endpoint; each item is saved as a draft for admin review.
 
 Endpoints:
 
@@ -43,7 +47,10 @@ Endpoints:
 - `POST /api/field-submissions`: accept authenticated reader submissions into the moderation queue. `publication_choice` is `as_submitted` or `editor_review`; the latter requires explicit editing consent. Every item keeps its original text.
 - `GET /api/admin/field-submissions` and `POST /api/admin/field-submissions/:id`: admin review and publish decisions use the existing admin session.
 - `GET /api/field-posts`: list only published field notes.
-- `GET /api/premium/articles` and `/api/premium/articles/:slug`: serve teasers or full editorial JSON according to the free-beta gate and membership state.
-- `POST /api/admin/premium/sync`: private pipeline endpoint, protected by `MEVO_SYNC_SECRET`, for importing MEVO editorial articles into D1.
+- `GET /api/member/mevo-reports` and `GET /api/member/mevo-reports/:slug`: require a signed-in member and return only published member reports.
+- `GET /api/admin/mevo-reports`: list reports for the authenticated Blog admin.
+- `POST /api/admin/mevo-reports` and `/api/admin/mevo-reports/:id`: create or update a report and its draft/published status using the authenticated Blog admin session.
+- `POST /api/admin/mevo-reports/sync`: private MEVO report upload endpoint protected by `MEVO_SYNC_SECRET`; uploaded reports enter as drafts.
+- `GET /api/premium/articles` and `/api/premium/articles/:slug`, plus `POST /api/admin/premium/sync`: retained for compatibility with the earlier public editorial sync. Kabar Kopi's public page now reads its crawlable editorial JSON directly from the Update-Coffee-Data repository; this is not the member Report by MEVO system.
 
-No checkout, payment table, or payment provider is included. Enabling a gate later is not sufficient by itself until full editorial bodies are removed from public static files and delivered only through the authenticated API.
+No checkout, payment table, or payment provider is included. The member report API always requires a signed-in account, including during free beta. The public editorial body intentionally remains crawlable and public.

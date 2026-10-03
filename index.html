@@ -1199,6 +1199,7 @@ window.__qcoAnLang = function (lang) {
     <div onclick="showDashboardSection('content')" id="nav-content" class="sidebar-item"><i class="fas fa-file-alt w-5"></i><span>Konten & Artikel</span></div>
     <div onclick="showDashboardSection('editcontent')" id="nav-editcontent" class="sidebar-item"><i class="fas fa-pen w-5"></i><span>Edit Konten Blog</span></div>
     <div onclick="showDashboardSection('fieldnotes')" id="nav-fieldnotes" class="sidebar-item"><i class="fas fa-coffee w-5"></i><span>Kiriman Kabar Kopi</span></div>
+    <div onclick="showDashboardSection('mevoreports')" id="nav-mevoreports" class="sidebar-item"><i class="fas fa-chart-line w-5"></i><span>Report by MEVO</span></div>
 
     <div onclick="showDashboardSection('categories')" id="nav-categories" class="sidebar-item"><i class="fas fa-tags w-5"></i><span>Kategori</span></div>
 </nav>
@@ -1303,9 +1304,22 @@ window.__qcoAnLang = function (lang) {
         </div>
     </div>
     <div id="section-fieldnotes" class="dashboard-section hidden">
-        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Antrean Kolom Info Lapangan</h3><p class="text-sm text-coffee-500 mt-1">Kiriman pembaca Kabar Kopi. Naskah asli tetap tersimpan; terbitkan setelah ditinjau.</p></div><button type="button" class="btn-secondary" onclick="loadFieldModeration()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Antrean Suara Komunitas</h3><p class="text-sm text-coffee-500 mt-1">Kiriman anggota Kabar Kopi. Naskah asli tetap tersimpan; terbitkan setelah ditinjau.</p></div><button type="button" class="btn-secondary" onclick="loadFieldModeration()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
         <div id="field-moderation-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
         <div id="field-moderation-list" class="space-y-4"><div class="content-card">Memuat antrean…</div></div>
+    </div>
+    <div id="section-mevoreports" class="dashboard-section hidden">
+        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Report by MEVO</h3><p class="text-sm text-coffee-500 mt-1">Kelola report anggota. Report yang diunggah pipeline masuk sebagai draft sampai admin menerbitkannya.</p></div><button type="button" class="btn-secondary" onclick="loadMevoReports()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <div id="mevo-report-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
+        <form id="mevo-report-form" class="content-card space-y-3 mb-6">
+            <input id="mevo-report-id" type="hidden">
+            <div class="grid md:grid-cols-2 gap-3"><label class="text-sm">Slug unik (gunakan akhiran -id atau -en)<input id="mevo-report-slug" class="w-full px-3 py-2 border rounded mt-1" required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="120"></label><label class="text-sm">Bahasa<select id="mevo-report-language" class="w-full px-3 py-2 border rounded mt-1"><option value="id">Indonesia</option><option value="en">English</option></select></label></div>
+            <label class="block text-sm">Judul<input id="mevo-report-title" class="w-full px-3 py-2 border rounded mt-1" required maxlength="240"></label>
+            <label class="block text-sm">Cuplikan<textarea id="mevo-report-teaser" class="w-full px-3 py-2 border rounded mt-1" rows="2" maxlength="1200"></textarea></label>
+            <label class="block text-sm">Isi report dalam JSON<textarea id="mevo-report-json" class="w-full px-3 py-2 border rounded mt-1 font-mono text-xs" rows="12" required placeholder='{"summary":"...","sections":[{"heading":"...","paragraphs":["..."]}],"conclusion":"...","recommendations":[],"sources":[]}'></textarea></label>
+            <div class="flex flex-wrap gap-2"><button type="submit" class="btn-primary">Simpan sebagai draft</button><button type="button" class="btn-secondary" onclick="publishMevoReport()">Terbitkan untuk anggota</button><button type="button" class="btn-secondary" onclick="resetMevoReportForm()">Bersihkan</button></div>
+        </form>
+        <div id="mevo-report-list" class="space-y-4"><div class="content-card">Memuat report…</div></div>
     </div>
 </div>
 </main>
@@ -3013,6 +3027,88 @@ async function updateFieldModeration(item, action, editorText, actions) {
         loadFieldModeration();
     } catch (error) { showToast(error.message, "error"); buttons.forEach(button => button.disabled = false); }
 }
+function resetMevoReportForm() {
+    document.getElementById("mevo-report-form").reset();
+    document.getElementById("mevo-report-id").value = "";
+}
+function mevoReportPayload(status) {
+    let report;
+    try { report = JSON.parse(document.getElementById("mevo-report-json").value); }
+    catch (_) { throw new Error("Isi report harus berupa JSON yang valid."); }
+    return {
+        id: document.getElementById("mevo-report-id").value,
+        slug: document.getElementById("mevo-report-slug").value.trim(),
+        language: document.getElementById("mevo-report-language").value,
+        title: document.getElementById("mevo-report-title").value.trim(),
+        teaser: document.getElementById("mevo-report-teaser").value.trim(),
+        report,
+        status
+    };
+}
+async function saveMevoReport(status) {
+    const note = document.getElementById("mevo-report-status");
+    try {
+        const item = mevoReportPayload(status);
+        const path = item.id ? "/admin/mevo-reports/" + encodeURIComponent(item.id) : "/admin/mevo-reports";
+        const response = await fetch(BLOG_SYNC_API + path, {
+            method: "POST", credentials: "include", cache: "no-store",
+            headers: { "Content-Type": "application/json" }, body: JSON.stringify(item)
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Report gagal disimpan.");
+        note.textContent = status === "published" ? "Report diterbitkan untuk anggota." : "Report tersimpan sebagai draft.";
+        resetMevoReportForm();
+        await loadMevoReports();
+    } catch (error) { note.textContent = error.message; }
+}
+function publishMevoReport() { saveMevoReport("published"); }
+async function loadMevoReports() {
+    const list = document.getElementById("mevo-report-list");
+    const status = document.getElementById("mevo-report-status");
+    if (!list || !adminSessionActive) return;
+    status.textContent = "Memuat report MEVO…";
+    try {
+        const response = await fetchWithTimeout(BLOG_SYNC_API + "/admin/mevo-reports", { credentials: "include", cache: "no-store" }, 10000);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Report belum dapat dimuat.");
+        const reports = data.reports || [];
+        status.textContent = reports.length + " report tersimpan. Draft hanya dapat dibaca admin.";
+        list.replaceChildren();
+        if (!reports.length) { const empty = document.createElement("div"); empty.className = "content-card text-coffee-500"; empty.textContent = "Belum ada report. Buat report di formulir ini atau unggah melalui endpoint sinkronisasi MEVO."; list.append(empty); return; }
+        reports.forEach(report => {
+            const card = document.createElement("article"); card.className = "content-card";
+            const title = document.createElement("h4"); title.className = "font-serif text-lg font-bold text-coffee-900"; title.textContent = report.title;
+            const meta = document.createElement("p"); meta.className = "text-xs text-coffee-500 my-2"; meta.textContent = `${report.language.toUpperCase()} · ${report.slug} · ${report.status} · ${report.generated_by || "admin"}`;
+            const teaser = document.createElement("p"); teaser.className = "text-sm text-coffee-700"; teaser.textContent = report.teaser || "Tanpa cuplikan.";
+            const actions = document.createElement("div"); actions.className = "flex gap-2 mt-3";
+            const edit = document.createElement("button"); edit.type = "button"; edit.className = "btn-secondary"; edit.textContent = "Edit";
+            edit.addEventListener("click", () => {
+                document.getElementById("mevo-report-id").value = report.id;
+                document.getElementById("mevo-report-slug").value = report.slug;
+                document.getElementById("mevo-report-language").value = report.language;
+                document.getElementById("mevo-report-title").value = report.title;
+                document.getElementById("mevo-report-teaser").value = report.teaser || "";
+                document.getElementById("mevo-report-json").value = JSON.stringify(report.report || {}, null, 2);
+                document.getElementById("mevo-report-form").scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+            actions.append(edit);
+            if (report.status !== "published") {
+                const publish = document.createElement("button"); publish.type = "button"; publish.className = "btn-primary"; publish.textContent = "Terbitkan";
+                publish.addEventListener("click", async () => {
+                    const response = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
+                        method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ slug: report.slug, language: report.language, title: report.title, teaser: report.teaser, report: report.report, status: "published" })
+                    });
+                    const result = await response.json().catch(() => ({}));
+                    if (!response.ok) { status.textContent = result.error || "Report gagal diterbitkan."; return; }
+                    await loadMevoReports();
+                }); actions.append(publish);
+            }
+            card.append(title, meta, teaser, actions); list.append(card);
+        });
+    } catch (error) { status.textContent = error.message; }
+}
+document.getElementById("mevo-report-form")?.addEventListener("submit", event => { event.preventDefault(); saveMevoReport("draft"); });
 function adminLogout() {
     fetch(BLOG_SYNC_API + "/auth/logout", { method: "POST", credentials: "include", cache: "no-store" }).catch(() => {});
     adminSessionActive = false;
@@ -3036,7 +3132,9 @@ function showDashboardSection(section) {
     document.querySelectorAll(".sidebar-item").forEach(item => item.classList.remove("active"));
     document.getElementById("nav-" + section).classList.add("active");
     if (section === "statistics") { }
-    document.getElementById("dashboard-title").textContent = ({fieldnotes:"Kiriman Kabar Kopi"})[section] || (window.dashboardTitles && window.dashboardTitles[section]) || "Overview";
+    if (section === "fieldnotes") loadFieldModeration();
+    if (section === "mevoreports") loadMevoReports();
+    document.getElementById("dashboard-title").textContent = ({fieldnotes:"Suara Komunitas", mevoreports:"Report by MEVO"})[section] || (window.dashboardTitles && window.dashboardTitles[section]) || "Overview";
     if (window.innerWidth < 768) {
         document.getElementById("dashboard-sidebar").classList.add("-translate-x-full");
     }

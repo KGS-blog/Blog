@@ -219,10 +219,10 @@ async function adminSession(request, env) {
   } catch (_) { return false; }
 }
 async function fieldSubmission(request, env) {
-  if (!env.DB) return response(request, { error: "Penyimpanan Info Lapangan belum dikonfigurasi." }, 503);
+  if (!env.DB) return response(request, { error: "Penyimpanan kiriman Suara Komunitas belum dikonfigurasi." }, 503);
   const member = await memberForRequest(request, env);
-  if (!member) return response(request, { error: "Masuk dengan email atau Google untuk mengirim Info Lapangan." }, 401);
-  if (env.CONTRIBUTOR_GATE_ENABLED === "true" && !await memberHasAccess(member, env)) return response(request, { error: "Hak mengirim Info Lapangan belum aktif." }, 403);
+  if (!member) return response(request, { error: "Masuk dengan email atau Google untuk mengirim ke Suara Komunitas." }, 401);
+  if (env.CONTRIBUTOR_GATE_ENABLED === "true" && !await memberHasAccess(member, env)) return response(request, { error: "Hak mengirim ke Suara Komunitas belum aktif." }, 403);
   const body = await bodyJson(request);
   const title = String(body?.title || "").trim();
   const text = String(body?.text || "").trim();
@@ -355,6 +355,88 @@ async function syncPremium(request, env) {
   return response(request, { synced: statements.length });
 }
 
+// Member-only MEVO reports are kept apart from the public editorial feed in
+// mevo_member_reports. The MEVO pipeline uploads report payloads only; it does
+// not collect or import news through this endpoint.
+async function memberMevoReports(request, env, slug = "") {
+  if (!env.DB) return response(request, { error: "Penyimpanan Report by MEVO belum dikonfigurasi." }, 503);
+  if (!await memberForRequest(request, env)) return response(request, { error: "Masuk untuk membaca Report by MEVO." }, 401);
+  if (slug) {
+    const row = await env.DB.prepare(`SELECT slug, language, title, teaser, report_json, published_at
+      FROM mevo_member_reports WHERE slug = ? AND status = 'published'`).bind(slug).first();
+    if (!row) return response(request, { error: "Report by MEVO tidak ditemukan." }, 404);
+    return response(request, { ...row, report: JSON.parse(row.report_json) });
+  }
+  const rows = await env.DB.prepare(`SELECT slug, language, title, teaser, published_at
+    FROM mevo_member_reports WHERE status = 'published' ORDER BY published_at DESC LIMIT 100`).all();
+  return response(request, { reports: rows.results || [] });
+}
+
+async function adminMevoReports(request, env) {
+  if (!env.DB) return response(request, { error: "Penyimpanan Report by MEVO belum dikonfigurasi." }, 503);
+  if (!await adminSession(request, env)) return response(request, { error: "Sesi admin diperlukan." }, 401);
+  const rows = await env.DB.prepare(`SELECT id, slug, language, title, teaser, report_json, status,
+    source_batch_id, generated_by, created_at, updated_at, published_at
+    FROM mevo_member_reports ORDER BY updated_at DESC LIMIT 200`).all();
+  return response(request, { reports: (rows.results || []).map(row => ({ ...row, report: JSON.parse(row.report_json) })) });
+}
+
+async function saveAdminMevoReport(request, env, idValue = "") {
+  if (!env.DB) return response(request, { error: "Penyimpanan Report by MEVO belum dikonfigurasi." }, 503);
+  if (!await adminSession(request, env)) return response(request, { error: "Sesi admin diperlukan." }, 401);
+  const body = await bodyJson(request);
+  const slug = String(body?.slug || "").trim().toLowerCase();
+  const language = String(body?.language || "id");
+  const title = String(body?.title || "").trim();
+  const teaser = String(body?.teaser || "").trim();
+  const status = String(body?.status || "draft");
+  const report = body?.report;
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 120) return response(request, { error: "Slug report tidak valid." }, 400);
+  if (!["id", "en"].includes(language) || !["draft", "published", "archived"].includes(status)) return response(request, { error: "Bahasa atau status report tidak valid." }, 400);
+  if (!title || title.length > 240 || teaser.length > 1200 || !report || typeof report !== "object" || Array.isArray(report)) return response(request, { error: "Judul, cuplikan, dan isi report JSON wajib diisi dengan format yang benar." }, 400);
+  const timestamp = now();
+  const current = idValue ? await env.DB.prepare("SELECT id, published_at, source_batch_id FROM mevo_member_reports WHERE id = ?").bind(idValue).first() : null;
+  if (idValue && !current) return response(request, { error: "Report tidak ditemukan." }, 404);
+  const reportId = current?.id || id();
+  await env.DB.prepare(`INSERT INTO mevo_member_reports
+    (id, slug, language, title, teaser, report_json, status, source_batch_id, generated_by, created_at, updated_at, published_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, language=excluded.language, title=excluded.title,
+      teaser=excluded.teaser, report_json=excluded.report_json, status=excluded.status,
+      updated_at=excluded.updated_at, published_at=excluded.published_at`)
+    .bind(reportId, slug, language, title, teaser, JSON.stringify(report), status,
+      String(body?.source_batch_id || current?.source_batch_id || "").slice(0, 120) || null, "admin", timestamp, timestamp,
+      status === "published" ? (current?.published_at || timestamp) : null).run();
+  return response(request, { id: reportId, slug, status, saved: true }, 200);
+}
+
+async function syncMevoReports(request, env) {
+  if (!env.DB || !env.MEVO_SYNC_SECRET) return response(request, { error: "Sinkronisasi Report by MEVO belum dikonfigurasi." }, 503);
+  if ((request.headers.get("Authorization") || "") !== `Bearer ${env.MEVO_SYNC_SECRET}`) return response(request, { error: "Tidak diizinkan." }, 401);
+  const doc = await bodyJson(request);
+  if (!doc || !Array.isArray(doc.reports) || doc.reports.length > 100) return response(request, { error: "Format report tidak valid." }, 400);
+  const timestamp = now();
+  const statements = [];
+  for (const item of doc.reports) {
+    const slug = String(item?.slug || item?.id || "").trim().toLowerCase();
+    const language = String(item?.language || "id");
+    const title = String(item?.title || "").trim();
+    const report = item?.report;
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || !["id", "en"].includes(language) || !title || title.length > 240 || !report || typeof report !== "object" || Array.isArray(report)) continue;
+    const idValue = `${slug}:${language}`;
+    statements.push(env.DB.prepare(`INSERT INTO mevo_member_reports
+      (id, slug, language, title, teaser, report_json, status, source_batch_id, generated_by, created_at, updated_at, published_at)
+      VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, 'mevo-report-upload', ?, ?, NULL)
+      ON CONFLICT(slug) DO UPDATE SET title=excluded.title, teaser=excluded.teaser, report_json=excluded.report_json,
+        status='draft', published_at=NULL, source_batch_id=excluded.source_batch_id,
+        generated_by=excluded.generated_by, updated_at=excluded.updated_at`)
+      .bind(idValue, slug, language, title, String(item.teaser || "").slice(0, 1200), JSON.stringify(report),
+        String(item.source_batch_id || doc.batch_id || "").slice(0, 120) || null, timestamp, timestamp));
+  }
+  for (let i = 0; i < statements.length; i += 50) await env.DB.batch(statements.slice(i, i + 50));
+  return response(request, { received: statements.length, status: "draft", message: "Report masuk sebagai draft. Admin perlu meninjau dan menerbitkannya." });
+}
+
 export async function handleKabarMemberRequest(request, env, url) {
   const path = url.pathname;
   if (path === "/api/member/auth/email" && request.method === "POST") return startEmailLogin(request, env);
@@ -385,5 +467,13 @@ export async function handleKabarMemberRequest(request, env, url) {
   const premiumMatch = path.match(/^\/api\/premium\/articles\/([a-z0-9-]+)$/);
   if (premiumMatch && request.method === "GET") return premiumArticle(request, env, premiumMatch[1]);
   if (path === "/api/admin/premium/sync" && request.method === "POST") return syncPremium(request, env);
+  if (path === "/api/member/mevo-reports" && request.method === "GET") return memberMevoReports(request, env);
+  const memberMevoMatch = path.match(/^\/api\/member\/mevo-reports\/([a-z0-9-]+)$/);
+  if (memberMevoMatch && request.method === "GET") return memberMevoReports(request, env, memberMevoMatch[1]);
+  if (path === "/api/admin/mevo-reports" && request.method === "GET") return adminMevoReports(request, env);
+  if (path === "/api/admin/mevo-reports" && request.method === "POST") return saveAdminMevoReport(request, env);
+  const adminMevoMatch = path.match(/^\/api\/admin\/mevo-reports\/([a-f0-9-]+)$/);
+  if (adminMevoMatch && request.method === "POST") return saveAdminMevoReport(request, env, adminMevoMatch[1]);
+  if (path === "/api/admin/mevo-reports/sync" && request.method === "POST") return syncMevoReports(request, env);
   return null;
 }
