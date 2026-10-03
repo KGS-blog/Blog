@@ -51,13 +51,15 @@ async function memberForRequest(request, env) {
   const token = cookieValue(request, MEMBER_COOKIE);
   if (!token) return null;
   const tokenHash = await sha256(token);
-  return env.DB.prepare(`SELECT m.id, m.email, m.display_name, m.status
+  return env.DB.prepare(`SELECT m.id, m.email, m.display_name, m.status, m.member_role, m.role_other,
+      m.newsletter_opt_in, m.profile_completed_at,
+      CASE WHEN m.profile_completed_at IS NOT NULL THEN 1 ELSE 0 END AS profile_complete
     FROM member_sessions s JOIN members m ON m.id = s.member_id
     WHERE s.token_hash = ? AND s.revoked_at IS NULL AND s.expires_at > ? AND m.status = 'active'`)
     .bind(tokenHash, now()).first();
 }
 async function memberHasAccess(member, env) {
-  if (!member) return false;
+  if (!member || !member.profile_complete) return false;
   const row = await env.DB.prepare(`SELECT 1 AS allowed FROM memberships
     WHERE member_id = ? AND status = 'active' AND starts_at <= ? AND (ends_at IS NULL OR ends_at > ?)`)
     .bind(member.id, now(), now()).first();
@@ -90,11 +92,32 @@ async function ensureMember(env, email, displayName, provider, subject) {
   await env.DB.prepare(`INSERT OR IGNORE INTO member_identities (id, member_id, provider, provider_subject, created_at)
     VALUES (?, ?, ?, ?, ?)`)
     .bind(id(), member.id, provider, subject, timestamp).run();
-  await env.DB.prepare(`INSERT OR IGNORE INTO memberships
-    (id, member_id, package_id, status, access_source, starts_at, updated_at)
-    VALUES (?, ?, 'kabar-kopi-member', 'active', 'free_beta', ?, ?)`)
-    .bind(id(), member.id, timestamp, timestamp).run();
   return member;
+}
+async function completeMemberProfile(request, env) {
+  if (!env.DB) return response(request, { error: "Penyimpanan akun belum dikonfigurasi." }, 503);
+  const member = await memberForRequest(request, env);
+  if (!member) return response(request, { error: "Masuk dengan email atau Google terlebih dahulu." }, 401);
+  const body = await bodyJson(request);
+  const displayName = String(body?.display_name || "").trim().replace(/\s+/g, " ");
+  const role = String(body?.member_role || "");
+  const roleOther = String(body?.role_other || "").trim().replace(/\s+/g, " ");
+  const newsletter = body?.newsletter_opt_in;
+  if (displayName.length < 2 || displayName.length > 80) return response(request, { error: "Nama harus 2–80 karakter." }, 400);
+  if (!["petani", "prosesor", "marketing", "student", "lainnya"].includes(role)) return response(request, { error: "Pilih peran Anda." }, 400);
+  if (role === "lainnya" && (roleOther.length < 2 || roleOther.length > 80)) return response(request, { error: "Sebutkan peran lainnya (2–80 karakter)." }, 400);
+  if (typeof newsletter !== "boolean") return response(request, { error: "Pilih apakah Anda ingin menerima newsletter." }, 400);
+  const timestamp = now();
+  await env.DB.batch([
+    env.DB.prepare(`UPDATE members SET display_name = ?, member_role = ?, role_other = ?, newsletter_opt_in = ?,
+      profile_completed_at = COALESCE(profile_completed_at, ?), updated_at = ? WHERE id = ?`)
+      .bind(displayName, role, role === "lainnya" ? roleOther : null, newsletter ? 1 : 0, timestamp, timestamp, member.id),
+    env.DB.prepare(`INSERT INTO memberships (id, member_id, package_id, status, access_source, starts_at, updated_at)
+      VALUES (?, ?, 'kabar-kopi-member', 'active', 'free_beta', ?, ?)
+      ON CONFLICT(member_id) DO UPDATE SET status='active', access_source='free_beta', updated_at=excluded.updated_at`)
+      .bind(id(), member.id, timestamp, timestamp)
+  ]);
+  return response(request, { completed: true, message: "Profil anggota tersimpan." });
 }
 function validateEmail(email) {
   return email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -222,6 +245,7 @@ async function fieldSubmission(request, env) {
   if (!env.DB) return response(request, { error: "Penyimpanan kiriman Suara Komunitas belum dikonfigurasi." }, 503);
   const member = await memberForRequest(request, env);
   if (!member) return response(request, { error: "Masuk dengan email atau Google untuk mengirim ke Suara Komunitas." }, 401);
+  if (!member.profile_complete) return response(request, { error: "Lengkapi profil anggota sebelum mengirim tulisan." }, 403);
   if (env.CONTRIBUTOR_GATE_ENABLED === "true" && !await memberHasAccess(member, env)) return response(request, { error: "Hak mengirim ke Suara Komunitas belum aktif." }, 403);
   const body = await bodyJson(request);
   const title = String(body?.title || "").trim();
@@ -360,7 +384,9 @@ async function syncPremium(request, env) {
 // not collect or import news through this endpoint.
 async function memberMevoReports(request, env, slug = "") {
   if (!env.DB) return response(request, { error: "Penyimpanan Report by MEVO belum dikonfigurasi." }, 503);
-  if (!await memberForRequest(request, env)) return response(request, { error: "Masuk untuk membaca Report by MEVO." }, 401);
+  const member = await memberForRequest(request, env);
+  if (!member) return response(request, { error: "Masuk untuk membaca Report by MEVO." }, 401);
+  if (!member.profile_complete) return response(request, { error: "Lengkapi profil anggota untuk membaca Report by MEVO." }, 403);
   if (slug) {
     const row = await env.DB.prepare(`SELECT slug, language, title, teaser, report_json, published_at
       FROM mevo_member_reports WHERE slug = ? AND status = 'published'`).bind(slug).first();
@@ -451,7 +477,16 @@ export async function handleKabarMemberRequest(request, env, url) {
     const member = await memberForRequest(request, env);
     if (!member) return response(request, { authenticated: false });
     const membership = await env.DB.prepare("SELECT package_id, status, access_source, ends_at FROM memberships WHERE member_id = ?").bind(member.id).first();
-    return response(request, { authenticated: true, member, membership });
+    return response(request, { authenticated: true, profile_complete: Boolean(member.profile_complete), member, membership });
+  }
+  if (path === "/api/member/profile" && request.method === "POST") return completeMemberProfile(request, env);
+  if (path === "/api/member/mevo-report-previews" && request.method === "GET") {
+    if (!env.DB) return response(request, { reports: [] });
+    const language = url.searchParams.get("language") === "en" ? "en" : "id";
+    const rows = await env.DB.prepare(`SELECT slug, language, title, teaser, published_at
+      FROM mevo_member_reports WHERE status = 'published' AND language = ?
+      ORDER BY published_at DESC LIMIT 3`).bind(language).all();
+    return response(request, { reports: rows.results || [] });
   }
   if (path === "/api/member/logout" && request.method === "POST") {
     const raw = cookieValue(request, MEMBER_COOKIE);

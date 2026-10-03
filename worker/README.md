@@ -32,9 +32,9 @@ The Kabar Kopi public editorial feed remains static and crawlable in `Update-Cof
 
 Reader submissions are stored in the existing `field_submissions` table and admin queue for backward compatibility. Product-facing labels call this **Suara Komunitas**. Published submissions alone appear in the public feed. Existing stored submissions are retained.
 
-One `kabar-kopi-member` membership record is created with `access_source=free_beta`.
+After identity sign-in, a person must complete a profile with their name, coffee-industry role, and explicit newsletter choice. The account is not treated as an active member and cannot read member MEVO reports or submit community writing until that profile is saved. A `kabar-kopi-member` record with `access_source=free_beta` is created at that point.
 
-The D1 schema is in `migrations/0001_kabar_kopi_membership.sql` and the new report table is added by `migrations/0002_mevo_member_reports.sql`. If the first migration is already applied, apply only migration 0002 in Cloudflare D1 or run `npx wrangler d1 execute kabar-kopi-members --remote --file=migrations/0002_mevo_member_reports.sql` from this directory. If D1 is not yet provisioned, create the `kabar-kopi-members` database, add a D1 binding named `DB` to production `qco-blog-sync`, then apply both migrations in order and deploy the Worker.
+The D1 schema is in `migrations/0001_kabar_kopi_membership.sql`; member MEVO reports are added by `0002_mevo_member_reports.sql`; required member profiles and newsletter preferences are added by `0003_member_profiles.sql`. If migrations 0001 and 0002 are already applied, apply only 0003 in Cloudflare D1 or run `npx wrangler d1 execute kabar-kopi-members --remote --file=migrations/0003_member_profiles.sql` from this directory, then deploy the Worker. If D1 is not yet provisioned, apply all migrations in order before deploying the Worker.
 
 Email-link login needs the encrypted Worker secret `RESEND_API_KEY` and the variable `MEMBER_EMAIL_FROM` (a sender address on a verified domain). Google Sign-In needs `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` set to `https://blog-api.qcoid.com/api/member/auth/google/callback`; register that exact callback URL in the Google OAuth client. Keep OAuth client secrets out of GitHub and chat. Report upload needs `MEVO_SYNC_SECRET` as a Worker secret and in the trusted report-producing process. It is not used by the coffee news feed workflow. Send JSON shaped like `{"batch_id":"...","reports":[{"slug":"sample-report-id","language":"id","title":"...","teaser":"...","report":{"summary":"...","sections":[],"conclusion":"...","recommendations":[],"sources":[]}}]}` to the report sync endpoint; each item is saved as a draft for admin review.
 
@@ -44,6 +44,8 @@ Endpoints:
 - `GET /api/member/auth/verify-page` and `POST /api/member/auth/verify`: confirm the link and set an HttpOnly member session.
 - `GET /api/member/auth/google` and `/api/member/auth/google/callback`: Google OpenID Connect sign-in.
 - `GET /api/member/session` and `POST /api/member/logout`: inspect/end the member session.
+- `POST /api/member/profile`: complete a required member profile (name, coffee-industry role, newsletter choice) and activate free beta membership.
+- `GET /api/member/mevo-report-previews`: return published report titles and teasers for the public homepage invitation.
 - `POST /api/field-submissions`: accept authenticated reader submissions into the moderation queue. `publication_choice` is `as_submitted` or `editor_review`; the latter requires explicit editing consent. Every item keeps its original text.
 - `GET /api/admin/field-submissions` and `POST /api/admin/field-submissions/:id`: admin review and publish decisions use the existing admin session.
 - `GET /api/field-posts`: list only published field notes.
