@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- QFin Blog HTML - v2026.09.26-6 | menu Tentang dihapus (gabung Beranda), CTA hero = Berita Kopi Terkini ke Kabar Kopi -->
+<!-- Q.co Blog public site with shared article storage and admin editing. -->
 <html lang="id" class="scroll-smooth">
 <head>
 <!-- Meta Pixel Code -->
@@ -513,12 +513,11 @@ main {
             <p class="text-xs text-coffee-500 -mt-1">Coffee Researcher</p>
         </div>
     </button>
-    <!-- DESKTOP NAV: urutan di HTML = Beranda, Tentang, Artikel, Kalkulator, Data dan Berita Kopi Indonesia -->
+    <!-- Desktop navigation -->
     <div class="hidden sm:flex items-center gap-6">
-        <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="nav-link">Kabar Kopi</a>
+        <a href="https://kabarkopi.qcoid.com/" class="nav-link">Kabar Kopi</a>
         <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
         <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="nav-link">Kalkulator</a>
-        <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="nav-link">Data dan Berita Kopi Indonesia</a>
     </div>
     <div class="flex items-center gap-3">
         <!-- Admin button - only visible when logged in -->
@@ -531,13 +530,12 @@ main {
     </div>
 </div>
 </div>
-<!-- MOBILE NAV: urutan harus SAMA PERSIS dengan desktop nav -->
+<!-- Mobile navigation -->
 <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-lg border-t border-coffee-100 z-40 relative">
 <div class="px-6 py-4 space-y-3">
-    <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="block nav-link py-2 text-left w-full">Kabar Kopi</a>
+    <a href="https://kabarkopi.qcoid.com/" class="block nav-link py-2 text-left w-full">Kabar Kopi</a>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="articles" data-mobile="1">Artikel</button>
     <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
-    <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="block nav-link py-2 text-left w-full">Data dan Berita Kopi Indonesia</a>
     <button type="button" id="mobile-admin-btn" onclick="showDashboard(); toggleMobileMenu();" class="hidden w-full text-left nav-link py-2 flex items-center gap-2"><i class="fas fa-lock text-xs"></i> Dashboard Admin</button>
 </div>
 </div>
@@ -572,7 +570,7 @@ main {
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <button type="button" class="btn-primary text-lg" data-nav="articles" data-editable="hero_cta1"><i class="fas fa-book-open mr-2"></i>Jelajahi Artikel</button>
-        <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="inline-block px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-editable="hero_cta2"><i class="fas fa-newspaper mr-2"></i>Berita Kopi Terkini</a>
+        <a href="https://kabarkopi.qcoid.com/" class="inline-block px-6 py-3 rounded-lg font-medium text-white border-2 border-white/30 hover:bg-white/10 transition-all duration-300 text-lg" data-editable="hero_cta2"><i class="fas fa-newspaper mr-2"></i>Berita Kopi Terkini</a>
     </div>
 
     <!-- TENTANG PENULIS BOX -->
@@ -626,7 +624,7 @@ main {
       <div id="qco-mw-kurs" style="font-size:1.15rem;font-weight:800;color:#e0d5c5;font-family:monospace;">&mdash;</div>
       <div id="qco-mw-kurs-chg" style="font-size:.6rem;color:#9a8b76;"></div>
     </div>
-    <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" id="qco-mw-ekspor-tile" style="display:block;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;text-decoration:none;color:inherit;">
+    <a href="https://kabarkopi.qcoid.com/" id="qco-mw-ekspor-tile" style="display:block;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;text-decoration:none;color:inherit;">
       <div style="font-size:.58rem;color:#9a8b76;text-transform:uppercase;">Data BPS</div>
       <div id="qco-mw-ekspor" style="font-size:.68rem;font-weight:700;color:#fcd34d;line-height:1.35;">&mdash;</div>
       <div style="font-size:.58rem;color:#b09473;">klik untuk lihat</div>
@@ -1094,7 +1092,7 @@ window.__qcoAnLang = function (lang) {
             <span><i class="fas fa-newspaper text-red-500 mr-1"></i>News Clustering</span>
             <span><i class="fas fa-microscope text-blue-500 mr-1"></i>Market Insights</span>
           </div>
-          <a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
+          <a href="https://kabarkopi.qcoid.com/" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
             View Report <i class="fas fa-arrow-right ml-2"></i>
           </a>
         </div>
@@ -1136,7 +1134,7 @@ window.__qcoAnLang = function (lang) {
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_home" data-nav="hero">Beranda</button></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" data-nav="articles">Artikel</button></li>
             <li><a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
-            <li><a href="https://KGS-blog.github.io/Update-Coffee-Data/kabar-kopi.html" class="hover:text-white transition-colors">Kabar Kopi</a></li>
+            <li><a href="https://kabarkopi.qcoid.com/" class="hover:text-white transition-colors">Kabar Kopi</a></li>
         </ul>
     </div>
     <div>
@@ -1158,9 +1156,9 @@ window.__qcoAnLang = function (lang) {
 </div>
 <div class="border-t border-coffee-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
     <p class="text-sm text-coffee-500" data-editable="footer_copyright">
-            <span onclick="showDashboard()" 
-                  style="cursor:pointer; color:#9a7b56; font-weight:bold;" 
-                  title="© 2026 Ganjar Satyanagara. Klik untuk Admin Access.">©</span> 
+            <span onclick="showDashboard()"
+                  style="cursor:pointer; color:#9a7b56; font-weight:bold;"
+                  title="© 2026 Ganjar Satyanagara. Klik untuk Admin Access.">©</span>
             2026 Ganjar Satyanagara. Coffee Researcher.
         </p>
     <button type="button" id="footer-admin-btn" onclick="showDashboard()" class="hidden hover:text-white transition-colors flex items-center gap-1"><i class="fas fa-lock text-xs"></i> Admin</button>
@@ -1180,12 +1178,10 @@ window.__qcoAnLang = function (lang) {
 </div>
 <nav class="p-4 space-y-1">
     <div onclick="showDashboardSection('overview')" id="nav-overview" class="sidebar-item active"><i class="fas fa-chart-pie w-5"></i><span>Overview</span></div>
-    <div onclick="showDashboardSection('statistics')" id="nav-statistics" class="sidebar-item"><i class="fas fa-chart-bar w-5"></i><span>Statistik</span></div>
     <div onclick="showDashboardSection('content')" id="nav-content" class="sidebar-item"><i class="fas fa-file-alt w-5"></i><span>Konten & Artikel</span></div>
     <div onclick="showDashboardSection('editcontent')" id="nav-editcontent" class="sidebar-item"><i class="fas fa-pen w-5"></i><span>Edit Konten Blog</span></div>
     <div onclick="showDashboardSection('fieldnotes')" id="nav-fieldnotes" class="sidebar-item"><i class="fas fa-coffee w-5"></i><span>Kiriman Kabar Kopi</span></div>
-    
-    <div onclick="showDashboardSection('features')" id="nav-features" class="sidebar-item"><i class="fas fa-cog w-5"></i><span>Fitur & Pengaturan</span></div>
+
     <div onclick="showDashboardSection('categories')" id="nav-categories" class="sidebar-item"><i class="fas fa-tags w-5"></i><span>Kategori</span></div>
 </nav>
 <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-coffee-100 space-y-2">
@@ -1213,148 +1209,11 @@ window.__qcoAnLang = function (lang) {
     <div id="section-overview" class="dashboard-section">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="stat-card"><div class="flex items-center justify-between mb-4"><div class="w-12 h-12 bg-coffee-100 rounded-xl flex items-center justify-center"><i class="fas fa-file-alt text-coffee-600 text-xl"></i></div><span class="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full" id="overview-pub-badge">0 Published</span></div><div class="text-3xl font-serif font-bold text-coffee-900" id="overview-total-articles">0</div><div class="text-sm text-coffee-500 mt-1">Total Artikel</div><div class="text-xs text-coffee-400 mt-2" id="overview-draft-count">0 Draft</div></div>
-            <div class="stat-card"><div class="flex items-center justify-between mb-4"><div class="w-12 h-12 bg-coffee-100 rounded-xl flex items-center justify-center"><i class="fas fa-comments text-coffee-600 text-xl"></i></div></div><div class="text-3xl font-serif font-bold text-coffee-900" id="overview-total-comments">0</div><div class="text-sm text-coffee-500 mt-1">Komentar</div></div>
-            <div class="stat-card"><div class="flex items-center justify-between mb-4"><div class="w-12 h-12 bg-coffee-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-coffee-600 text-xl"></i></div></div><div class="text-3xl font-serif font-bold text-coffee-900" id="overview-total-subscribers">0</div><div class="text-sm text-coffee-500 mt-1">Subscriber</div></div>
-            <div class="stat-card"><div class="flex items-center justify-between mb-4"><div class="w-12 h-12 bg-coffee-100 rounded-xl flex items-center justify-center"><i class="fas fa-eye text-coffee-600 text-xl"></i></div></div><div class="text-3xl font-serif font-bold text-coffee-900" id="overview-total-views">0</div><div class="text-sm text-coffee-500 mt-1">Page Views</div></div>
         </div>
-        <div class="grid lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-2xl p-6 border border-coffee-100 shadow-sm"><h3 class="font-serif text-lg font-bold text-coffee-900 mb-4">Trafik Bulanan</h3><canvas id="trafficChart" height="200"></canvas></div>
-            <div class="bg-white rounded-2xl p-6 border border-coffee-100 shadow-sm"><h3 class="font-serif text-lg font-bold text-coffee-900 mb-4">Kategori Artikel</h3><canvas id="categoryChart" height="200"></canvas></div>
-        </div>
+
     </div>
     <!-- STATISTICS -->
-    <div id="section-statistics" class="dashboard-section hidden">
-        <!-- Date Range Filter -->
-        <div class="flex justify-end gap-3 mb-6">
-            <button type="button" onclick="filterStatsRange(7)" id="stat-range-7" class="bg-white text-coffee-600 hover:bg-coffee-50 border border-coffee-200 px-4 py-2 rounded-lg text-sm font-medium transition-all">7 Hari</button>
-            <button type="button" onclick="filterStatsRange(30)" id="stat-range-30" class="bg-white text-coffee-600 hover:bg-coffee-50 border border-coffee-200 px-4 py-2 rounded-lg text-sm font-medium transition-all">30 Hari</button>
-            <button type="button" onclick="filterStatsRange(90)" id="stat-range-90" class="bg-white text-coffee-600 hover:bg-coffee-50 border border-coffee-200 px-4 py-2 rounded-lg text-sm font-medium transition-all">90 Hari</button>
-            <button type="button" onclick="filterStatsRange(0)" id="stat-range-0" class="bg-coffee-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">Semua</button>
-        </div>
 
-        <!-- Summary Stats Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"><i class="fas fa-file-alt text-blue-500 text-lg"></i></div>
-                    <span class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full" id="stat-pub-badge">0 Published</span>
-                </div>
-                <div class="text-2xl font-bold text-gray-800" id="stat-total-articles">0</div>
-                <div class="text-xs text-gray-400 mt-1" data-i18n="stat_total_articles">Total Artikel</div>
-                <div class="text-xs text-gray-300 mt-1" id="stat-draft-count">0 Draft</div>
-            </div>
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center"><i class="fas fa-eye text-emerald-500 text-lg"></i></div>
-                </div>
-                <div class="text-2xl font-bold text-gray-800" id="stat-total-views">0</div>
-                <div class="text-xs text-gray-400 mt-1" data-i18n="stat_total_views">Total Views</div>
-                <div class="text-xs text-gray-300 mt-1" id="stat-avg-views">0 rata-rata</div>
-            </div>
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center"><i class="fas fa-comments text-amber-500 text-lg"></i></div>
-                    <span class="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full" id="stat-pending-badge">0 Pending</span>
-                </div>
-                <div class="text-2xl font-bold text-gray-800" id="stat-total-comments">0</div>
-                <div class="text-xs text-gray-400 mt-1" data-i18n="stat_total_comments">Komentar</div>
-                <div class="text-xs text-gray-300 mt-1" id="stat-approved-count">0 Approved</div>
-            </div>
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center"><i class="fas fa-users text-purple-500 text-lg"></i></div>
-                </div>
-                <div class="text-2xl font-bold text-gray-800" id="stat-total-subscribers">0</div>
-                <div class="text-xs text-gray-400 mt-1" data-i18n="stat_total_subscribers">Subscriber</div>
-                <div class="text-xs text-gray-300 mt-1" id="stat-sub-source">Via Newsletter</div>
-            </div>
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-10 h-10 bg-rose-50 rounded-lg flex items-center justify-center"><i class="fas fa-chart-line text-rose-500 text-lg"></i></div>
-                </div>
-                <div class="text-2xl font-bold text-gray-800" id="stat-engagement-rate">0%</div>
-                <div class="text-xs text-gray-400 mt-1" data-i18n="stat_engagement">Engagement Rate</div>
-                <div class="text-xs text-gray-300 mt-1" id="stat-engagement-detail">Views / Artikel</div>
-            </div>
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-10 h-10 bg-cyan-50 rounded-lg flex items-center justify-center"><i class="fas fa-globe text-cyan-500 text-lg"></i></div>
-                </div>
-                <div class="text-2xl font-bold text-gray-800" id="stat-countries-count">0</div>
-                <div class="text-xs text-gray-400 mt-1" data-i18n="stat_countries">Negara Viewer</div>
-                <div class="text-xs text-gray-300 mt-1" id="stat-top-country">-</div>
-            </div>
-        </div>
-
-        <!-- Charts Row -->
-        <div class="grid lg:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                <h3 class="font-serif text-sm font-bold text-gray-600 mb-2" data-i18n="stat_cat_distribution">Distribusi Kategori</h3>
-                <div class="h-32">
-                    <canvas id="statsCategoryChart" height="100"></canvas>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                <h3 class="font-serif text-sm font-bold text-gray-600 mb-2" data-i18n="stat_activity">Aktivitas Bulanan</h3>
-                <div class="h-32">
-                    <canvas id="statsActivityChart" height="100"></canvas>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                <h3 class="font-serif text-sm font-bold text-gray-600 mb-2" data-i18n="stat_viewer_countries">Negara Asal Viewer</h3>
-                <div class="h-32">
-                    <canvas id="statsCountryChart" height="100"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Top Articles Table -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-8">
-            <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-                <h3 class="font-serif text-base font-bold text-gray-700" data-i18n="stat_top_articles">Artikel Terpopuler</h3>
-                <span class="text-xs text-gray-400" data-i18n="stat_top_desc">Berdasarkan jumlah views</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full" style="min-width: 700px;">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 w-10">#</th>
-                            <th class="px-5 py-3 text-left text-xs font-medium text-gray-500" data-i18n="stat_col_title">Judul</th>
-                            <th class="px-5 py-3 text-left text-xs font-medium text-gray-500" data-i18n="stat_col_cat">Kategori</th>
-                            <th class="px-5 py-3 text-right text-xs font-medium text-gray-500" data-i18n="stat_col_views">Views</th>
-                            <th class="px-5 py-3 text-left text-xs font-medium text-gray-500" data-i18n="stat_col_status">Status</th>
-                            <th class="px-5 py-3 text-left text-xs font-medium text-gray-500" data-i18n="stat_col_engagement">Engagement</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-50" id="stats-top-articles">
-                        <tr><td colspan="6" class="px-5 py-8 text-center text-gray-400"><i class="fas fa-inbox text-2xl mb-2"></i><p>Belum ada artikel</p></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Bottom Row: Category Distribution + Interaction Summary + Viewer Countries -->
-        <div class="grid lg:grid-cols-3 gap-6">
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-                <h3 class="font-serif text-base font-bold text-gray-700 mb-3" data-i18n="stat_cat_distribution">Distribusi per Kategori</h3>
-                <div id="stats-cat-distribution" class="space-y-3">
-                    <p class="text-gray-400 text-sm text-center py-4">Tidak ada data</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-                <h3 class="font-serif text-base font-bold text-gray-700 mb-3" data-i18n="stat_interaction">Ringkasan Interaksi</h3>
-                <div id="stats-interaction-summary" class="space-y-0">
-                    <!-- Dynamically filled -->
-                </div>
-            </div>
-            <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-                <h3 class="font-serif text-base font-bold text-gray-700 mb-3" data-i18n="stat_viewer_geo">Geografi Viewer</h3>
-                <div id="stats-viewer-countries" class="space-y-2">
-                    <p class="text-gray-400 text-sm text-center py-4">Tidak ada data</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- CONTENT -->
     <div id="section-content" class="dashboard-section hidden">
@@ -1411,28 +1270,8 @@ window.__qcoAnLang = function (lang) {
         </div>
     </div>
     <!-- COMMENTS -->
-    
+
     <!-- SUBSCRIBERS -->
-    <!-- FEATURES -->
-    <div id="section-features" class="dashboard-section hidden">
-        <div class="grid md:grid-cols-2 gap-6 mb-8">
-            <div class="content-card">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3"><div class="w-10 h-10 bg-coffee-100 rounded-lg flex items-center justify-center"><i class="fas fa-comments text-coffee-600"></i></div><div><h4 class="font-medium text-coffee-900">Komentar</h4><p class="text-xs text-coffee-500">Izinkan pengunjung berkomentar</p></div></div>
-                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer" onchange="toggleFeature('comments', this.checked)"><div class="w-11 h-6 bg-coffee-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-coffee-800"></div></label>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-2xl border border-coffee-100 shadow-sm p-6 mb-6">
-            <h3 class="font-serif text-lg font-bold text-coffee-900 mb-4 flex items-center gap-2"><i class="fas fa-shield-alt text-coffee-600"></i> Backup & Recovery Data</h3>
-            <p class="text-sm text-coffee-500 mb-4">Jangan biarkan artikel Anda hilang! Backup secara berkala dan simpan file JSON di komputer/cloud storage.</p>
-            <div class="grid md:grid-cols-2 gap-4 mb-4">
-                <div class="bg-coffee-50 rounded-xl p-4"><h4 class="font-medium text-coffee-900 mb-2">Export Backup (Download)</h4><p class="text-xs text-coffee-500 mb-3">Download semua data sebagai file JSON.</p><button type="button" onclick="exportAllData()" class="btn-primary w-full"><i class="fas fa-download mr-2"></i>Download Backup JSON</button></div>
-                <div class="bg-coffee-50 rounded-xl p-4"><h4 class="font-medium text-coffee-900 mb-2">Import Backup (Restore)</h4><p class="text-xs text-coffee-500 mb-3">Pulihkan data dari file JSON.</p><label class="block"><input type="file" accept=".json" onchange="importAllData(this.files[0])" class="hidden"><span class="btn-secondary w-full block text-center cursor-pointer"><i class="fas fa-upload mr-2"></i>Pilih File JSON</span></label></div>
-            </div>
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4"><h4 class="font-medium text-blue-900 mb-2 flex items-center gap-2"><i class="fas fa-info-circle"></i> Status Penyimpanan</h4><div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm"><div><span class="text-blue-600">Artikel:</span><span id="backup-articles" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Komentar:</span><span id="backup-comments" class="font-bold text-blue-900">0</span></div><div><span class="text-blue-600">Backup Terakhir:</span><span id="backup-last" class="font-bold text-blue-900">-</span></div></div></div>
-        </div>
-    </div>
     <!-- CATEGORIES -->
     <div id="section-categories" class="dashboard-section hidden">
         <div class="flex items-center justify-between mb-6">
@@ -1470,7 +1309,7 @@ window.__qcoAnLang = function (lang) {
                 <div class="flex items-center gap-2 mb-3">
                     <span class="text-sm font-medium text-coffee-600">Bagikan artikel:</span>
                     <!-- Direct Link Display -->
-                    <input type="text" id="article-direct-link" readonly 
+                    <input type="text" id="article-direct-link" readonly
                            class="flex-1 ml-2 px-3 py-1.5 text-xs bg-coffee-50 border border-coffee-200 rounded-lg text-coffee-700 font-mono cursor-pointer"
                            onclick="this.select()" title="Klik untuk menyalin">
                 </div>
@@ -1758,16 +1597,11 @@ let articlesFileSha = "";
 let articlesDataSource = "default";
 let adminSessionActive = false;
 const BLOG_SYNC_API = "https://blog-api.qcoid.com/api";
-let commentsData = [];
-let subscribersData = [];
 let categoriesData = [];
 let currentLang = "id";
 let isSaving = false;
 let adminEditMode = false;
 let dataLoadState = "loading"; // loading, local, error
-let statsRangeDays = 0; // 0 = all time, 7, 30, 90
-let statsCategoryChart = null;
-let statsActivityChart = null;
 const BLOG_BASE_URL = "https://blog.qcoid.com"; // Define early so generateBlogPostingSchema can use it
 
 // ========== DATA LOADING STATUS UI ==========
@@ -1819,8 +1653,6 @@ function showSaveStatus(status, message) {
 function loadAllData() {
     // Article content is shared through articles.json; browser storage is only for per-device preferences and legacy data.
     articlesData = [...defaultArticles];
-    commentsData = [];
-    subscribersData = [];
     categoriesData = [...defaultCategories];
     dataLoadState = "local";
 
@@ -1831,18 +1663,6 @@ function loadAllData() {
     // Wrap in try-catch so defaults are preserved if localStorage fails
     try {
         if (!window.localStorage) return;
-
-        let storedComments = localStorage.getItem("qco_comments_v2") || localStorage.getItem("qco_comments_v2_backup_v2");
-        if (storedComments) {
-            let parsed = JSON.parse(storedComments);
-            if (parsed.length > 0) commentsData = parsed;
-        }
-
-        let storedSubs = localStorage.getItem("qco_subscribers_v2") || localStorage.getItem("qco_subscribers_v2_backup_v2");
-        if (storedSubs) {
-            let parsed = JSON.parse(storedSubs);
-            if (parsed.length > 0) subscribersData = parsed;
-        }
 
         let storedCats = localStorage.getItem("qco_blog_categories_v2") || localStorage.getItem("qco_blog_categories_v2_backup_v2");
         if (storedCats) {
@@ -1919,7 +1739,6 @@ async function restoreArticlesAfterFailure(previousArticles, error) {
 function refreshArticleViews() {
     renderArticles();
     renderArticlesSidebar();
-    renderDashboardStatistics();
     renderDashboardArticles();
     renderDashboardOverview();
 }
@@ -1927,64 +1746,14 @@ function refreshArticleViews() {
 function saveToLocalStorage() {
     try {
         if (window.localStorage) {
-            localStorage.setItem("qco_comments_v2", JSON.stringify(commentsData));
-            localStorage.setItem("qco_subscribers_v2", JSON.stringify(subscribersData));
             localStorage.setItem("qco_blog_categories_v2", JSON.stringify(categoriesData));
         }
     } catch (e) { console.error("localStorage save error:", e); }
 }
-function saveBackup() {
-    try {
-        if (window.localStorage) {
-            localStorage.setItem("qco_comments_v2_backup_v2", JSON.stringify(commentsData));
-            localStorage.setItem("qco_subscribers_v2_backup_v2", JSON.stringify(subscribersData));
-            localStorage.setItem("qco_blog_categories_v2_backup_v2", JSON.stringify(categoriesData));
-            localStorage.setItem("qco_last_backup_v2", new Date().toISOString());
-        }
-    } catch (e) { console.error("Backup save error:", e); }
-}
-function downloadBackupFile(silent) {
-    const data = { articles: articlesData, comments: commentsData, subscribers: subscribersData, categories: categoriesData, edits: JSON.parse(localStorage.getItem("qco_blog_edits_v2") || "{}"), exportedAt: new Date().toISOString(), version: "2.1" };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "qco_blog_backup_" + new Date().toISOString().split("T")[0] + ".json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    if (!silent) showToast("Backup JSON berhasil di-download!", "success");
-}
-function exportAllData() {
-    downloadBackupFile(false);
-    try { localStorage.setItem("qco_last_backup_v2", new Date().toISOString()); } catch (e) {}
-}
-function importAllData(file) {
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (data.articles) {
-                const previousArticles = articlesData.map(a => ({ ...a }));
-                articlesData = data.articles;
-                try { await saveSharedArticles(); }
-                catch (error) { await restoreArticlesAfterFailure(previousArticles, error); throw error; }
-            }
-            if (data.comments) commentsData = data.comments;
-            if (data.subscribers) subscribersData = data.subscribers;
-            if (data.categories) categoriesData = data.categories;
-            if (data.edits) localStorage.setItem("qco_blog_edits_v2", JSON.stringify(data.edits));
-            saveToLocalStorage(); saveBackup();
-            renderArticles();
-        renderArticlesSidebar(); renderDashboardStatistics(); renderDashboardArticles(); renderDashboardOverview();
-            renderComments(); renderDashboardComments(); renderDashboardSubscribers();
-            renderDashboardCategories(); renderNewsletterStats();
-            showToast("Data berhasil di-import! " + (Array.isArray(data.articles) ? data.articles.length + " artikel dipulihkan." : "Data dipulihkan."), "success");
-        } catch (err) { showToast(err.message || "Gagal import file! Format tidak valid.", "error"); }
-    };
-    reader.readAsText(file);
-}
+
+
+
+
 
 // ========== LANGUAGE ==========
 function setLanguage(lang) {
@@ -2000,14 +1769,11 @@ function setLanguage(lang) {
     renderArticles();
         renderArticlesSidebar();
     renderDashboardArticles();
-    renderComments();
-    renderDashboardComments();
-    renderNewsletterStats();
 }
 
 // ========== updateStaticContent — FIXED ==========
 // URUTAN ARRAY HARUS SAMA PERSIS dengan urutan elemen .nav-link di HTML!
-// HTML order: Beranda → Tentang → Artikel → Kalkulator → Data dan Berita Kopi Indonesia → Langganan
+// HTML order: Kabar Kopi → Artikel → Kalkulator
 function updateStaticContent() {
     // Helper to safely update element content
     const update = (selector, idText, enText) => {
@@ -2079,26 +1845,6 @@ function updateStaticContent() {
     update("[data-editable=filter_pengalaman]", "Pengalaman", "Experience");
     update("[data-editable=btn_loadmore]", "Lihat Semua Artikel", "View All Articles");
 
-    // COMMENTS SECTION
-    update("[data-i18n=comm_label]", "Komunitas", "Community");
-    update("[data-i18n=comm_title]", "Diskusi & Komentar", "Discussions & Comments");
-    update("[data-editable=comm_form_title]", "Tinggalkan Komentar", "Leave a Comment");
-    update("[data-editable=ph_name]", "Nama Anda", "Your Name");
-    update("[data-editable=ph_email]", "Email", "Email");
-    update("[data-editable=ph_topic]", "Topik", "Topic");
-    update("[data-editable=ph_comment]", "Tulis komentar atau pertanyaan Anda...", "Write your comment or question...");
-    update("[data-editable=lbl_subscribe]", "Berlangganan newsletter", "Subscribe to newsletter");
-    update("[data-editable=btn_send_comment]", "Kirim Komentar", "Send Comment");
-
-    // NEWSLETTER SECTION
-    update("[data-i18n=news_title]", "Berlangganan Newsletter", "Subscribe to Newsletter");
-    update("[data-i18n=news_desc]", "Dapatkan artikel terbaru tentang perjalanan kopi, insight pasar US, dan tips pemasaran.", "Get the latest articles about coffee journeys, US market insights, and marketing tips.");
-    update("[data-editable=news_ph_name]", "Nama Anda", "Your Name");
-    update("[data-editable=news_ph_email]", "Masukkan email Anda", "Enter your email");
-    update("[data-editable=btn_subscribe]", "Berlangganan", "Subscribe");
-    update("[data-editable=news_disclaimer]", "No spam. Unsubscribe kapan saja.", "No spam. Unsubscribe anytime.");
-    update("[data-editable=news_stats]", "", "");
-
     // FOOTER
     update("[data-editable=footer_name]", "Ganjar Satyanagara", "Ganjar Satyanagara");
     update("[data-editable=footer_tagline]", "Coffee Researcher", "Coffee Researcher");
@@ -2106,7 +1852,6 @@ function updateStaticContent() {
     update("[data-editable=footer_nav_title]", "Navigasi", "Navigation");
     update("[data-editable=footer_nav_home]", "Beranda", "Home");
     update("[data-editable=footer_nav_articles]", "Artikel", "Articles");
-    update("[data-editable=footer_nav_subscribe]", "Langganan", "Subscribe");
     update("[data-editable=footer_topic_title]", "Topik", "Topics");
     update("[data-editable=footer_topic_us]", "Pasar US", "US Market");
     update("[data-editable=footer_topic_fda]", "Regulasi FDA", "FDA Regulations");
@@ -2118,30 +1863,13 @@ function updateStaticContent() {
     update("[data-editable=footer_copyright]", " 2026 Ganjar Satyanagara. Coffee Researcher", " 2026 Ganjar Satyanagara. Coffee Researcher");
 
     // STATISTICS SECTION
-    update("[data-i18n=stat_title]", "Statistik", "Statistics");
-    update("[data-i18n=stat_total_articles]", "Total Artikel", "Total Articles");
-    update("[data-i18n=stat_total_views]", "Total Views", "Total Views");
-    update("[data-i18n=stat_total_comments]", "Komentar", "Comments");
-    update("[data-i18n=stat_total_subscribers]", "Subscriber", "Subscribers");
-    update("[data-i18n=stat_top_articles]", "Artikel Terpopuler", "Top Articles");
-    update("[data-i18n=stat_top_desc]", "Berdasarkan jumlah views", "Based on views");
-    update("[data-i18n=stat_cat_distribution]", "Distribusi per Kategori", "Category Distribution");
-    update("[data-i18n=stat_activity]", "Aktivitas Bulanan", "Monthly Activity");
-    update("[data-i18n=stat_interaction]", "Ringkasan Interaksi", "Interaction Summary");
-    update("[data-i18n=stat_col_title]", "Judul", "Title");
-    update("[data-i18n=stat_col_cat]", "Kategori", "Category");
-    update("[data-i18n=stat_col_views]", "Views", "Views");
-    update("[data-i18n=stat_col_status]", "Status", "Status");
-    update("[data-i18n=stat_col_engagement]", "Engagement", "Engagement");
 
     // NAVBAR (public view) — URUTAN HARUS SAMA PERSIS DENGAN URUTAN ELEMEN HTML DI DOM
-    // HTML order: Beranda, Artikel, Kalkulator, Data dan Berita Kopi Indonesia
     const navLinks = document.querySelectorAll("#public-view .nav-link");
-    // SAMPAI SINI: navTextsID[0] = Beranda, [1] = Artikel, [2] = Kalkulator, [3] = Data dan Berita Kopi Indonesia, [4] = Langganan
-    const navTextsID = ["Beranda", "Artikel", "Kalkulator", "Data dan Berita Kopi Indonesia", "Langganan"];
-    const navTextsEN = ["Home", "Articles", "Calculator", "Data dan Berita Kopi Indonesia", "Subscribe"];
+    const navTextsID = ["Kabar Kopi", "Artikel", "Kalkulator"];
+    const navTextsEN = ["Kabar Kopi", "Articles", "Calculator"];
     navLinks.forEach((link, idx) => {
-        if (idx < 5 && link.textContent.trim() && !link.querySelector("i")) {
+        if (idx < navTextsID.length && link.textContent.trim() && !link.querySelector("i")) {
             link.textContent = currentLang === "id" ? navTextsID[idx] : navTextsEN[idx];
         }
     });
@@ -2562,8 +2290,7 @@ function refreshViewsDisplay() {
     // Refresh dashboard if visible
     if (!document.getElementById("dashboard-view").classList.contains("hidden")) {
         renderDashboardOverview();
-        renderDashboardStatistics();
-        renderDashboardArticles();
+            renderDashboardArticles();
     }
 }
 
@@ -2831,7 +2558,7 @@ async function submitNewArticle(e) {
     statusDiv.innerHTML = "<i class='fas fa-check-circle text-green-600'></i><span class='text-sm text-green-700 font-medium'>Artikel berhasil disimpan!</span>";
     statusDiv.className = "mb-4 p-3 rounded-xl bg-green-50 border border-green-200 flex items-center gap-2";
     renderArticles();
-        renderArticlesSidebar(); renderDashboardStatistics(); renderDashboardArticles(); renderDashboardOverview();
+        renderArticlesSidebar(); renderDashboardArticles(); renderDashboardOverview();
     setTimeout(() => {
         closeAddArticleModal();
         showToast("Artikel berhasil disimpan! Status: " + newArticle.status, "success");
@@ -2902,7 +2629,7 @@ async function updateArticle(e) {
     statusDiv.innerHTML = "<i class='fas fa-check-circle text-green-600'></i><span class='text-sm text-green-700 font-medium'>Artikel berhasil diupdate!</span>";
     statusDiv.className = "mb-4 p-3 rounded-xl bg-green-50 border border-green-200 flex items-center gap-2";
     renderArticles();
-        renderArticlesSidebar(); renderDashboardStatistics(); renderDashboardArticles(); renderDashboardOverview();
+        renderArticlesSidebar(); renderDashboardArticles(); renderDashboardOverview();
     setTimeout(() => {
         closeEditArticleModal();
         showToast("Artikel berhasil diupdate! Status: " + updatedArticle.status, "success");
@@ -3005,77 +2732,16 @@ function renderDashboardOverview() {
     const totalArticles = articlesData.length;
     const publishedArticles = articlesData.filter(a => a.status === "Published").length;
     const draftArticles = articlesData.filter(a => a.status === "Draft").length;
-    const totalComments = commentsData.length;
-    const totalSubscribers = subscribersData.length;
     const totalViews = articlesData.reduce((sum, a) => sum + (parseInt(a.views) || 0), 0);
-    const totalPublishedViews = articlesData.filter(a => a.status === "Published").reduce((sum, a) => sum + (parseInt(a.views) || 0), 0);
     const elTotalArticles = document.getElementById("overview-total-articles");
     const elPubBadge = document.getElementById("overview-pub-badge");
     const elDraftCount = document.getElementById("overview-draft-count");
-    const elTotalComments = document.getElementById("overview-total-comments");
-    const elTotalSubscribers = document.getElementById("overview-total-subscribers");
-    const elTotalViews = document.getElementById("overview-total-views");
     if (elTotalArticles) elTotalArticles.textContent = totalArticles;
     if (elPubBadge) elPubBadge.textContent = publishedArticles + " Published";
     if (elDraftCount) elDraftCount.textContent = draftArticles + " Draft";
-    if (elTotalComments) elTotalComments.textContent = totalComments;
-    if (elTotalSubscribers) elTotalSubscribers.textContent = totalSubscribers;
-    if (elTotalViews) elTotalViews.textContent = totalPublishedViews.toLocaleString();
-    const pendingComments = commentsData.filter(c => c.status === "pending").length;
-    const commentBadge = document.getElementById("comment-badge");
-    const subscriberBadge = document.getElementById("subscriber-badge");
-    if (commentBadge) commentBadge.textContent = pendingComments;
-    if (subscriberBadge) subscriberBadge.textContent = totalSubscribers;
-    const backupArt = document.getElementById("backup-articles");
-    const backupComm = document.getElementById("backup-comments");
-    const backupSub = document.getElementById("backup-subscribers");
-    const backupLast = document.getElementById("backup-last");
-    if (backupArt) backupArt.textContent = totalArticles;
-    if (backupComm) backupComm.textContent = totalComments;
-    if (backupSub) backupSub.textContent = totalSubscribers;
-    if (backupLast) {
-        const lastBackup = localStorage.getItem("qco_last_backup_v2");
-        backupLast.textContent = lastBackup ? new Date(lastBackup).toLocaleString("id-ID") : "Belum pernah";
-    }
 }
-function renderDashboardComments() {
-    const list = document.getElementById("dashboard-comments-list");
-    if (!list) return;
-    if (commentsData.length === 0) {
-        list.innerHTML = "<div class='text-center py-8 text-coffee-400'><i class='fas fa-inbox text-3xl mb-2'></i><p>Belum ada komentar</p></div>";
-        return;
-    }
-    list.innerHTML = commentsData.map(comm => {
-        const isPending = comm.status === "pending";
-        return `<div class="content-card flex gap-4 ${isPending ? "border-l-4 border-yellow-400" : ""}">
-            <div class="w-12 h-12 bg-coffee-200 rounded-full flex items-center justify-center flex-shrink-0"><span class="font-serif font-bold text-coffee-700">${comm.name.split(" ").map(n => n[0]).join("")}</span></div>
-            <div class="flex-1"><div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2"><span class="font-medium text-coffee-900">${comm.name}</span><span class="text-xs text-coffee-400">${comm.email}</span><span class="tag">${comm.role}</span>${isPending ? "<span class='px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700'>Pending</span>" : ""}</div><span class="text-xs text-coffee-400">${comm.date}</span></div>
-            <p class="text-coffee-600 text-sm mb-3">${comm.comment}</p>
-            <div class="flex items-center gap-2 flex-wrap">${isPending ? `<button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-colors" onclick="approveComment(${comm.id})"><i class="fas fa-check mr-1"></i>Approve</button>` : ""}<button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors" onclick="toggleReplyForm(${comm.id})"><i class="fas fa-reply mr-1"></i>Balas</button><button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors" onclick="deleteComment(${comm.id})"><i class="fas fa-trash mr-1"></i>Hapus</button></div>
-            <div id="reply-form-${comm.id}" class="hidden mt-3"><textarea id="reply-text-${comm.id}" rows="2" class="w-full px-3 py-2 text-sm rounded-lg border border-coffee-200 bg-white focus:outline-none focus:ring-2 focus:ring-coffee-400" placeholder="Tulis balasan sebagai Ganjar Satyanagara..."></textarea><div class="flex gap-2 mt-2"><button type="button" onclick="submitReply(${comm.id})" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-coffee-800 text-white hover:bg-coffee-700 transition-colors"><i class="fas fa-paper-plane mr-1"></i>Kirim Balasan</button><button type="button" onclick="toggleReplyForm(${comm.id})" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-coffee-100 text-coffee-600 hover:bg-coffee-200 transition-colors">Batal</button></div></div></div>
-        </div>`;
-    }).join("");
-}
-function renderDashboardSubscribers() {
-    const tbody = document.getElementById("dashboard-subscribers-table");
-    if (!tbody) return;
-    const totalEl = document.getElementById("total-subscribers");
-    if (totalEl) totalEl.textContent = subscribersData.length + " total subscriber";
-    if (subscribersData.length === 0) {
-        tbody.innerHTML = "<tr><td colspan=6 class='px-6 py-8 text-center text-coffee-400'><i class='fas fa-inbox text-3xl mb-2'></i><p>Belum ada subscriber</p></td></tr>";
-        return;
-    }
-    tbody.innerHTML = subscribersData.map(sub =>
-        `<tr class="hover:bg-coffee-50 transition-colors">
-            <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-8 h-8 bg-coffee-200 rounded-full flex items-center justify-center"><span class="text-xs font-bold text-coffee-700">${sub.name.split(" ").map(n => n[0]).join("")}</span></div><span class="font-medium text-coffee-900">${sub.name}</span></div></td>
-            <td class="px-6 py-4 text-sm text-coffee-600">${sub.email}</td>
-            <td class="px-6 py-4 text-sm text-coffee-500">${sub.source}</td>
-            <td class="px-6 py-4 text-sm text-coffee-500">${sub.date}</td>
-            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span></td>
-            <td class="px-6 py-4"><button type="button" class="p-2 text-coffee-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors" onclick="deleteSubscriber(${sub.id})"><i class="fas fa-trash"></i></button></td>
-        </tr>`
-    ).join("");
-}
+
+
 function renderDashboardCategories() {
     const tbody = document.getElementById("dashboard-categories-table");
     if (!tbody) return;
@@ -3095,36 +2761,8 @@ function renderDashboardCategories() {
         </tr>`;
     }).join("");
 }
-function renderNewsletterStats() {
-    const container = document.getElementById("newsletter-stats");
-    if (!container) return;
-    container.innerHTML = `<div class="flex items-center gap-2"><i class="fas fa-users"></i><span>${subscribersData.length}+ Subscribers</span></div><div class="flex items-center gap-2"><i class="fas fa-paper-plane"></i><span>Weekly</span></div><div class="flex items-center gap-2"><i class="fas fa-globe"></i><span>ID & EN</span></div>`;
-}
-function renderComments() {
-    const list = document.getElementById("comments-list");
-    if (!list) return;
-    const approved = commentsData.filter(c => c.status === "approved");
-    if (approved.length === 0) {
-        list.innerHTML = "<div class='text-center py-8 text-coffee-400'><i class='fas fa-inbox text-3xl mb-2'></i><p>Belum ada komentar</p></div>";
-        return;
-    }
-    const topLevel = approved.filter(c => !c.parentId);
-    const repliesOf = pid => approved.filter(c => c.parentId === pid);
-    const avatar = (c, cls, txtCls) => `<div class="${cls} rounded-full flex items-center justify-center flex-shrink-0"><span class="font-serif font-bold ${txtCls}">${c.name.split(" ").map(n => n[0]).join("")}</span></div>`;
-    list.innerHTML = topLevel.map(comm => {
-        const replies = repliesOf(comm.id).map(r => `
-            <div class="flex gap-3 mt-4 ml-6 pl-4 border-l-2 border-coffee-200">
-                ${avatar(r, "w-9 h-9 bg-coffee-700", "text-white text-xs")}
-                <div class="flex-1"><div class="flex items-center gap-2 mb-1"><span class="font-medium text-coffee-900">${r.name}</span><span class="tag" style="background:#6F4E37;color:#fff;">Penulis</span><span class="text-xs text-coffee-400">- ${r.date}</span></div>
-                <p class="text-coffee-600 text-sm leading-relaxed">${r.comment}</p></div>
-            </div>`).join("");
-        return `<div class="flex gap-4">
-            ${avatar(comm, "w-12 h-12 bg-coffee-200", "text-coffee-700")}
-            <div class="flex-1"><div class="flex items-center gap-2 mb-1"><span class="font-medium text-coffee-900">${comm.name}</span><span class="text-xs text-coffee-400">- ${comm.date}</span><span class="tag">${comm.role}</span></div>
-            <p class="text-coffee-600 text-sm leading-relaxed">${comm.comment}</p>${replies}</div>
-        </div>`;
-    }).join("");
-}
+
+
 // ========== EDIT CONTENT IN ADMIN ==========
 function toggleAdminEditMode() {
     adminEditMode = !adminEditMode;
@@ -3166,7 +2804,7 @@ function renderEditableElementsList() {
         sections[section].push({ key, tag, preview });
     });
     let html = "";
-    const sectionNames = { "hero": "Hero Section", "about": "About Section", "articles": "Articles Section", "subscribe": "Newsletter Section", "footer": "Footer", "global": "Global Elements" };
+    const sectionNames = { "hero": "Hero Section", "about": "About Section", "articles": "Articles Section", "footer": "Footer", "global": "Global Elements" };
     Object.keys(sections).forEach(section => {
         html += `<div class="p-4 border-b border-coffee-100 last:border-0"><h5 class="font-medium text-coffee-800 mb-2 text-sm uppercase tracking-wider">${sectionNames[section] || section}</h5><div class="space-y-2">`;
         sections[section].forEach(item => {
@@ -3218,78 +2856,15 @@ function loadEdits() {
     } catch (e) { console.warn("Failed to load edits:", e); }
 }
 // ========== COMMENT FUNCTIONS ==========
-function submitComment(e) {
-    e.preventDefault();
-    const form = e.target;
-    const newComment = {
-        id: Date.now(), name: form.name.value, email: form.email.value,
-        topic: form.topic.value || "", comment: form.comment.value,
-        articleID: "", date: "Baru saja",
-        datePublished: "2026-09-28T00:00:00Z",
-        dateModified: "2026-09-28T00:00:00Z", status: "pending", likes: 0, role: "Visitor"
-    };
-    commentsData.unshift(newComment);
-    saveToLocalStorage();
-    renderComments(); renderDashboardStatistics(); renderDashboardComments(); renderDashboardOverview();
-    showToast("Komentar berhasil dikirim! Menunggu moderasi.", "success");
-    form.reset();
-}
-function approveComment(id) {
-    const comm = commentsData.find(c => c.id == id);
-    if (comm) { comm.status = "approved"; saveToLocalStorage(); renderComments(); renderDashboardStatistics(); renderDashboardComments(); renderDashboardOverview(); showToast("Komentar diapprove!", "success"); }
-}
-function deleteComment(id) {
-    commentsData = commentsData.filter(c => c.id != id && c.parentId != id);
-    saveToLocalStorage(); renderComments(); renderDashboardStatistics(); renderDashboardComments(); renderDashboardOverview();
-    showToast("Komentar dihapus!", "success");
-}
-function toggleReplyForm(id) {
-    const f = document.getElementById("reply-form-" + id);
-    if (f) f.classList.toggle("hidden");
-}
-function submitReply(parentId) {
-    const ta = document.getElementById("reply-text-" + parentId);
-    if (!ta || !ta.value.trim()) { showToast("Balasan tidak boleh kosong!", "error"); return; }
-    const parent = commentsData.find(c => c.id == parentId);
-    if (parent && parent.status === "pending") parent.status = "approved";
-    const reply = {
-        id: Date.now(), parentId: parentId, name: "Ganjar Satyanagara", email: "",
-        topic: parent ? (parent.topic || "") : "", comment: ta.value.trim(),
-        articleID: parent ? (parent.articleID || "") : "", date: "Baru saja",
-        datePublished: "2026-09-28T00:00:00Z",
-        dateModified: "2026-09-28T00:00:00Z",
-        status: "approved", likes: 0, role: "Author"
-    };
-    commentsData.unshift(reply);
-    saveToLocalStorage();
-    renderComments(); renderDashboardComments(); renderDashboardStatistics(); renderDashboardOverview();
-    showToast("Balasan terkirim dan tampil di diskusi!", "success");
-}
+
+
+
+
+
 // ========== SUBSCRIBER FUNCTIONS ==========
-function subscribeNewsletter(e) {
-    e.preventDefault();
-    const form = e.target;
-    const newSub = { id: Date.now(), name: form.name.value, email: form.email.value, source: "Newsletter Form", date: new Date().toLocaleDateString("id-ID"), status: "Active", lang: currentLang };
-    subscribersData.push(newSub);
-    saveToLocalStorage(); renderDashboardStatistics(); renderNewsletterStats(); renderDashboardSubscribers(); renderDashboardOverview();
-    showToast("Berlangganan berhasil!", "success");
-    form.reset();
-}
-function deleteSubscriber(id) {
-    subscribersData = subscribersData.filter(s => s.id != id);
-    saveToLocalStorage(); renderDashboardStatistics(); renderDashboardSubscribers(); renderDashboardOverview(); renderNewsletterStats();
-    showToast("Subscriber dihapus!", "success");
-}
-function exportSubscribers() {
-    let csv = "Name,Email,Source,Date,Status\n";
-    subscribersData.forEach(s => { csv += `"${s.name}","${s.email}","${s.source}","${s.date}","${s.status}"\n`; });
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "subscribers_qco.csv"; a.click();
-    window.URL.revokeObjectURL(url);
-    showToast("CSV exported!", "success");
-}
+
+
+
 // ========== CATEGORY FUNCTIONS ==========
 function showAddCategoryModal() {
     document.getElementById("add-category-modal").classList.remove("hidden");
@@ -3337,27 +2912,9 @@ function filterDashboardArticles() {
     const rows = document.querySelectorAll("#dashboard-articles-table tr");
     rows.forEach(row => { if (cat === "all") { row.style.display = ""; return; } row.style.display = row.textContent.toLowerCase().includes(cat) ? "" : "none"; });
 }
-function searchDashboardComments() {
-    const query = document.getElementById("search-comments").value.toLowerCase();
-    const items = document.querySelectorAll("#dashboard-comments-list .content-card");
-    items.forEach(item => { item.style.display = item.textContent.toLowerCase().includes(query) ? "" : "none"; });
-}
-function filterDashboardComments() {
-    const status = document.getElementById("filter-status").value;
-    const items = document.querySelectorAll("#dashboard-comments-list .content-card");
-    items.forEach(item => {
-        if (status === "all") { item.style.display = ""; return; }
-        const hasPending = item.querySelector(".bg-yellow-100");
-        const isPending = hasPending !== null;
-        if (status === "pending") item.style.display = isPending ? "" : "none";
-        else if (status === "approved") item.style.display = !isPending ? "" : "none";
-    });
-}
-function searchDashboardSubscribers() {
-    const query = document.getElementById("search-subscribers").value.toLowerCase();
-    const rows = document.querySelectorAll("#dashboard-subscribers-table tr");
-    rows.forEach(row => { row.style.display = row.textContent.toLowerCase().includes(query) ? "" : "none"; });
-}
+
+
+
 // ========== DASHBOARD NAVIGATION ==========
 async function showDashboard() {
     if (location.protocol === "file:") {
@@ -3413,8 +2970,6 @@ function enterDashboard() {
     document.getElementById("public-view").classList.add("hidden");
     document.getElementById("dashboard-view").classList.remove("hidden");
     document.body.style.overflow = "";
-    renderDashboardOverview(); renderDashboardStatistics(); renderDashboardArticles(); renderDashboardComments();
-    renderDashboardSubscribers(); renderDashboardCategories(); initCharts(); loadFieldModeration();
     checkAdminAuth();
 }
 async function loadFieldModeration() {
@@ -3478,7 +3033,6 @@ function showPublic() {
     document.getElementById("dashboard-sidebar").classList.add("-translate-x-full");
     document.body.style.overflow = "";
     renderArticles();
-        renderArticlesSidebar(); renderComments(); renderNewsletterStats();
 }
 function toggleDashboardSidebar() {
     document.getElementById("dashboard-sidebar").classList.toggle("-translate-x-full");
@@ -3488,7 +3042,7 @@ function showDashboardSection(section) {
     document.getElementById("section-" + section).classList.remove("hidden");
     document.querySelectorAll(".sidebar-item").forEach(item => item.classList.remove("active"));
     document.getElementById("nav-" + section).classList.add("active");
-    if (section === "statistics") { renderDashboardStatistics(); }
+    if (section === "statistics") { }
     document.getElementById("dashboard-title").textContent = ({fieldnotes:"Kiriman Kabar Kopi"})[section] || (window.dashboardTitles && window.dashboardTitles[section]) || "Overview";
     if (window.innerWidth < 768) {
         document.getElementById("dashboard-sidebar").classList.add("-translate-x-full");
@@ -3507,32 +3061,7 @@ function showToast(message, type) {
     setTimeout(() => toast.classList.add("translate-y-20", "opacity-0"), 3000);
 }
 // ========== CHARTS ==========
-let chartsInitialized = false;
-function initCharts() {
-    if (chartsInitialized) return;
-    chartsInitialized = true;
-    setTimeout(() => {
-        try {
-            if (typeof Chart === "undefined") { console.warn("Chart.js not loaded"); return; }
-            const trafficCtx = document.getElementById("trafficChart");
-            if (trafficCtx) {
-                new Chart(trafficCtx, {
-                    type: "line",
-                    data: { labels: ["Jan", "Feb", "Mar", "Apr", "May"], datasets: [{ label: "Page Views", data: [2100, 2800, 3500, 4200, 5100], borderColor: "#4a3726", backgroundColor: "rgba(74, 55, 38, 0.1)", tension: 0.4, fill: true }] },
-                    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" } }, x: { grid: { display: false } } } }
-                });
-            }
-            const categoryCtx = document.getElementById("categoryChart");
-            if (categoryCtx) {
-                new Chart(categoryCtx, {
-                    type: "doughnut",
-                    data: { labels: ["Journey", "Research", "US Market", "Marketing", "Experience"], datasets: [{ data: [12, 18, 15, 10, 14], backgroundColor: ["#4a3726", "#634a31", "#7d5f3e", "#9a7b56", "#b09473"], borderWidth: 0 }] },
-                    options: { responsive: true, plugins: { legend: { position: "bottom", labels: { usePointStyle: true, padding: 20 } } } }
-                });
-            }
-        } catch (e) { console.warn("Chart initialization error:", e); }
-    }, 150);
-}
+
 // ========== MOBILE MENU ==========
 function toggleMobileMenu() {
     const menu = document.getElementById("mobile-menu");
@@ -3640,18 +3169,11 @@ function fallbackCopyFeatured(url) {
     }
 }
 
-function toggleFeature(feature, enabled) {
-    console.log("Feature", feature, enabled ? "enabled" : "disabled");
-    showToast("Feature " + feature + " " + (enabled ? "enabled" : "disabled"), "success");
-}
-function refreshComments() {
-    renderDashboardComments();
-    showToast("Komentar di-refresh!", "success");
-}
+
+
 
 // ========== INIT (FIXED ORDER) ==========
 document.addEventListener("DOMContentLoaded", async function() {
-    // TRIPLE-REDUNDANCY EVENT BINDING for Google Sites iframe compatibility
     (function bindEvents() {
         var bid = document.getElementById('btn-id');
         var ben = document.getElementById('btn-en');
@@ -3716,7 +3238,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         // Step 1: Show skeleton loading state
         showDataStatus("loading", "Memuat data...");
 
-        // Step 2: Load shared article data; keep comments and categories local for now.
+        // Step 2: Load shared articles and per-browser category preferences.
         loadAllData();
         const sharedArticlesLoaded = await loadSharedArticles();
 
@@ -3724,9 +3246,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         setLanguage("id");
         renderArticles();
         renderArticlesSidebar();
-        renderComments();
-        renderNewsletterStats();
-        loadEdits();
+                loadEdits();
         checkAdminAuth();
 
         // Step 4: Show appropriate status based on what we loaded
@@ -3746,8 +3266,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
 
         // Step 4.5: Initialize USDA report charts and load cached data
-        setTimeout(function() { 
-            initUSDACharts(); 
+        setTimeout(function() {
+            initUSDACharts();
             loadUSDACache();
             scheduleUSDAAutoRefresh();
             try { updateGradeCalculator(); } catch (e) { console.warn("Grade calc dilewati:", e.message); }
@@ -3911,331 +3431,21 @@ function showUrlModal(url) {
 // ========== AUTO CONNECT WITH RETRY ==========
 
 // ========== STATISTICS FEATURE ==========
-function filterStatsRange(days) {
-    statsRangeDays = days;
-    [7, 30, 90, 0].forEach(function(d) {
-        var btn = document.getElementById("stat-range-" + d);
-        if (!btn) return;
-        if (d === days) {
-            btn.className = "bg-coffee-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all";
-        } else {
-            btn.className = "bg-white text-coffee-600 hover:bg-coffee-50 border border-coffee-200 px-4 py-2 rounded-lg text-sm font-medium transition-all";
-        }
-    });
-    renderDashboardStatistics();
-}
 
-function renderDashboardStatistics() {
-    var totalArticles = articlesData.length;
-    var publishedArticles = articlesData.filter(function(a) { return a.status === "Published"; }).length;
-    var draftArticles = articlesData.filter(function(a) { return a.status === "Draft"; }).length;
-    var totalViews = articlesData.reduce(function(sum, a) { return sum + (parseInt(a.views) || 0); }, 0);
-    var avgViews = totalArticles > 0 ? Math.round(totalViews / totalArticles) : 0;
-    var totalComments = commentsData.length;
-    var approvedComments = commentsData.filter(function(c) { return c.status === "approved"; }).length;
-    var pendingComments = commentsData.filter(function(c) { return c.status === "pending"; }).length;
-    var totalSubscribers = subscribersData.length;
-    var engagementRate = totalArticles > 0 ? Math.round((totalViews / totalArticles) / 10) : 0;
-    if (engagementRate > 100) engagementRate = 99;
 
-    var elTotalArticles = document.getElementById("stat-total-articles");
-    var elPubBadge = document.getElementById("stat-pub-badge");
-    var elDraftCount = document.getElementById("stat-draft-count");
-    var elTotalViews = document.getElementById("stat-total-views");
-    var elAvgViews = document.getElementById("stat-avg-views");
-    var elTotalComments = document.getElementById("stat-total-comments");
-    var elPendingBadge = document.getElementById("stat-pending-badge");
-    var elApprovedCount = document.getElementById("stat-approved-count");
-    var elTotalSubscribers = document.getElementById("stat-total-subscribers");
-    var elSubSource = document.getElementById("stat-sub-source");
-    var elEngagement = document.getElementById("stat-engagement-rate");
-    var elEngagementDetail = document.getElementById("stat-engagement-detail");
-    var elCountriesCount = document.getElementById("stat-countries-count");
-    var elTopCountry = document.getElementById("stat-top-country");
 
-    if (elTotalArticles) elTotalArticles.textContent = totalArticles;
-    if (elPubBadge) elPubBadge.textContent = publishedArticles + " Published";
-    if (elDraftCount) elDraftCount.textContent = draftArticles + " Draft";
-    if (elTotalViews) elTotalViews.textContent = totalViews.toLocaleString();
-    if (elAvgViews) elAvgViews.textContent = avgViews + (currentLang === "id" ? " rata-rata" : " avg");
-    if (elTotalComments) elTotalComments.textContent = totalComments;
-    if (elPendingBadge) elPendingBadge.textContent = pendingComments + " Pending";
-    if (elApprovedCount) elApprovedCount.textContent = approvedComments + " Approved";
-    if (elTotalSubscribers) elTotalSubscribers.textContent = totalSubscribers;
-    if (elSubSource) elSubSource.textContent = "Via Newsletter";
-    if (elEngagement) elEngagement.textContent = engagementRate + "%";
-    if (elEngagementDetail) elEngagementDetail.textContent = totalViews + " / " + totalArticles + " artikel";
 
-    var countryData = getViewerCountryData();
-    if (elCountriesCount) elCountriesCount.textContent = countryData.length;
-    if (elTopCountry) elTopCountry.textContent = countryData.length > 0 ? countryData[0].name : "-";
 
-    renderStatsTopArticles();
-    renderStatsCategoryDistribution();
-    renderStatsInteractionSummary();
-    renderStatsViewerCountries();
-    setTimeout(function() { initStatsCharts(); }, 50);
-}
 
-function getViewerCountryData() {
-    var countries = [
-        { key: "US", name: currentLang === "id" ? "Amerika Serikat" : "United States", flag: "🇺🇸" },
-        { key: "ID", name: currentLang === "id" ? "Indonesia" : "Indonesia", flag: "🇮🇩" },
-        { key: "SG", name: currentLang === "id" ? "Singapura" : "Singapore", flag: "🇸🇬" },
-        { key: "MY", name: currentLang === "id" ? "Malaysia" : "Malaysia", flag: "🇲🇾" },
-        { key: "JP", name: currentLang === "id" ? "Jepang" : "Japan", flag: "🇯🇵" },
-        { key: "AU", name: currentLang === "id" ? "Australia" : "Australia", flag: "🇦🇺" },
-        { key: "NL", name: currentLang === "id" ? "Belanda" : "Netherlands", flag: "🇳🇱" },
-        { key: "DE", name: currentLang === "id" ? "Jerman" : "Germany", flag: "🇩🇪" },
-        { key: "GB", name: currentLang === "id" ? "Inggris" : "United Kingdom", flag: "🇬🇧" },
-        { key: "CA", name: currentLang === "id" ? "Kanada" : "Canada", flag: "🇨🇦" }
-    ];
-    var totalViews = articlesData.reduce(function(sum, a) { return sum + (parseInt(a.views) || 0); }, 0);
-    if (totalViews === 0) return [];
-    var seed = totalViews + articlesData.length + subscribersData.length;
-    var result = [];
-    countries.forEach(function(c, i) {
-        var weight = [35, 22, 12, 8, 6, 5, 4, 3, 3, 2][i] || 1;
-        var variation = Math.sin(seed * (i + 1) * 0.7) * 3;
-        var count = Math.max(1, Math.round((totalViews * (weight + variation)) / 100));
-        result.push({ key: c.key, name: c.name, flag: c.flag, views: count });
-    });
-    return result.sort(function(a, b) { return b.views - a.views; });
-}
 
-function renderStatsTopArticles() {
-    var tbody = document.getElementById("stats-top-articles");
-    if (!tbody) return;
 
-    // SORT by date: newest first
-    articlesData.sort((a, b) => {
-        const parseDate = (dateStr) => {
-            if (!dateStr) return 0;
-            const monthsID = ["januari","februari","maret","april","mei","juni","juli","agustus","september","oktober","november","desember"];
-            const monthsEN = ["january","february","march","april","may","june","july","august","september","october","november","december"];
-            const parts = dateStr.toLowerCase().split(/\s+/);
-            if (parts.length >= 3) {
-                const day = parseInt(parts[0]) || parseInt(parts[1]) || 1;
-                const monthStr = parts[1] || parts[0];
-                const year = parseInt(parts[parts.length - 1]) || 2026;
-                let month = monthsID.indexOf(monthStr);
-                if (month === -1) month = monthsEN.indexOf(monthStr);
-                if (month === -1) month = 0;
-                return new Date(year, month, day).getTime();
-            }
-            return new Date(dateStr).getTime() || 0;
-        };
-        return parseDate(b.date) - parseDate(a.date);
-    });
 
-    if (articlesData.length === 0) {
-        tbody.innerHTML = "<tr><td colspan=6 class='px-5 py-8 text-center text-gray-400'><i class='fas fa-inbox text-2xl mb-2'></i><p>" + (currentLang === "id" ? "Belum ada artikel" : "No articles yet") + "</p></td></tr>";
-        return;
-    }
 
-    var catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
-    var sorted = articlesData.slice().sort(function(a, b) { return (parseInt(b.views) || 0) - (parseInt(a.views) || 0); }).slice(0, 10);
-    var maxViews = sorted.length > 0 ? (parseInt(sorted[0].views) || 0) : 1;
 
-    tbody.innerHTML = sorted.map(function(art, idx) {
-        var title = currentLang === "id" ? art.title_id : art.title_en;
-        var catLabel = catLabels[art.category] || art.category;
-        var isPublished = art.status === "Published";
-        var views = parseInt(art.views) || 0;
-        var barWidth = maxViews > 0 ? (views / maxViews) * 100 : 0;
-        return "<tr class='hover:bg-gray-50 transition-colors'><td class='px-5 py-3 text-sm font-medium text-gray-400'>" + (idx + 1) + "</td><td class='px-5 py-3'><div class='font-medium text-gray-800 text-sm truncate max-w-xs'>" + title + "</div></td><td class='px-5 py-3'><span class='inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600'>" + catLabel + "</span></td><td class='px-5 py-3 text-sm text-gray-600 text-right'>" + views.toLocaleString() + "</td><td class='px-5 py-3'><span class='inline-block px-2 py-0.5 rounded-full text-xs font-medium " + (isPublished ? "bg-green-50 text-green-600" : "bg-yellow-50 text-yellow-600") + "'><i class='fas " + (isPublished ? "fa-check-circle" : "fa-pencil-ruler") + " mr-1'></i>" + (isPublished ? "Published" : "Draft") + "</span></td><td class='px-5 py-3'><div class='w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden'><div class='h-full bg-coffee-500 rounded-full transition-all duration-500' style='width:" + barWidth + "%'></div></div></td></tr>";
-    }).join("");
-}
 
-function renderStatsCategoryDistribution() {
-    var container = document.getElementById("stats-cat-distribution");
-    if (!container) return;
 
-    var catLabels = {
-        "kopi-indonesia": currentLang === "id" ? "Kopi Indonesia" : "Indonesian Coffee",
-        "perjalanan": currentLang === "id" ? "Perjalanan" : "Journey",
-        "riset-pasar": currentLang === "id" ? "Riset & Pasar" : "Research & Market",
-        "pemasaran": currentLang === "id" ? "Pemasaran" : "Marketing",
-        "pengalaman": currentLang === "id" ? "Pengalaman" : "Experience"
-    };
 
-    var catCounts = {};
-    articlesData.forEach(function(a) { catCounts[a.category] = (catCounts[a.category] || 0) + 1; });
 
-    var maxCount = Math.max.apply(Math, Object.values(catCounts).concat([1]));
-    var catsWithData = Object.keys(catCounts).sort(function(a, b) { return catCounts[b] - catCounts[a]; });
-
-    if (catsWithData.length === 0) {
-        container.innerHTML = "<p class='text-gray-400 text-sm text-center py-4'>" + (currentLang === "id" ? "Tidak ada data" : "No data") + "</p>";
-        return;
-    }
-
-    container.innerHTML = catsWithData.map(function(cat) {
-        var count = catCounts[cat];
-        var label = catLabels[cat] || cat;
-        var pct = Math.round((count / maxCount) * 100);
-        return "<div><div class='flex items-center justify-between mb-1'><span class='text-xs text-gray-600'>" + label + "</span><span class='text-xs font-semibold text-gray-800'>" + count + "</span></div><div class='h-1.5 bg-gray-100 rounded-full overflow-hidden'><div class='h-full bg-coffee-500 rounded-full transition-all duration-500' style='width:" + pct + "%'></div></div></div>";
-    }).join("");
-}
-
-function renderStatsInteractionSummary() {
-    var container = document.getElementById("stats-interaction-summary");
-    if (!container) return;
-
-    var totalArticles = articlesData.length;
-    var totalViews = articlesData.reduce(function(sum, a) { return sum + (parseInt(a.views) || 0); }, 0);
-    var avgViews = totalArticles > 0 ? Math.round(totalViews / totalArticles) : 0;
-    var pendingComments = commentsData.filter(function(c) { return c.status === "pending"; }).length;
-    var publishedCount = articlesData.filter(function(a) { return a.status === "Published"; }).length;
-    var draftCount = articlesData.filter(function(a) { return a.status === "Draft"; }).length;
-    var pubRatio = totalArticles > 0 ? Math.round((publishedCount / totalArticles) * 100) : 0;
-
-    var topArticleTitle = "-";
-    var topArticleViews = 0;
-    var sorted = articlesData.slice().sort(function(a, b) { return (parseInt(b.views) || 0) - (parseInt(a.views) || 0); });
-    if (sorted.length > 0) {
-        topArticleTitle = (currentLang === "id" ? sorted[0].title_id : sorted[0].title_en) || "-";
-        topArticleViews = parseInt(sorted[0].views) || 0;
-    }
-
-    var items = [
-        [currentLang === "id" ? "Rata-rata views per artikel" : "Avg views per article", avgViews.toLocaleString()],
-        [currentLang === "id" ? "Artikel paling banyak views" : "Top article by views", topArticleTitle + " (" + topArticleViews.toLocaleString() + ")"],
-        [currentLang === "id" ? "Komentar pending" : "Pending comments", pendingComments.toString()],
-        [currentLang === "id" ? "Rasio Published / Draft" : "Published / Draft ratio", pubRatio + "% / " + (100 - pubRatio) + "%"],
-        [currentLang === "id" ? "Total artikel tersedia" : "Total articles available", totalArticles.toString()]
-    ];
-
-    container.innerHTML = items.map(function(item, idx) {
-        var label = item[0];
-        var value = item[1];
-        var borderClass = idx < items.length - 1 ? "border-b border-gray-50" : "";
-        return "<div class='flex items-center justify-between py-2.5 " + borderClass + "'><span class='text-xs text-gray-500'>" + label + "</span><span class='text-xs font-medium text-gray-700 text-right max-w-[55%] truncate'>" + value + "</span></div>";
-    }).join("");
-}
-
-function renderStatsViewerCountries() {
-    var container = document.getElementById("stats-viewer-countries");
-    if (!container) return;
-
-    var countryData = getViewerCountryData();
-    if (countryData.length === 0) {
-        container.innerHTML = "<p class='text-gray-400 text-sm text-center py-4'>" + (currentLang === "id" ? "Tidak ada data" : "No data") + "</p>";
-        return;
-    }
-
-    var maxViews = countryData[0].views;
-    container.innerHTML = countryData.slice(0, 8).map(function(c) {
-        var pct = maxViews > 0 ? Math.round((c.views / maxViews) * 100) : 0;
-        return "<div class='flex items-center gap-2'><span class='text-base w-5 text-center'>" + c.flag + "</span><div class='flex-1'><div class='flex items-center justify-between mb-0.5'><span class='text-xs text-gray-600'>" + c.name + "</span><span class='text-xs font-medium text-gray-700'>" + c.views.toLocaleString() + "</span></div><div class='h-1 bg-gray-100 rounded-full overflow-hidden'><div class='h-full bg-cyan-500 rounded-full transition-all duration-500' style='width:" + pct + "%'></div></div></div></div>";
-    }).join("");
-}
-
-function initStatsCharts() {
-    if (typeof Chart === "undefined") { console.warn("Chart.js not loaded"); return; }
-
-    var catLabels = {
-        "kopi-indonesia": currentLang === "id" ? "Kopi Indonesia" : "Indonesian Coffee",
-        "perjalanan": currentLang === "id" ? "Perjalanan" : "Journey",
-        "riset-pasar": currentLang === "id" ? "Riset & Pasar" : "Research & Market",
-        "pemasaran": currentLang === "id" ? "Pemasaran" : "Marketing",
-        "pengalaman": currentLang === "id" ? "Pengalaman" : "Experience"
-    };
-
-    var catCounts = {};
-    articlesData.forEach(function(a) { catCounts[a.category] = (catCounts[a.category] || 0) + 1; });
-    var cats = Object.keys(catCounts);
-    var counts = cats.map(function(c) { return catCounts[c]; });
-    var labels = cats.map(function(c) { return catLabels[c] || c; });
-
-    var catCtx = document.getElementById("statsCategoryChart");
-    if (catCtx) {
-        if (statsCategoryChart) statsCategoryChart.destroy();
-        if (cats.length === 0) {
-            var ctx = catCtx.getContext("2d");
-            ctx.clearRect(0, 0, catCtx.width, catCtx.height);
-            ctx.fillStyle = "#d1d5db";
-            ctx.font = "12px Inter";
-            ctx.textAlign = "center";
-            ctx.fillText("Tidak ada data", catCtx.width / 2, catCtx.height / 2);
-        } else {
-            statsCategoryChart = new Chart(catCtx, {
-                type: "doughnut",
-                data: {
-                    labels: labels,
-                    datasets: [{ data: counts, backgroundColor: ["#4a3726", "#7d5f3e", "#9a7b56", "#b09473", "#c9b89e"], borderWidth: 2, borderColor: "#ffffff" }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { position: "bottom", labels: { usePointStyle: true, padding: 12, font: { family: "Inter", size: 10 } } } },
-                    cutout: "60%"
-                }
-            });
-        }
-    }
-
-    var actCtx = document.getElementById("statsActivityChart");
-    if (actCtx) {
-        if (statsActivityChart) statsActivityChart.destroy();
-        var monthNames = currentLang === "id"
-            ? ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"]
-            : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        var totalActivity = articlesData.length + commentsData.length + subscribersData.length;
-        var baseActivity = totalActivity > 0 ? Math.ceil(totalActivity / 12) : 0;
-        var activityData = monthNames.map(function(_, i) {
-            var variation = Math.sin(i * 0.8) * baseActivity * 0.4;
-            return Math.max(0, Math.round(baseActivity + variation));
-        });
-
-        statsActivityChart = new Chart(actCtx, {
-            type: "bar",
-            data: {
-                labels: monthNames,
-                datasets: [{ label: currentLang === "id" ? "Aktivitas" : "Activity", data: activityData, backgroundColor: "#7d5f3e", hoverBackgroundColor: "#b09473", borderRadius: 3, borderSkipped: false }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { font: { family: "Inter", size: 10 } } },
-                    x: { grid: { display: false }, ticks: { font: { family: "Inter", size: 10 } } }
-                }
-            }
-        });
-    }
-
-    var countryCtx = document.getElementById("statsCountryChart");
-    if (countryCtx) {
-        var countryData = getViewerCountryData();
-        if (window.statsCountryChart) window.statsCountryChart.destroy();
-        if (countryData.length === 0) {
-            var ctx2 = countryCtx.getContext("2d");
-            ctx2.clearRect(0, 0, countryCtx.width, countryCtx.height);
-            ctx2.fillStyle = "#d1d5db";
-            ctx2.font = "12px Inter";
-            ctx2.textAlign = "center";
-            ctx2.fillText("Tidak ada data", countryCtx.width / 2, countryCtx.height / 2);
-        } else {
-            var top5 = countryData.slice(0, 5);
-            window.statsCountryChart = new Chart(countryCtx, {
-                type: "bar",
-                data: {
-                    labels: top5.map(function(c) { return c.flag + " " + c.name; }),
-                    datasets: [{ label: "Views", data: top5.map(function(c) { return c.views; }), backgroundColor: ["#0891b2", "#0e7490", "#155e75", "#1e4d5c", "#264653"], borderRadius: 3, borderSkipped: false }]
-                },
-                options: {
-                    indexAxis: "y",
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { font: { family: "Inter", size: 10 } } },
-                        y: { grid: { display: false }, ticks: { font: { family: "Inter", size: 10 } } }
-                    }
-                }
-            });
-        }
-    }
-}
 
 // ========== COFFEE PRICE CALCULATOR (v2) ==========
 const COFFEE_LB_TO_KG = 0.45359237;
@@ -4699,7 +3909,7 @@ function renderFobProductList() {
 
   section.classList.remove('hidden');
   container.innerHTML = fobProducts.map((p, idx) => {
-    const gradeBadge = p.gradeType === 'specialty' 
+    const gradeBadge = p.gradeType === 'specialty'
       ? '<span class="inline-block px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-medium border border-purple-500/30 ml-2">Specialty</span>'
       : '<span class="inline-block px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-medium border border-blue-500/30 ml-2">Komersial</span>';
     const priceColor = p.gradeType === 'specialty' ? 'text-purple-300' : 'text-green-300';
@@ -5218,7 +4428,7 @@ function initUSDACharts() {
     if (typeof Chart === "undefined") return;
     const coffeeColors = {
         primary: '#4a3726',
-        secondary: '#7d5f3e', 
+        secondary: '#7d5f3e',
         accent: '#b09473',
         arabika: '#6b8e6b',
         robusta: '#8b6914',
