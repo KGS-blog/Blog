@@ -1183,6 +1183,7 @@ window.__qcoAnLang = function (lang) {
     <div onclick="showDashboardSection('statistics')" id="nav-statistics" class="sidebar-item"><i class="fas fa-chart-bar w-5"></i><span>Statistik</span></div>
     <div onclick="showDashboardSection('content')" id="nav-content" class="sidebar-item"><i class="fas fa-file-alt w-5"></i><span>Konten & Artikel</span></div>
     <div onclick="showDashboardSection('editcontent')" id="nav-editcontent" class="sidebar-item"><i class="fas fa-pen w-5"></i><span>Edit Konten Blog</span></div>
+    <div onclick="showDashboardSection('fieldnotes')" id="nav-fieldnotes" class="sidebar-item"><i class="fas fa-coffee w-5"></i><span>Kiriman Kabar Kopi</span></div>
     
     <div onclick="showDashboardSection('features')" id="nav-features" class="sidebar-item"><i class="fas fa-cog w-5"></i><span>Fitur & Pengaturan</span></div>
     <div onclick="showDashboardSection('categories')" id="nav-categories" class="sidebar-item"><i class="fas fa-tags w-5"></i><span>Kategori</span></div>
@@ -1446,6 +1447,11 @@ window.__qcoAnLang = function (lang) {
                 </table>
             </div>
         </div>
+    </div>
+    <div id="section-fieldnotes" class="dashboard-section hidden">
+        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Antrean Kolom Info Lapangan</h3><p class="text-sm text-coffee-500 mt-1">Kiriman pembaca Kabar Kopi. Naskah asli tetap tersimpan; terbitkan setelah ditinjau.</p></div><button type="button" class="btn-secondary" onclick="loadFieldModeration()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <div id="field-moderation-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
+        <div id="field-moderation-list" class="space-y-4"><div class="content-card">Memuat antrean…</div></div>
     </div>
 </div>
 </main>
@@ -3408,8 +3414,56 @@ function enterDashboard() {
     document.getElementById("dashboard-view").classList.remove("hidden");
     document.body.style.overflow = "";
     renderDashboardOverview(); renderDashboardStatistics(); renderDashboardArticles(); renderDashboardComments();
-    renderDashboardSubscribers(); renderDashboardCategories(); initCharts();
+    renderDashboardSubscribers(); renderDashboardCategories(); initCharts(); loadFieldModeration();
     checkAdminAuth();
+}
+async function loadFieldModeration() {
+    const list = document.getElementById("field-moderation-list");
+    const status = document.getElementById("field-moderation-status");
+    if (!list || !adminSessionActive) return;
+    status.textContent = "Memuat kiriman yang menunggu tinjauan…";
+    try {
+        const response = await fetch(BLOG_SYNC_API + "/admin/field-submissions?status=pending_review", { credentials: "include", cache: "no-store" });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Antrean belum dapat dimuat.");
+        const submissions = data.submissions || [];
+        status.textContent = submissions.length + " kiriman menunggu tinjauan.";
+        list.replaceChildren();
+        if (!submissions.length) { const empty = document.createElement("div"); empty.className = "content-card text-coffee-500"; empty.textContent = "Belum ada kiriman yang menunggu tinjauan."; list.append(empty); return; }
+        submissions.forEach(item => {
+            const card = document.createElement("article"); card.className = "content-card";
+            const title = document.createElement("h3"); title.className = "font-serif text-lg font-bold text-coffee-900"; title.textContent = item.title;
+            const meta = document.createElement("p"); meta.className = "text-xs text-coffee-500 my-2"; meta.textContent = `${item.author_display_name} · ${item.email} · ${item.publication_choice === "editor_review" ? "Minta dirapikan editor" : "Sesuai naskah asli"}`;
+            const originalLabel = document.createElement("strong"); originalLabel.className = "block text-sm mt-4 mb-2"; originalLabel.textContent = "Naskah asli";
+            const original = document.createElement("div"); original.className = "whitespace-pre-wrap text-sm text-coffee-700 bg-coffee-50 rounded-lg p-4 max-h-96 overflow-auto"; original.textContent = item.original_text;
+            card.append(title, meta, originalLabel, original);
+            let editorText = null;
+            if (item.publication_choice === "editor_review") {
+                const label = document.createElement("label"); label.className = "block text-sm font-medium mt-4 mb-2"; label.textContent = "Naskah setelah dirapikan editor";
+                editorText = document.createElement("textarea"); editorText.className = "w-full px-3 py-2 rounded-lg border border-coffee-200"; editorText.rows = 10; editorText.value = item.editor_text || ""; editorText.placeholder = "Rapikan naskah di sini; teks asli tetap disimpan.";
+                card.append(label, editorText);
+            }
+            const actions = document.createElement("div"); actions.className = "flex flex-wrap gap-2 mt-4";
+            const actionButton = (label, action, klass) => { const button = document.createElement("button"); button.type = "button"; button.className = klass; button.textContent = label; button.addEventListener("click", () => updateFieldModeration(item, action, editorText, actions)); actions.append(button); };
+            if (item.publication_choice === "editor_review") actionButton("Terbitkan hasil edit", "published", "btn-primary"); else actionButton("Terbitkan sesuai naskah asli", "published", "btn-primary");
+            actionButton("Minta revisi", "revision_requested", "btn-secondary"); actionButton("Tolak", "rejected", "px-6 py-3 rounded-lg font-medium bg-red-700 text-white"); card.append(actions); list.append(card);
+        });
+    } catch (error) { status.textContent = error.message; }
+}
+async function updateFieldModeration(item, action, editorText, actions) {
+    const buttons = actions.querySelectorAll("button"); buttons.forEach(button => button.disabled = true);
+    try {
+        const text = editorText ? editorText.value.trim() : null;
+        if (action === "published" && item.publication_choice === "editor_review" && !text) throw new Error("Isi naskah hasil edit sebelum diterbitkan.");
+        const response = await fetch(BLOG_SYNC_API + "/admin/field-submissions/" + encodeURIComponent(item.id), {
+            method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action, editor_text: text })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Perubahan kiriman gagal disimpan.");
+        showToast(action === "published" ? "Kiriman berhasil diterbitkan." : action === "rejected" ? "Kiriman ditolak." : "Revisi diminta.", "success");
+        loadFieldModeration();
+    } catch (error) { showToast(error.message, "error"); buttons.forEach(button => button.disabled = false); }
 }
 function adminLogout() {
     fetch(BLOG_SYNC_API + "/auth/logout", { method: "POST", credentials: "include", cache: "no-store" }).catch(() => {});
@@ -3435,7 +3489,7 @@ function showDashboardSection(section) {
     document.querySelectorAll(".sidebar-item").forEach(item => item.classList.remove("active"));
     document.getElementById("nav-" + section).classList.add("active");
     if (section === "statistics") { renderDashboardStatistics(); }
-    document.getElementById("dashboard-title").textContent = titles[section] || "Overview";
+    document.getElementById("dashboard-title").textContent = ({fieldnotes:"Kiriman Kabar Kopi"})[section] || (window.dashboardTitles && window.dashboardTitles[section]) || "Overview";
     if (window.innerWidth < 768) {
         document.getElementById("dashboard-sidebar").classList.add("-translate-x-full");
     }

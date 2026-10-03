@@ -1,3 +1,5 @@
+import { handleKabarMemberRequest } from "./kabar-members.js";
+
 const SESSION_COOKIE = "qco_blog_admin";
 const SESSION_SECONDS = 4 * 60 * 60;
 const MAX_ARTICLES_BYTES = 900_000;
@@ -234,6 +236,14 @@ export default {
       } catch (error) {
         return json({ error: "Artikel gagal disimpan ke repo. Coba lagi." }, 502, {}, request);
       }
+    }
+
+    try {
+      const kabarResponse = await handleKabarMemberRequest(request, env, url);
+      if (kabarResponse) return kabarResponse;
+    } catch (error) {
+      console.error("Kabar member API failed", error);
+      return json({ error: "Layanan Kabar Kopi sedang bermasalah. Coba lagi nanti." }, 500, {}, request);
     }
 
     return json({ error: "Endpoint tidak ditemukan." }, 404, {}, request);
