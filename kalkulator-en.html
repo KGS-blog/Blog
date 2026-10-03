@@ -2507,14 +2507,14 @@ async function coffeeFetchPrices() {
         hour: '2-digit', minute: '2-digit',
         timeZone: 'Asia/Jakarta'
       });
-      const icoDate = data.robusta && data.robusta.sourceDate ? new Date(data.robusta.sourceDate + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' }) : '';
-      lastUpdate.innerHTML = '<i class="fas fa-check-circle text-green-400 mr-1"></i>Feed updated: ' + timeStr + ' WIB' + (icoDate ? ' · ICO Robustas: ' + icoDate : '');
+      const icoDate = data.robusta && data.robusta.sourceDate ? new Date(data.robusta.sourceDate + 'T00:00:00Z').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' }) : '';
+      lastUpdate.innerHTML = '<i class="fas fa-check-circle text-green-400 mr-1"></i>Feed diperbarui: ' + timeStr + ' WIB' + (icoDate ? ' · ICO Robustas: ' + icoDate : '');
     }
 
     coffeePublicEdit();
     syncCoffeeToFob();
 
-    showToast(robustaLive ? 'Arabica, Robusta, and exchange rate updated.' : 'Arabica and exchange rate updated. Live Robusta price is unavailable; your manual value was kept.', robustaLive ? 'success' : 'info');
+    showToast(robustaLive ? 'Data Arabika, Robusta, dan kurs diperbarui.' : 'Data Arabika dan kurs diperbarui. Harga Robusta live belum tersedia; nilai manual tetap dipakai.', robustaLive ? 'success' : 'info');
 
   } catch (err) {
     console.error('[coffeeFetchPrices] Error:', err);
@@ -4217,7 +4217,7 @@ main {
                             <h4 class="text-sm font-bold text-white">Set Harga Pasar Global</h4>
                         </div>
                         <p class="text-xs text-coffee-300 leading-relaxed">
-                            Click <strong class="text-blue-300">Refresh</strong> in <em>Global Coffee Prices</em> to load Arabica from Yahoo Finance, the ICO daily Robustas indicator (¢/lb, converted to $/ton equivalent), and the exchange rate feed. ICO Robustas is a group indicator, not an ICE futures quote.
+                            Klik tombol <strong class="text-blue-300">Refresh</strong> di bagian <em>Harga Kopi Dunia</em> untuk memuat harga Arabika dari Yahoo Finance, indikator harian ICO Robustas (¢/lb, dikonversi ke ekuivalen $/ton), serta kurs dari feed data. Indikator ICO adalah harga grup Robustas, bukan kuotasi futures ICE.
                         </p>
                     </div>
                     <div class="bg-black/20 rounded-xl p-4 border border-white/5">
@@ -4318,7 +4318,7 @@ main {
                            oninput="coffeePublicEdit()" title="Auto-update dari GitHub — bisa juga edit manual">
                 </div>
                 <div>
-                    <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">ICO daily Robustas ( $/t equivalent )</label>
+                    <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">ICO Robustas harian (ekuivalen $/t)</label>
                     <input type="number" id="coffee-pub-robusta" value="3487" step="1" 
                            class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono text-coffee-300 w-full" 
                            oninput="coffeePublicEdit()" title="Auto-update dari GitHub — bisa juga edit manual">
@@ -4358,10 +4358,10 @@ main {
 
             <!-- STATUS LAST UPDATE -->
             <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] text-coffee-400" id="coffee-last-update">Loading price feed...</span>
+                <span class="text-[10px] text-coffee-400" id="coffee-last-update">Memuat feed harga...</span>
                 <a href="https://github.com/KGS-blog/Update-Coffee-Data/actions" target="_blank"
                    class="text-[10px] text-coffee-400 hover:text-coffee-300 underline">
-                    <i class="fab fa-github mr-1"></i>View feed updates
+                    <i class="fab fa-github mr-1"></i>Lihat pembaruan feed
                 </a>
             </div>
 
@@ -4822,7 +4822,7 @@ main {
                         <div class="text-[9px] text-coffee-400">USD/kg</div>
                     </div>
                     <div class="bg-white rounded-lg p-2 border border-coffee-100">
-                        <div class="text-[10px] text-coffee-500 uppercase">ICO Robustas (daily indicator)</div>
+                        <div class="text-[10px] text-coffee-500 uppercase">ICO Robustas (indikator harian)</div>
                         <div class="text-sm font-mono font-bold text-coffee-800" id="fob-q-robusta">—</div>
                         <div class="text-[9px] text-coffee-400">$/ton</div>
                     </div>
@@ -4833,7 +4833,7 @@ main {
                     </div>
                 </div>
                 <p class="text-[9px] text-coffee-400 mt-2 text-center">
-                    <i class="fas fa-info-circle mr-1"></i>Source: Arabica C-Market from Yahoo Finance, the ICO daily Robustas indicator, and the exchange-rate feed. ICO is converted from ¢/lb to $/ton equivalent for the FOB estimate; it is not the London futures price. <a href="https://www.ico.org/resources/public-market-information/" target="_blank" rel="noopener">ICO source</a>
+                    <i class="fas fa-info-circle mr-1"></i>Sumber: C-Market Arabika dari Yahoo Finance, indikator harian ICO Robustas, dan kurs dari feed data. Nilai ICO dikonversi dari ¢/lb ke ekuivalen $/ton untuk simulasi FOB; bukan harga futures London. <a href="https://www.ico.org/resources/public-market-information/" target="_blank" rel="noopener">Sumber ICO</a>
                 </p>
             </div>
             <div id="fob-q-shipment-summary"></div>
