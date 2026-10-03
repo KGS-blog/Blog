@@ -2,6 +2,13 @@
 <!-- Q.co Blog public site with shared article storage and admin editing. -->
 <html lang="id" class="scroll-smooth">
 <head>
+<script>
+function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+</script>
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -517,7 +524,7 @@ main {
     <div class="hidden sm:flex items-center gap-6">
         <a href="https://kabarkopi.qcoid.com/" class="nav-link">Kabar Kopi</a>
         <button type="button" class="nav-link nav-btn" data-nav="articles">Artikel</button>
-        <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="nav-link">Kalkulator</a>
+        <a href="/kalkulator.html" class="nav-link">Kalkulator</a>
     </div>
     <div class="flex items-center gap-3">
         <!-- Admin button - only visible when logged in -->
@@ -535,7 +542,7 @@ main {
 <div class="px-6 py-4 space-y-3">
     <a href="https://kabarkopi.qcoid.com/" class="block nav-link py-2 text-left w-full">Kabar Kopi</a>
     <button type="button" class="block nav-link nav-btn py-2 text-left w-full" data-nav="articles" data-mobile="1">Artikel</button>
-    <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
+    <a href="/kalkulator.html" class="block nav-link py-2 text-left w-full">Kalkulator</a>
     <button type="button" id="mobile-admin-btn" onclick="showDashboard(); toggleMobileMenu();" class="hidden w-full text-left nav-link py-2 flex items-center gap-2"><i class="fas fa-lock text-xs"></i> Dashboard Admin</button>
 </div>
 </div>
@@ -582,7 +589,7 @@ main {
     </div>
 
     <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
-        <div class="text-center"><div class="text-3xl font-serif font-bold text-white" id="stat-articles">0</div><div class="text-sm text-coffee-300" data-editable="stat_articles_label">Artikel</div></div>
+    <div class="text-center"><div class="text-3xl font-serif font-bold text-white" id="stat-articles">—</div><div class="text-sm text-coffee-300" data-editable="stat_articles_label">Artikel</div></div>
         <div class="text-center"><div class="text-3xl font-serif font-bold text-white">25+</div><div class="text-sm text-coffee-300" data-editable="stat_research_label">Tahun Riset</div></div>
         <div class="text-center"><div class="text-3xl font-serif font-bold text-white">10+</div><div class="text-sm text-coffee-300" data-editable="stat_supply_label">Tahun Supply</div></div>
         <div class="text-center"><div class="text-3xl font-serif font-bold text-white">3</div><div class="text-sm text-coffee-300" data-editable="stat_cert_label">Sertifikasi</div></div>
@@ -593,8 +600,8 @@ main {
 <!-- PAGE 2: DATA DAN TREN KOPI DUNIA -->
 <section class="py-4 bg-cream">
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
-    <h2 class="text-4xl md:text-5xl font-serif font-bold text-coffee-900 mb-1">Data dan Tren Kopi Dunia <span class="text-red-500">(Live)</span></h2>
-    <p class="text-sm text-coffee-700 mb-2">Kalkulator harga, analisis pasar real-time, dan laporan ekspor Indonesia.</p>
+    <h2 class="text-4xl md:text-5xl font-serif font-bold text-coffee-900 mb-1">Data dan Tren Kopi Dunia</h2>
+    <p class="text-sm text-coffee-700 mb-2">Harga acuan kopi terbaru, analisis pasar, dan data ekspor Indonesia.</p>
 </div>
 </section>
 
@@ -627,7 +634,7 @@ main {
     <a href="https://kabarkopi.qcoid.com/" id="qco-mw-ekspor-tile" style="display:block;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;text-decoration:none;color:inherit;">
       <div style="font-size:.58rem;color:#9a8b76;text-transform:uppercase;">Data BPS</div>
       <div id="qco-mw-ekspor" style="font-size:.68rem;font-weight:700;color:#fcd34d;line-height:1.35;">&mdash;</div>
-      <div style="font-size:.58rem;color:#b09473;">klik untuk lihat</div>
+      <div id="qco-mw-ekspor-note" style="font-size:.58rem;color:#b09473;">memeriksa data BPS…</div>
     </a>
   </div>
   <div style="margin-top:10px;padding:9px 11px;background:rgba(255,255,255,.04);border-radius:10px;font-size:.67rem;color:#c9b89e;line-height:1.65;">
@@ -635,15 +642,15 @@ main {
     <div><span style="color:#9a8b76;">Robusta:</span> World <b id="qco-mw-r1" style="color:#6ee7b7;"></b> &middot; +Diff <b id="qco-mw-r2" style="color:#6ee7b7;"></b> &middot; Cherry <b id="qco-mw-r3" style="color:#6ee7b7;"></b></div>
     <div><span style="color:#9a8b76;">Specialty:</span> 84&ndash;85 <b id="qco-mw-s84" style="color:#d8b4fe;"></b> &middot; 86+ <b id="qco-mw-s86" style="color:#d8b4fe;"></b> &middot; 88+ <b id="qco-mw-s88" style="color:#d8b4fe;"></b></div>
   </div>
-  <div style="margin-top:8px;font-size:.6rem;color:#7a6a58;"><span id="qco-mw-params"></span> &middot; <a href="https://KGS-blog.github.io/Blog/kalkulator.html" style="color:#b09473;">sesuaikan di kalkulator</a></div>
+  <div style="margin-top:8px;font-size:.6rem;color:#7a6a58;"><span id="qco-mw-params"></span> &middot; <a href="/kalkulator.html" style="color:#b09473;">sesuaikan di kalkulator</a></div>
   <script>
 // ===== WIDGET "DARI KEBUN KE ICE" — fetch — v2026.09.26-5 =====
 (function () {
-  var DATA_BASE = "https://KGS-blog.github.io/Update-Coffee-Data/data";
+  var DATA_BASE = "https://kabarkopi.qcoid.com/data";
   var LB_TO_KG = 0.45359237;
   function t(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
-  function fetchJSON(p) { return fetch(DATA_BASE + "/" + p, { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).catch(function () { return null; }); }
-  function fmtDate(iso) { try { return new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }); } catch (e) { return iso || ""; } }
+  function fetchJSON(p) { return fetchWithTimeout(DATA_BASE + "/" + p, { cache: "no-store" }, 10000).then(function (r) { if (!r.ok) throw 0; return r.json(); }).catch(function () { return null; }); }
+  function fmtDate(iso) { try { return new Date(iso).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }); } catch (e) { return iso || ""; } }
   function idrShort(n) { n = Math.round(n); if (n >= 1e9) return "Rp" + (n / 1e9).toFixed(2) + "M"; if (n >= 1e6) return "Rp" + (n / 1e6).toFixed(2) + "jt"; if (n >= 1e3) return "Rp" + (n / 1e3).toFixed(0) + "rb"; return "Rp" + n; }
   function pair(idrN, usdN) { return idrShort(idrN) + " / $" + usdN.toFixed(2); }
   var P = { diffA: 20, diffR: 150, ratio: 5 };
@@ -666,7 +673,7 @@ main {
       if (m.robusta && m.robusta.current) {
         var rKg = rT / 1000, r2Kg = (rT + P.diffR) / 1000, r3Kg = r2Kg / P.ratio;
         t("qco-mw-robusta", rT.toLocaleString("id-ID"));
-        t("qco-mw-r-note", m.robusta.stale ? "estimasi \u2014 sumber live belum tersedia" : "");
+        t("qco-mw-robusta-note", m.robusta.stale ? "estimasi \u2014 data live belum tersedia" : "");
         t("qco-mw-r1", pair(rKg * K, rKg)); t("qco-mw-r2", pair(r2Kg * K, r2Kg)); t("qco-mw-r3", pair(r3Kg * K, r3Kg));
       }
       t("qco-mw-kurs", K.toLocaleString("id-ID"));
@@ -675,19 +682,21 @@ main {
       t("qco-mw-s84", pair((aKg + 2.50) * K, aKg + 2.50));
       t("qco-mw-s86", pair((aKg + 6.00) * K, aKg + 6.00));
       t("qco-mw-s88", pair((aKg + 11.50) * K, aKg + 11.50));
-      t("qco-mw-updated", "Yahoo Finance via GitHub Actions \u00b7 " + fmtDate(m.meta && m.meta.lastUpdated));
+      t("qco-mw-updated", "Pembaruan data \u00b7 " + fmtDate(m.meta && m.meta.lastUpdated));
     } else {
       t("qco-mw-updated", "Data pasar belum tersedia \u2014 jalankan workflow Update-Coffee-Data");
     }
-    if (ek) {
-      var n = 0;
-      try {
-        if (Array.isArray(ek.data)) n = ek.data.length;
-        else if (ek.mentah) {
-          Object.keys(ek.mentah).forEach(function (k) { if (Array.isArray(ek.mentah[k])) n += ek.mentah[k].length; });
-        }
-      } catch (eN) {}
-      t("qco-mw-ekspor", (n || "N") + " laporan/data tersedia");
+    var rows = ek && Array.isArray(ek.data) ? ek.data : [];
+    var exportRows = rows.filter(function (row) {
+      return row && String(row.trade_flow || "").toLowerCase() === "export" && Number.isFinite(Number(row.year)) && Number.isFinite(Number(row.value_usd)) && Number.isFinite(Number(row.volume));
+    });
+    if (exportRows.length) {
+      var years = exportRows.map(function (row) { return Number(row.year); });
+      t("qco-mw-ekspor", exportRows.length + " data ekspor");
+      t("qco-mw-ekspor-note", "BPS \u00b7 " + Math.min.apply(null, years) + "\u2013" + Math.max.apply(null, years) + " \u00b7 klik untuk lihat");
+    } else {
+      t("qco-mw-ekspor", "Data belum tersedia");
+      t("qco-mw-ekspor-note", "Angka ekspor BPS belum termuat");
     }
   });
 })();
@@ -703,7 +712,7 @@ main {
     <div id="qco-expl-id" style="margin-top:10px;font-size:.74rem;color:#c9b89e;line-height:1.75;">
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">World</strong> adalah harga acuan internasional (C-Market) yang dikonversi ke Rupiah per kg. Ini harga &ldquo;papan&rdquo; di New York &mdash; <strong style="color:#e0d5c5;">bukan</strong> harga di kebun Indonesia.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">+Diff (Diferensial)</strong> adalah tambahan (atau pengurangan, kalau negatif) di atas harga acuan, sesuai kualitas dan asal. Diff +20&cent; berarti kopi ini diperdagangkan 20 sen di atas C-Market.</p>
-      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Diff sangat tergantung kondisi</strong> &mdash; tidak ada angka baku. Pembaca dapat mengeditnya di <a href="https://KGS-blog.github.io/Blog/kalkulator.html" style="color:#b09473;">Kalkulator</a>; sesuaikan Diff dengan kondisi pengolahan (processing) Anda: metode (washed, natural, wet-hull, honey), skor cupping, defect &amp; moisture, asal, ukuran lot, sertifikasi, dan relasi dengan buyer. Gambaran umum: robusta komersial +$0.15&ndash;0.30, arabika regional +$0.50&ndash;1.20, specialty 86+ +$1.50&ndash;2.50 &mdash; dan bisa <em>negatif</em> untuk grade bawah atau lot besar tanpa diferensiasi.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Diff sangat tergantung kondisi</strong> &mdash; tidak ada angka baku. Pembaca dapat mengeditnya di <a href="/kalkulator.html" style="color:#b09473;">Kalkulator</a>; sesuaikan Diff dengan kondisi pengolahan (processing) Anda: metode (washed, natural, wet-hull, honey), skor cupping, defect &amp; moisture, asal, ukuran lot, sertifikasi, dan relasi dengan buyer. Gambaran umum: robusta komersial +$0.15&ndash;0.30, arabika regional +$0.50&ndash;1.20, specialty 86+ +$1.50&ndash;2.50 &mdash; dan bisa <em>negatif</em> untuk grade bawah atau lot besar tanpa diferensiasi.</p>
       <p style="margin:0 0 8px;padding:8px 10px;background:rgba(176,148,115,.08);border-left:3px solid #b09473;border-radius:0 8px 8px 0;"><strong style="color:#e0d5c5;">Contoh hitung:</strong> C-Market 274.90&cent; + Diff 20&cent; = 294.90&cent;/lb &rarr; (294.90 &divide; 100) &divide; 0.4536 = <strong style="color:#e0d5c5;">$6.50/kg</strong> &rarr; &times; kurs 17.836 &asymp; <strong style="color:#e0d5c5;">Rp116.000/kg</strong>. Angka ini yang tampil di kotak &ldquo;+Diff&rdquo; widget.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Cherry</strong> adalah <strong style="color:#e0d5c5;">estimasi matematis</strong> harga di tingkat petani dalam bentuk cherry/gabah, memakai rasio konversi (5:1 = &plusmn;5 kg cherry menjadi 1 kg green bean). Bukan harga riil kebun &mdash; harga sebenarnya ditentukan pasar lokal, kadar air, dan negosiasi.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Specialty Grade</strong> = C-Market + premium berdasarkan skor cupping (Q-Grade).</p>
@@ -712,7 +721,7 @@ main {
     <div id="qco-expl-en" style="display:none;margin-top:10px;font-size:.74rem;color:#c9b89e;line-height:1.75;">
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">World</strong> is the international benchmark price (C-Market) converted to IDR per kg &mdash; the New York &ldquo;board&rdquo; price, <strong style="color:#e0d5c5;">not</strong> the farm-gate price in Indonesia.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">+Diff (Differential)</strong> is the premium (or discount, if negative) over the benchmark, reflecting quality and origin. +20&cent; means this coffee trades 20 cents above the C-Market.</p>
-      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Diff is highly condition-dependent</strong> &mdash; there is no fixed number. You can edit it in the <a href="https://KGS-blog.github.io/Blog/kalkulator.html" style="color:#b09473;">Calculator</a>; adjust Diff to your processing conditions: method (washed, natural, wet-hull, honey), cupping score, defect &amp; moisture, origin, lot size, certification, and buyer relationship. Rough guide: commercial robusta +$0.15&ndash;0.30, regional arabica +$0.50&ndash;1.20, specialty 86+ +$1.50&ndash;2.50 &mdash; and it can go <em>negative</em> for low grades or large undifferentiated lots.</p>
+      <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Diff is highly condition-dependent</strong> &mdash; there is no fixed number. You can edit it in the <a href="/kalkulator.html" style="color:#b09473;">Calculator</a>; adjust Diff to your processing conditions: method (washed, natural, wet-hull, honey), cupping score, defect &amp; moisture, origin, lot size, certification, and buyer relationship. Rough guide: commercial robusta +$0.15&ndash;0.30, regional arabica +$0.50&ndash;1.20, specialty 86+ +$1.50&ndash;2.50 &mdash; and it can go <em>negative</em> for low grades or large undifferentiated lots.</p>
       <p style="margin:0 0 8px;padding:8px 10px;background:rgba(176,148,115,.08);border-left:3px solid #b09473;border-radius:0 8px 8px 0;"><strong style="color:#e0d5c5;">Worked example:</strong> C-Market 274.90&cent; + Diff 20&cent; = 294.90&cent;/lb &rarr; (294.90 &divide; 100) &divide; 0.4536 = <strong style="color:#e0d5c5;">$6.50/kg</strong> &rarr; &times; rate 17,836 &asymp; <strong style="color:#e0d5c5;">IDR 116,000/kg</strong>. That is the figure shown in the widget&rsquo;s &ldquo;+Diff&rdquo; tile.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Cherry</strong> is a <strong style="color:#e0d5c5;">mathematical estimate</strong> of the farm-gate price in cherry/parchment form, using a conversion ratio (5:1 = &plusmn;5 kg cherry per 1 kg green bean). It is not the real farm price &mdash; actual prices are set by local markets, moisture content, and negotiation.</p>
       <p style="margin:0 0 8px;"><strong style="color:#e0d5c5;">Specialty Grade</strong> = C-Market + premium by cupping score (Q-Grade).</p>
@@ -805,7 +814,7 @@ window.__qcoAnLang = function (lang) {
 (function () {
   function t(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
   function col(v) { return v >= 0 ? "#34d399" : "#f87171"; }
-  fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/harga-harian.json", { cache: "no-store" })
+  fetchWithTimeout("https://kabarkopi.qcoid.com/data/harga-harian.json", { cache: "no-store" }, 10000)
     .then(function (r) { if (!r.ok) throw 0; return r.json(); })
     .then(function (j) {
       var closes = (j.seri || []).map(function (p) { return p[1]; });
@@ -1010,7 +1019,11 @@ window.__qcoAnLang = function (lang) {
 <script>
 (function () {
   function fmtDate(iso) { try { return new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short" }); } catch (e) { return ""; } }
-  function esc(s) { return String(s || "").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
+  function esc(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
+  function safeNewsUrl(value) {
+    try { var url = new URL(String(value || "")); return url.protocol === "https:" || url.protocol === "http:" ? url.href : "https://kabarkopi.qcoid.com/"; }
+    catch (_) { return "https://kabarkopi.qcoid.com/"; }
+  }
   window.__qcoNewsExpanded = false;
   window.__qcoNewsData = null;
   window.__qcoNewsRender = function () {
@@ -1023,7 +1036,7 @@ window.__qcoAnLang = function (lang) {
     }
     var show = window.__qcoNewsExpanded ? arr : arr.slice(0, 5);
     list.innerHTML = show.map(function (a) {
-      return '<a href="' + esc(a.tautan || "#") + '" target="_blank" rel="noopener noreferrer" class="block p-4 border-b border-coffee-50 last:border-0 hover:bg-coffee-50 transition-colors">' +
+      return '<a href="' + esc(safeNewsUrl(a.tautan)) + '" target="_blank" rel="noopener noreferrer" class="block p-4 border-b border-coffee-50 last:border-0 hover:bg-coffee-50 transition-colors">' +
         '<h4 class="font-serif text-sm font-bold text-coffee-900 line-clamp-2">' + esc(a.judul) + '</h4>' +
         '<div class="flex items-center gap-2 mt-1.5 text-xs text-coffee-400"><span>' + esc(a.sumber || "") + '</span>' + (a.tanggal ? '<span>&middot;</span><span>' + fmtDate(a.tanggal) + '</span>' : '') + '</div>' +
         '</a>';
@@ -1032,7 +1045,7 @@ window.__qcoAnLang = function (lang) {
     if (btn) { btn.classList.remove("hidden"); btn.textContent = window.__qcoNewsExpanded ? "Tutup" : "Lihat semua (" + arr.length + ")"; }
   };
   window.__qcoNewsToggle = function () { window.__qcoNewsExpanded = !window.__qcoNewsExpanded; window.__qcoNewsRender(); };
-  fetch("https://KGS-blog.github.io/Update-Coffee-Data/data/berita.json", { cache: "no-store" })
+  fetchWithTimeout("https://kabarkopi.qcoid.com/data/berita.json", { cache: "no-store" }, 10000)
     .then(function (r) { if (!r.ok) throw 0; return r.json(); })
     .then(function (j) { window.__qcoNewsData = j; window.__qcoNewsRender(); })
     .catch(function () {
@@ -1055,8 +1068,8 @@ window.__qcoAnLang = function (lang) {
 <section class="py-16 bg-cream border-t border-coffee-100">
   <div class="max-w-7xl mx-auto px-6 lg:px-8">
     <div class="mb-12">
-      <h2 class="font-serif text-4xl font-bold text-coffee-900 mb-3">Featured Tools & Reports</h2>
-      <p class="text-lg text-coffee-600 leading-relaxed">Explore our core tools and market analysis resources for Indonesian coffee data</p>
+      <h2 class="font-serif text-4xl font-bold text-coffee-900 mb-3" data-i18n="resources_title">Alat dan Laporan</h2>
+      <p class="text-lg text-coffee-600 leading-relaxed" data-i18n="resources_desc">Alat utama dan analisis pasar untuk memahami kopi Indonesia.</p>
     </div>
 
     <div class="grid md:grid-cols-2 gap-8">
@@ -1066,15 +1079,15 @@ window.__qcoAnLang = function (lang) {
           <i class="fas fa-calculator text-white text-5xl opacity-30"></i>
         </div>
         <div class="p-6">
-          <h3 class="font-serif text-2xl font-bold text-coffee-900 mb-2">Kalkulator Harga Kopi FOB</h3>
-          <p class="text-coffee-600 mb-6 text-sm leading-relaxed">Real-time coffee price calculator with automatic ICE C-Market conversion to IDR/kg. Track market differentials and weekly trends instantly.</p>
+          <h3 class="font-serif text-2xl font-bold text-coffee-900 mb-2" data-i18n="resources_calc_title">Kalkulator Harga Kopi FOB</h3>
+          <p class="text-coffee-600 mb-6 text-sm leading-relaxed" data-i18n="resources_calc_desc">Kalkulator harga kopi dengan konversi ICE C-Market ke IDR/kg. Sesuaikan diferensial, biaya, margin, dan logistik berdasarkan angka acuan yang tersedia.</p>
           <div class="flex items-center gap-3 text-xs text-coffee-500 mb-4">
-            <span><i class="fas fa-bolt text-orange-500 mr-1"></i>Real-time Data</span>
-            <span><i class="fas fa-calculator text-blue-500 mr-1"></i>Auto Calculation</span>
-            <span><i class="fas fa-chart-line text-green-500 mr-1"></i>Market Analysis</span>
+            <span><i class="fas fa-clock text-orange-500 mr-1"></i><span data-i18n="resources_periodic">Pembaruan berkala</span></span>
+            <span><i class="fas fa-calculator text-blue-500 mr-1"></i><span data-i18n="resources_auto_calc">Kalkulasi otomatis</span></span>
+            <span><i class="fas fa-chart-line text-green-500 mr-1"></i><span data-i18n="resources_market">Analisis pasar</span></span>
           </div>
-          <a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
-            Open Calculator <i class="fas fa-arrow-right ml-2"></i>
+          <a href="/kalkulator.html" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
+            <span data-i18n="resources_open_calc">Buka kalkulator</span> <i class="fas fa-arrow-right ml-2"></i>
           </a>
         </div>
       </div>
@@ -1085,15 +1098,15 @@ window.__qcoAnLang = function (lang) {
           <i class="fas fa-chart-bar text-white text-5xl opacity-30"></i>
         </div>
         <div class="p-6">
-          <h3 class="font-serif text-2xl font-bold text-coffee-900 mb-2">Laporan USDA & Analisis Pasar</h3>
-          <p class="text-coffee-600 mb-6 text-sm leading-relaxed">Comprehensive market analysis with official USDA production data, 800+ auto-clustered news articles, weekly updates, and price trends for global buyers.</p>
+          <h3 class="font-serif text-2xl font-bold text-coffee-900 mb-2" data-i18n="resources_report_title">Kabar Kopi: Berita dan Analisis</h3>
+          <p class="text-coffee-600 mb-6 text-sm leading-relaxed" data-i18n="resources_report_desc">Kumpulan berita kopi, peta topik, dan analisis editorial untuk membantu membaca perkembangan pasar.</p>
           <div class="flex items-center gap-3 text-xs text-coffee-500 mb-4">
-            <span><i class="fas fa-database text-purple-500 mr-1"></i>USDA PSD Data</span>
-            <span><i class="fas fa-newspaper text-red-500 mr-1"></i>News Clustering</span>
-            <span><i class="fas fa-microscope text-blue-500 mr-1"></i>Market Insights</span>
+            <span><i class="fas fa-database text-purple-500 mr-1"></i><span data-i18n="resources_usda">Data USDA PSD</span></span>
+            <span><i class="fas fa-newspaper text-red-500 mr-1"></i><span data-i18n="resources_news">Pengelompokan berita</span></span>
+            <span><i class="fas fa-microscope text-blue-500 mr-1"></i><span data-i18n="resources_insights">Analisis pasar</span></span>
           </div>
           <a href="https://kabarkopi.qcoid.com/" class="inline-flex items-center px-4 py-2 rounded-lg bg-coffee-800 text-white hover:bg-coffee-700 transition-colors font-medium text-sm">
-            View Report <i class="fas fa-arrow-right ml-2"></i>
+            <span data-i18n="resources_open_report">Buka Kabar Kopi</span> <i class="fas fa-arrow-right ml-2"></i>
           </a>
         </div>
       </div>
@@ -1106,9 +1119,9 @@ window.__qcoAnLang = function (lang) {
           <i class="fas fa-link text-coffee-800 text-xl"></i>
         </div>
         <div>
-          <h3 class="font-serif font-bold text-coffee-900 mb-1">How These Resources Work Together</h3>
-          <p class="text-sm text-coffee-600">
-            The calculator provides real-time price conversions for market analysis, while the comprehensive USDA report and market intelligence give you the broader context needed for informed trading decisions. Together, they form your complete coffee market intelligence toolkit.
+          <h3 class="font-serif font-bold text-coffee-900 mb-1" data-i18n="resources_together_title">Menggunakan Alat dan Analisis</h3>
+          <p class="text-sm text-coffee-600" data-i18n="resources_together_desc">
+            Kalkulator membantu mengubah harga acuan menjadi estimasi biaya. Kabar Kopi menyediakan berita dan analisis untuk memahami konteks pasarnya.
           </p>
         </div>
       </div>
@@ -1133,17 +1146,17 @@ window.__qcoAnLang = function (lang) {
         <ul class="space-y-2 text-sm">
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_home" data-nav="hero">Beranda</button></li>
             <li><button type="button" class="footer-btn hover:text-white transition-colors" data-editable="footer_nav_articles" data-nav="articles">Artikel</button></li>
-            <li><a href="https://KGS-blog.github.io/Blog/kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
+            <li><a href="/kalkulator.html" class="hover:text-white transition-colors">Kalkulator</a></li>
             <li><a href="https://kabarkopi.qcoid.com/" class="hover:text-white transition-colors">Kabar Kopi</a></li>
         </ul>
     </div>
     <div>
         <h4 class="font-serif font-bold text-white mb-4" data-editable="footer_topic_title">Topik</h4>
         <ul class="space-y-2 text-sm">
-            <li><a href="javascript:void(0)" class="hover:text-white transition-colors" data-editable="footer_topic_us">Pasar US</a></li>
-            <li><a href="javascript:void(0)" class="hover:text-white transition-colors" data-editable="footer_topic_fda">Regulasi FDA</a></li>
-            <li><a href="javascript:void(0)" class="hover:text-white transition-colors" data-editable="footer_topic_logistics">Shipping & Logistics</a></li>
-            <li><a href="javascript:void(0)" class="hover:text-white transition-colors" data-editable="footer_topic_sensory">Sensory Analysis</a></li>
+            <li><a href="#articles" onclick="openAllArticlesForSearch(currentLang === 'id' ? 'Pasar US' : 'US Market'); return false;" class="hover:text-white transition-colors" data-editable="footer_topic_us">Pasar US</a></li>
+            <li><a href="#articles" onclick="openAllArticlesForSearch(currentLang === 'id' ? 'Regulasi FDA' : 'FDA Regulations'); return false;" class="hover:text-white transition-colors" data-editable="footer_topic_fda">Regulasi FDA</a></li>
+            <li><a href="#articles" onclick="openAllArticlesForSearch('shipping logistics'); return false;" class="hover:text-white transition-colors" data-editable="footer_topic_logistics">Shipping & Logistics</a></li>
+            <li><a href="#articles" onclick="openAllArticlesForSearch(currentLang === 'id' ? 'sensori' : 'sensory'); return false;" class="hover:text-white transition-colors" data-editable="footer_topic_sensory">Sensory Analysis</a></li>
         </ul>
     </div>
     <div>
@@ -1234,8 +1247,8 @@ window.__qcoAnLang = function (lang) {
         <div class="bg-white rounded-2xl border border-coffee-100 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full" style="min-width: 900px;">
-                    <thead class="bg-coffee-50"><tr><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Judul</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Kategori</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Status</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Views</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Tanggal</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Aksi</th></tr></thead>
-                    <tbody class="divide-y divide-coffee-100" id="dashboard-articles-table"><tr><td colspan="6" class="px-6 py-4 text-center text-coffee-400"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat artikel...</td></tr></tbody>
+                    <thead class="bg-coffee-50"><tr><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Judul</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Kategori</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Status</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Tanggal</th><th class="px-6 py-4 text-left text-sm font-medium text-coffee-700">Aksi</th></tr></thead>
+                    <tbody class="divide-y divide-coffee-100" id="dashboard-articles-table"><tr><td colspan="5" class="px-6 py-4 text-center text-coffee-400"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat artikel...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -1654,7 +1667,7 @@ function loadAllData() {
     dataLoadState = "local";
 
     // Ensure all default article views are numbers
-    articlesData.forEach(a => { a.views = parseInt(a.views) || 0; });
+    articlesData.forEach(a => { a.views = 0; });
 
     // Google Sites iframe may block localStorage access (SecurityError)
     // Wrap in try-catch so defaults are preserved if localStorage fails
@@ -1681,13 +1694,13 @@ async function loadSharedArticles() {
         try {
             // Public article reads do not need cookies; omit them so local file previews can
             // read the public GitHub Pages JSON without credentialed-CORS restrictions.
-            const response = await fetch(url, { cache: "no-store", credentials: "omit" });
+            const response = await fetchWithTimeout(url, { cache: "no-store", credentials: "omit" }, 8000);
             if (!response.ok) throw new Error("HTTP " + response.status);
             const data = await response.json();
             if (!data || !Array.isArray(data.articles)) throw new Error("Format articles.json tidak valid");
             articlesData = data.articles;
             articlesData.forEach(a => {
-                a.views = parseInt(a.views) || 0;
+                a.views = 0;
                 if (a.content_id) a.content_id = cleanHtmlContent(a.content_id);
                 if (a.content_en) a.content_en = cleanHtmlContent(a.content_en);
             });
@@ -1842,6 +1855,24 @@ function updateStaticContent() {
     update("[data-editable=filter_pengalaman]", "Pengalaman", "Experience");
     update("[data-editable=btn_loadmore]", "Lihat Semua Artikel", "View All Articles");
 
+    // TOOLS & REPORTS
+    update("[data-i18n=resources_title]", "Alat dan Laporan", "Tools & Reports");
+    update("[data-i18n=resources_desc]", "Alat utama dan analisis pasar untuk memahami kopi Indonesia.", "Tools and market analysis for understanding Indonesian coffee.");
+    update("[data-i18n=resources_calc_title]", "Kalkulator Harga Kopi FOB", "FOB Coffee Price Calculator");
+    update("[data-i18n=resources_calc_desc]", "Kalkulator harga kopi dengan konversi ICE C-Market ke IDR/kg. Sesuaikan diferensial, biaya, margin, dan logistik berdasarkan angka acuan yang tersedia.", "Convert ICE C-Market benchmarks to IDR/kg and adjust differentials, costs, margins, and logistics for an export price estimate.");
+    update("[data-i18n=resources_periodic]", "Pembaruan berkala", "Periodic updates");
+    update("[data-i18n=resources_auto_calc]", "Kalkulasi otomatis", "Automatic calculation");
+    update("[data-i18n=resources_market]", "Analisis pasar", "Market analysis");
+    update("[data-i18n=resources_open_calc]", "Buka kalkulator", "Open calculator");
+    update("[data-i18n=resources_report_title]", "Kabar Kopi: Berita dan Analisis", "Kabar Kopi: News & Analysis");
+    update("[data-i18n=resources_report_desc]", "Kumpulan berita kopi, peta topik, dan analisis editorial untuk membantu membaca perkembangan pasar.", "Coffee news, topic maps, and editorial analysis to help readers understand market developments.");
+    update("[data-i18n=resources_usda]", "Data USDA PSD", "USDA PSD data");
+    update("[data-i18n=resources_news]", "Pengelompokan berita", "News clustering");
+    update("[data-i18n=resources_insights]", "Analisis pasar", "Market insights");
+    update("[data-i18n=resources_open_report]", "Buka Kabar Kopi", "Open Kabar Kopi");
+    update("[data-i18n=resources_together_title]", "Menggunakan Alat dan Analisis", "Using the tools and analysis");
+    update("[data-i18n=resources_together_desc]", "Kalkulator membantu mengubah harga acuan menjadi estimasi biaya. Kabar Kopi menyediakan berita dan analisis untuk memahami konteks pasarnya.", "The calculator turns price benchmarks into cost estimates. Kabar Kopi adds reporting and analysis to help explain the market context.");
+
     // FOOTER
     update("[data-editable=footer_name]", "Ganjar Satyanagara", "Ganjar Satyanagara");
     update("[data-editable=footer_tagline]", "Coffee Researcher", "Coffee Researcher");
@@ -1960,7 +1991,7 @@ function renderArticles(filter) {
                         <span><i class="fas fa-user mr-1"></i>Ganjar Satyanagara</span>
                         <span><i class="far fa-clock mr-1"></i>${art.readTime} ${currentLang === "id" ? "menit baca" : "min read"}</span>
                     </div>
-                    <span class="text-xs text-coffee-400"><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span>
+                    <span class="text-xs text-coffee-400"><i class="far fa-clock mr-1"></i>${art.readTime} ${currentLang === "id" ? "menit baca" : "min read"}</span>
                 </div>
                 <a href="${articleUrl}" class="block w-full py-2.5 px-4 bg-coffee-600 hover:bg-coffee-700 text-white rounded-lg font-medium text-sm transition-colors text-center no-underline">
                     <i class="fas fa-arrow-right mr-2"></i>${readMoreText}
@@ -2071,12 +2102,6 @@ function showFeaturedArticle(id) {
 
     // Scroll to featured article
     featured.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    // Increment views
-    art.views = (parseInt(art.views) || 0) + 1;
-    saveToLocalStorage();
-    // Refresh views display
-    refreshViewsDisplay();
 
     // Track sidebar article click in GA4
     const title = currentLang === "id" ? art.title_id : art.title_en;
@@ -2215,11 +2240,6 @@ function openArticle(id) {
 
     document.getElementById("article-modal").classList.remove("hidden");
     document.body.style.overflow = "hidden";
-    art.views = (parseInt(art.views) || 0) + 1;
-    saveToLocalStorage();
-    // Refresh views display in all places
-    refreshViewsDisplay();
-
     // Track article click in GA4
     const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
     const category = catLabels[art.category] || art.category;
@@ -2276,21 +2296,6 @@ function displayRelatedArticles(currentArticleId, category) {
     modalBody.innerHTML += relatedHTML;
 }
 
-// Refresh views count display across all UI components
-function refreshViewsDisplay() {
-    // Refresh main grid and sidebar (skip when featured mode active - avoid overwriting opened article)
-    const featEl = document.getElementById("featured-article");
-    if (featEl && featEl.classList.contains("hidden")) {
-        renderArticles();
-    }
-    renderArticlesSidebar();
-    // Refresh dashboard if visible
-    if (!document.getElementById("dashboard-view").classList.contains("hidden")) {
-        renderDashboardOverview();
-            renderDashboardArticles();
-    }
-}
-
 function closeArticle() {
     document.getElementById("article-modal").classList.add("hidden");
     document.body.style.overflow = "";
@@ -2298,8 +2303,6 @@ function closeArticle() {
     try {
         sessionStorage.removeItem("qco_target_article_id");
     } catch (e) { /* ignore */ }
-    // Refresh views display to show updated counts
-    refreshViewsDisplay();
 }
 
 // ========== ARTICLE LINK DETECTION (ROBUST - GOOGLE SITES IFRAME) ==========
@@ -2707,7 +2710,7 @@ function renderDashboardArticles() {
         return parseDate(b.date) - parseDate(a.date);
     });
     if (articlesData.length === 0) {
-        tbody.innerHTML = "<tr><td colspan=6 class='px-6 py-8 text-center text-coffee-400'><i class='fas fa-inbox text-3xl mb-2'></i><p>Belum ada artikel</p></td></tr>";
+        tbody.innerHTML = "<tr><td colspan=5 class='px-6 py-8 text-center text-coffee-400'><i class='fas fa-inbox text-3xl mb-2'></i><p>Belum ada artikel</p></td></tr>";
         return;
     }
     const catLabels = { "kopi-indonesia": "Kopi Indonesia", "perjalanan": "Perjalanan", "riset-pasar": "Riset & Pasar", "pemasaran": "Pemasaran", "pengalaman": "Pengalaman" };
@@ -2719,7 +2722,6 @@ function renderDashboardArticles() {
             <td class="px-6 py-4"><div class="font-medium text-coffee-900">${title}</div><div class="text-xs text-coffee-400 mt-1">${art.readTime} menit baca</div></td>
             <td class="px-6 py-4"><span class="tag">${catLabel}</span></td>
             <td class="px-6 py-4"><button type="button" onclick="toggleArticleStatus(${art.id})" class="cursor-pointer transition-all hover:opacity-80 ${isPublished ? "status-badge-published" : "status-badge-draft"}"><i class="fas ${isPublished ? "fa-check-circle" : "fa-pencil-ruler"} mr-1"></i>${isPublished ? "Published" : "Draft"}</button></td>
-            <td class="px-6 py-4 text-sm text-coffee-600">${(parseInt(art.views) || 0).toLocaleString()}</td>
             <td class="px-6 py-4 text-sm text-coffee-500">${art.date}</td>
             <td class="px-6 py-4"><div class="flex gap-1"><button type="button" class="p-2 text-coffee-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors" onclick="editArticle(${art.id})" title="Edit"><i class="fas fa-pen"></i></button><button type="button" class="p-2 text-coffee-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors" onclick="deleteArticle(${art.id})" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
         </tr>`;
@@ -2729,7 +2731,6 @@ function renderDashboardOverview() {
     const totalArticles = articlesData.length;
     const publishedArticles = articlesData.filter(a => a.status === "Published").length;
     const draftArticles = articlesData.filter(a => a.status === "Draft").length;
-    const totalViews = articlesData.reduce((sum, a) => sum + (parseInt(a.views) || 0), 0);
     const elTotalArticles = document.getElementById("overview-total-articles");
     const elPubBadge = document.getElementById("overview-pub-badge");
     const elDraftCount = document.getElementById("overview-draft-count");
@@ -2911,7 +2912,7 @@ async function showDashboard() {
         return;
     }
     try {
-        const response = await fetch(BLOG_SYNC_API + "/auth/session", { cache: "no-store", credentials: "include" });
+        const response = await fetchWithTimeout(BLOG_SYNC_API + "/auth/session", { cache: "no-store", credentials: "include" }, 8000);
         const data = await response.json();
         adminSessionActive = !!data.authenticated;
     } catch (_) { adminSessionActive = false; }
@@ -2965,7 +2966,7 @@ async function loadFieldModeration() {
     if (!list || !adminSessionActive) return;
     status.textContent = "Memuat kiriman yang menunggu tinjauan…";
     try {
-        const response = await fetch(BLOG_SYNC_API + "/admin/field-submissions?status=pending_review", { credentials: "include", cache: "no-store" });
+        const response = await fetchWithTimeout(BLOG_SYNC_API + "/admin/field-submissions?status=pending_review", { credentials: "include", cache: "no-store" }, 10000);
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || "Antrean belum dapat dimuat.");
         const submissions = data.submissions || [];
@@ -3100,12 +3101,12 @@ function openAllArticlesModal() {
             const title = currentLang === "id" ? art.title_id : art.title_en;
             const desc = currentLang === "id" ? art.desc_id : art.desc_en;
             const modalImageUrl = art.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
-            return `<article class="card group cursor-pointer" onclick="closeAllArticlesModal(); setTimeout(() => openArticle(${art.id}), 300);">
+            return `<article class="card group cursor-pointer" data-article-id="${art.id}" onclick="closeAllArticlesModal(); setTimeout(() => openArticle(${art.id}), 300);">
                 <div class="aspect-[16/10] overflow-hidden rounded-t-2xl"><img src="${modalImageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy"></div>
                 <div class="p-5"><div class="flex items-center gap-2 mb-2"><span class="tag">${catLabel}</span><span class="text-xs text-coffee-400">${art.date}</span></div>
                 <h3 class="font-serif text-lg font-bold text-coffee-900 mb-2 group-hover:text-coffee-600 transition-colors line-clamp-2">${title}</h3>
                 <p class="text-coffee-600 text-sm line-clamp-2 mb-3">${desc}</p>
-                <div class="flex items-center justify-between text-xs text-coffee-400"><span><i class="far fa-clock mr-1"></i>${art.readTime} min</span><span><i class="far fa-eye mr-1"></i>${(parseInt(art.views) || 0).toLocaleString()}</span></div></div>
+                <div class="text-xs text-coffee-400"><i class="far fa-clock mr-1"></i>${art.readTime} ${currentLang === "id" ? "menit baca" : "min read"}</div></div>
             </article>`;
         }).join('') + '</div>';
     }
@@ -3121,11 +3122,37 @@ function closeAllArticlesModal() {
 }
 
 function searchAllArticles() {
-    const query = document.getElementById("search-all-articles").value.toLowerCase();
+    const query = document.getElementById("search-all-articles").value.trim().toLocaleLowerCase();
+    const terms = query.split(/\s+/).filter(Boolean);
     const cards = document.querySelectorAll("#all-articles-content article");
+    let visible = 0;
     cards.forEach(card => {
-        card.style.display = card.textContent.toLowerCase().includes(query) ? "" : "none";
+        const article = articlesData.find(item => String(item.id) === card.dataset.articleId);
+        let body = "";
+        if (article) {
+            const parsed = new DOMParser().parseFromString((article.content_id || "") + " " + (article.content_en || ""), "text/html");
+            parsed.querySelectorAll("script,style").forEach(node => node.remove());
+            body = parsed.body.textContent || "";
+        }
+        const searchable = ((card.textContent || "") + " " + body + " " + (article ? [article.title_id, article.title_en, article.desc_id, article.desc_en, article.category].join(" ") : "")).toLocaleLowerCase();
+        const matches = terms.every(term => searchable.includes(term));
+        card.style.display = matches ? "" : "none";
+        if (matches) visible++;
     });
+    let empty = document.getElementById("all-articles-no-results");
+    if (query && visible === 0) {
+        if (!empty) { empty = document.createElement("p"); empty.id = "all-articles-no-results"; empty.className = "col-span-full py-10 text-center text-coffee-500"; document.getElementById("all-articles-content").append(empty); }
+        empty.textContent = currentLang === "id" ? "Tidak ada artikel yang cocok dengan pencarian ini." : "No articles match this search.";
+    } else if (empty) empty.remove();
+}
+
+function openAllArticlesForSearch(query) {
+    openAllArticlesModal();
+    const input = document.getElementById("search-all-articles");
+    if (!input) return;
+    input.value = query || "";
+    searchAllArticles();
+    input.focus();
 }
 
 function copyFeaturedLink(articleId) {
@@ -3246,7 +3273,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         } else {
         }
         if (location.protocol !== "file:") {
-            fetch(BLOG_SYNC_API + "/auth/session", { cache: "no-store", credentials: "include" })
+            fetchWithTimeout(BLOG_SYNC_API + "/auth/session", { cache: "no-store", credentials: "include" }, 8000)
                 .then(response => response.json())
                 .then(data => { adminSessionActive = !!data.authenticated; checkAdminAuth(); })
                 .catch(() => { adminSessionActive = false; checkAdminAuth(); });
