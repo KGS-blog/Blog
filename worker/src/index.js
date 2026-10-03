@@ -2,7 +2,7 @@ const SESSION_COOKIE = "qco_blog_admin";
 const SESSION_SECONDS = 4 * 60 * 60;
 const MAX_ARTICLES_BYTES = 900_000;
 const API_BASE = "https://api.github.com/repos";
-const ALLOWED_ORIGINS = new Set(["https://blog.qcoid.com", "https://kgs-blog.github.io"]);
+const ALLOWED_ORIGINS = new Set(["https://blog.qcoid.com", "https://kgs-blog.github.io", "https://kabarkopi.qcoid.com"]);
 const CLUSTER_CANDIDATES_URL = "https://raw.githubusercontent.com/KGS-blog/Update-Coffee-Data/main/data/cluster-candidates.json";
 const CLUSTER_DECISIONS_FILE = "kabar-kopi-cluster-decisions.json";
 
