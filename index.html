@@ -612,7 +612,7 @@ main {
 <div class="grid md:grid-cols-2 gap-5 items-stretch">
 <div id="qco-market-widget" style="background:linear-gradient(135deg,#1a120d,#2d2118 60%,#3E2723);border-radius:16px;padding:16px 18px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#e0d5c5;box-shadow:0 6px 20px rgba(0,0,0,.2);height:100%;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;">
-    <div style="font-size:.95rem;font-weight:800;color:#fff;">Dari Kebun ke ICE</div>
+    <div style="font-size:.95rem;font-weight:800;color:#fff;">Dari Kebun ke Pasar</div>
     <div id="qco-mw-updated" style="font-size:.62rem;color:#8a7a66;"></div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;">
@@ -622,7 +622,7 @@ main {
       <div id="qco-mw-arabica-chg" style="font-size:.6rem;color:#9a8b76;"></div>
     </div>
     <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:9px 8px;">
-      <div style="font-size:.58rem;color:#9a8b76;text-transform:uppercase;">Robusta $/ton</div>
+      <div style="font-size:.58rem;color:#9a8b76;text-transform:uppercase;">ICO Robustas · $/ton ekuivalen</div>
       <div id="qco-mw-robusta" style="font-size:1.15rem;font-weight:800;color:#6ee7b7;font-family:monospace;">&mdash;</div>
       <div id="qco-mw-robusta-note" style="font-size:.58rem;color:#b08d57;"></div>
     </div>
@@ -670,11 +670,15 @@ main {
       var a3Kg = a2Kg / P.ratio;
       t("qco-mw-arabica", aC.toFixed(2));
       if (typeof m.arabica.changePercent === "number") t("qco-mw-arabica-chg", (m.arabica.changePercent >= 0 ? "\u25b2 +" : "\u25bc ") + m.arabica.changePercent.toFixed(2) + "%");
-      if (m.robusta && m.robusta.current) {
+      if (m.robusta && m.robusta.current && !m.robusta.stale) {
         var rKg = rT / 1000, r2Kg = (rT + P.diffR) / 1000, r3Kg = r2Kg / P.ratio;
         t("qco-mw-robusta", rT.toLocaleString("id-ID"));
-        t("qco-mw-robusta-note", m.robusta.stale ? "estimasi \u2014 data live belum tersedia" : "");
+        t("qco-mw-robusta-note", "ICO " + Number(m.robusta.sourceValue).toFixed(2) + " ¢/lb · " + (m.robusta.sourceDate || ""));
         t("qco-mw-r1", pair(rKg * K, rKg)); t("qco-mw-r2", pair(r2Kg * K, r2Kg)); t("qco-mw-r3", pair(r3Kg * K, r3Kg));
+      } else {
+        t("qco-mw-robusta", "—");
+        t("qco-mw-robusta-note", "Harga live belum tersedia; angka turunan disembunyikan.");
+        t("qco-mw-r1", "—"); t("qco-mw-r2", "—"); t("qco-mw-r3", "—");
       }
       t("qco-mw-kurs", K.toLocaleString("id-ID"));
       if (typeof m.idrUsd.changePercent === "number") t("qco-mw-kurs-chg", (m.idrUsd.changePercent >= 0 ? "\u25b2 +" : "\u25bc ") + m.idrUsd.changePercent.toFixed(2) + "%");
@@ -3465,7 +3469,7 @@ function showUrlModal(url) {
 const COFFEE_LB_TO_KG = 0.45359237;
 const COFFEE_DEFAULTS = {
   arabicaCents: 275.70,
-  robustaTon: 3487,
+  robustaTon: 3661,
   kurs: 17570,
   diffArabica: 20,
   diffRobusta: 150,
@@ -3621,40 +3625,31 @@ function coffeePublicEdit() {
 async function coffeeFetchPrices() {
   showToast("Mengambil harga terkini...", "info");
   try {
-    var resA = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/KC=F?interval=1d&range=1d").catch(function() { return null; });
-    var resR = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/RM=F?interval=1d&range=1d").catch(function() { return null; });
+    var response = await fetch("https://kabarkopi.qcoid.com/data/market-data.json?t=" + Date.now(), { cache: "no-store" });
+    if (!response.ok) throw new Error("Data pasar tidak dapat dimuat");
+    var market = await response.json();
     var updated = false;
-    if (resA && resA.ok) {
-      var dataA = await resA.json();
-      var meta = dataA.chart && dataA.chart.result && dataA.chart.result[0] && dataA.chart.result[0].meta;
-      if (meta && meta.regularMarketPrice) {
-        var price = meta.regularMarketPrice;
-        if (price < 10) price = price * 100;
-        coffeeParams.arabicaCents = parseFloat(price.toFixed(2));
-        updated = true;
-      }
+    if (market.arabica && Number(market.arabica.current) > 0 && !market.arabica.stale) {
+      coffeeParams.arabicaCents = Number(market.arabica.current);
+      updated = true;
     }
-    if (resR && resR.ok) {
-      var dataR = await resR.json();
-      var metaR = dataR.chart && dataR.chart.result && dataR.chart.result[0] && dataR.chart.result[0].meta;
-      if (metaR && metaR.regularMarketPrice) {
-        var priceR = metaR.regularMarketPrice;
-        if (priceR < 1000) priceR = priceR * 1000;
-        coffeeParams.robustaTon = Math.round(priceR);
-        updated = true;
-      }
+    if (market.idrUsd && Number(market.idrUsd.current) > 0 && !market.idrUsd.stale) {
+      coffeeParams.kurs = Number(market.idrUsd.current);
+      updated = true;
     }
-    if (updated) {
+    var robustaLive = market.robusta && Number(market.robusta.current) > 0 && !market.robusta.stale;
+    if (robustaLive) coffeeParams.robustaTon = Number(market.robusta.current);
+    if (updated || robustaLive) {
       coffeeSaveParams();
       coffeeSyncInputs();
       coffeeCalculateAll();
       syncCoffeeToFob();
-      showToast("Harga futures berhasil diperbarui!", "success");
+      showToast(robustaLive ? "Harga Arabika, Robusta, dan kurs diperbarui." : "Arabika dan kurs diperbarui. Harga Robusta live belum tersedia; nilai manual Robusta tetap dipakai.", robustaLive ? "success" : "info");
     } else {
-      showToast("Gagal fetch. Update manual.", "error");
+      showToast("Data live belum tersedia. Nilai manual tetap dipakai.", "info");
     }
   } catch (e) {
-    showToast("Gagal fetch dari Yahoo.", "error");
+    showToast("Gagal mengambil data pasar. Nilai manual tetap dipakai.", "error");
   }
 }
 
