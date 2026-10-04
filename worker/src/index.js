@@ -5,8 +5,8 @@ const SESSION_SECONDS = 4 * 60 * 60;
 const MAX_ARTICLES_BYTES = 900_000;
 const API_BASE = "https://api.github.com/repos";
 const ALLOWED_ORIGINS = new Set(["https://blog.qcoid.com", "https://kgs-blog.github.io", "https://kabarkopi.qcoid.com"]);
-const CLUSTER_CANDIDATES_URL = "https://raw.githubusercontent.com/KGS-blog/Update-Coffee-Data/main/data/cluster-candidates.json";
 const CLUSTER_DECISIONS_FILE = "kabar-kopi-cluster-decisions.json";
+const CLUSTER_CANDIDATES_KEY = "cluster-candidates-v1";
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin");
@@ -112,9 +112,20 @@ async function writeArticles(env, document, sha) {
   return writeGithubJson(env, env.GITHUB_FILE, document, sha, "Update articles from blog admin");
 }
 async function readClusterCandidates() {
-  const response = await fetch(CLUSTER_CANDIDATES_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Cluster candidates unavailable (${response.status})`);
-  return response.json();
+  const row = await this.DB.prepare("SELECT document_json FROM kabar_workflow_documents WHERE document_key = ?").bind(CLUSTER_CANDIDATES_KEY).first();
+  return row ? JSON.parse(row.document_json) : { version: 1, candidates: [], needs_seed: true };
+}
+async function saveClusterCandidates(db, document) {
+  await db.prepare("INSERT INTO kabar_workflow_documents (document_key, document_json, updated_at) VALUES (?, ?, ?) ON CONFLICT(document_key) DO UPDATE SET document_json = excluded.document_json, updated_at = excluded.updated_at")
+    .bind(CLUSTER_CANDIDATES_KEY, JSON.stringify(document), new Date().toISOString()).run();
+}
+function validCandidateDocument(value) { return value && Array.isArray(value.candidates) && value.candidates.length <= 1000; }
+async function matchesSecret(input, expected) {
+  if (!input || !expected) return false;
+  const [actual, target] = await Promise.all([input, expected].map(x => crypto.subtle.digest("SHA-256", new TextEncoder().encode(x))));
+  const a = new Uint8Array(actual), b = new Uint8Array(target); let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
 }
 function validDecisionDocument(value) {
   return value && Array.isArray(value.accepted_candidate_ids) && Array.isArray(value.rejected_candidate_ids);
@@ -146,6 +157,20 @@ export default {
       if (!headers["Access-Control-Allow-Origin"]) return json({ error: "Origin tidak diizinkan." }, 403, {}, request);
       return new Response(null, { status: 204, headers });
     }
+    if (url.pathname === "/api/internal/cluster-candidates" && ["GET", "PUT"].includes(request.method)) {
+      const bearer = (request.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "").trim();
+      if (!await matchesSecret(bearer, env.MEVO_SYNC_SECRET || "")) return json({ error: "Akses sinkronisasi ditolak." }, 401);
+      try {
+        if (request.method === "GET") return json(await readClusterCandidates.call(env));
+        const document = await request.json();
+        if (!validCandidateDocument(document)) return json({ error: "Dokumen kandidat tidak valid." }, 400);
+        await saveClusterCandidates(env.DB, document);
+        return json({ saved: true, updated_at: new Date().toISOString() });
+      } catch (error) {
+        console.error("Cluster candidate D1 request failed", error);
+        return json({ error: "Penyimpanan kandidat klaster belum siap. Periksa migrasi database." }, 503);
+      }
+    }
     if (url.pathname === "/api/articles" && request.method === "GET") {
       try {
         const current = await readArticles(env);
@@ -167,7 +192,7 @@ export default {
     if (url.pathname === "/api/cluster-candidates" && request.method === "GET") {
       if (!await validSession(request, env.SESSION_SECRET || "")) return json({ error: "Masuk sebagai admin untuk meninjau klaster." }, 401, {}, request);
       try {
-        const candidates = await readClusterCandidates();
+        const candidates = await readClusterCandidates.call(env);
         return json(candidates, 200, {}, request);
       } catch (_) {
         return json({ error: "Kandidat klaster belum dapat dimuat." }, 502, {}, request);
@@ -207,7 +232,7 @@ export default {
         return json({ error: "Keputusan klaster tidak valid." }, 400, {}, request);
       }
       try {
-        const candidates = await readClusterCandidates();
+        const candidates = await readClusterCandidates.call(env);
         if (!(candidates.candidates || []).some(candidate => candidate.id === candidateId)) {
           return json({ error: "Kandidat ini sudah tidak tersedia. Muat ulang halaman." }, 404, {}, request);
         }
