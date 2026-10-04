@@ -1212,6 +1212,7 @@ window.__qcoAnLang = function (lang) {
     <div onclick="showDashboardSection('content')" id="nav-content" class="sidebar-item"><i class="fas fa-file-alt w-5"></i><span>Konten & Artikel</span></div>
     <div onclick="showDashboardSection('editcontent')" id="nav-editcontent" class="sidebar-item"><i class="fas fa-pen w-5"></i><span>Edit Konten Blog</span></div>
     <div onclick="showDashboardSection('fieldnotes')" id="nav-fieldnotes" class="sidebar-item"><i class="fas fa-coffee w-5"></i><span>Kiriman Kabar Kopi</span></div>
+    <div onclick="showDashboardSection('clusters'); loadClusterReview()" id="nav-clusters" class="sidebar-item"><i class="fas fa-layer-group w-5"></i><span>Tinjau Klaster Kopi</span></div>
     <div onclick="showDashboardSection('mevoreports')" id="nav-mevoreports" class="sidebar-item"><i class="fas fa-chart-line w-5"></i><span>Report by MEVO</span></div>
 
     <div onclick="showDashboardSection('categories')" id="nav-categories" class="sidebar-item"><i class="fas fa-tags w-5"></i><span>Kategori</span></div>
@@ -1320,6 +1321,11 @@ window.__qcoAnLang = function (lang) {
         <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Antrean Suara Komunitas</h3><p class="text-sm text-coffee-500 mt-1">Kiriman anggota Kabar Kopi. Naskah asli tetap tersimpan; terbitkan setelah ditinjau.</p></div><button type="button" class="btn-secondary" onclick="loadFieldModeration()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
         <div id="field-moderation-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
         <div id="field-moderation-list" class="space-y-4"><div class="content-card">Memuat antrean…</div></div>
+    </div>
+    <div id="section-clusters" class="dashboard-section hidden">
+        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Tinjau kandidat klaster Kabar Kopi</h3><p class="text-sm text-coffee-500 mt-1">Panel ini hanya tersedia setelah admin masuk. Keputusan diterapkan pada proses pengolahan feed berikutnya.</p></div><button type="button" class="btn-secondary" onclick="loadClusterReview()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <div id="cluster-review-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
+        <div id="cluster-review-list" class="space-y-4"><div class="content-card">Pilih muat ulang untuk mengambil kandidat.</div></div>
     </div>
     <div id="section-mevoreports" class="dashboard-section hidden">
         <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Report by MEVO</h3><p class="text-sm text-coffee-500 mt-1">Kelola report anggota. Report yang diunggah pipeline masuk sebagai draft sampai admin menerbitkannya.</p></div><button type="button" class="btn-secondary" onclick="loadMevoReports()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
@@ -3040,6 +3046,66 @@ async function updateFieldModeration(item, action, editorText, actions) {
         loadFieldModeration();
     } catch (error) { showToast(error.message, "error"); buttons.forEach(button => button.disabled = false); }
 }
+async function loadClusterReview() {
+    const list = document.getElementById("cluster-review-list");
+    const status = document.getElementById("cluster-review-status");
+    if (!list || !adminSessionActive) return;
+    status.textContent = "Memuat kandidat klaster…";
+    try {
+        const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-candidates", { credentials: "include", cache: "no-store" }, 10000);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Kandidat klaster belum dapat dimuat.");
+        const candidates = (data.candidates || []).filter(item => ["pending", "needs_review", "accepted", "rejected"].includes(item.status));
+        status.textContent = candidates.length + " kandidat klaster.";
+        list.replaceChildren();
+        if (!candidates.length) {
+            const empty = document.createElement("div"); empty.className = "content-card text-coffee-500"; empty.textContent = "Belum ada kandidat klaster yang perlu ditinjau."; list.append(empty); return;
+        }
+        for (const item of candidates) {
+            const card = document.createElement("article"); card.className = "content-card";
+            const label = document.createElement("span"); label.className = "text-xs font-bold uppercase tracking-wide text-coffee-600"; label.textContent = item.status === "accepted" ? "Disetujui" : item.status === "rejected" ? "Ditolak" : "Menunggu tinjauan";
+            const title = document.createElement("h4"); title.className = "font-serif text-lg font-bold text-coffee-900 mt-2"; title.textContent = item.name || "Kandidat klaster";
+            const description = document.createElement("p"); description.className = "text-sm text-coffee-600 mt-1"; description.textContent = item.description || item.rationale || "Tema yang muncul dari berita yang belum terpetakan.";
+            const count = document.createElement("p"); count.className = "text-xs text-coffee-500 mt-2"; count.textContent = (item.supporting_urls || []).length + " berita pendukung";
+            const links = document.createElement("ul"); links.className = "list-disc pl-5 mt-2 text-sm";
+            for (const rawUrl of (item.supporting_urls || []).slice(0, 5)) {
+                let parsed; try { parsed = new URL(rawUrl); } catch (_) { continue; }
+                if (!/^https?:$/.test(parsed.protocol)) continue;
+                const li = document.createElement("li"), a = document.createElement("a"); a.href = parsed.href; a.target = "_blank"; a.rel = "noopener noreferrer"; a.className = "underline"; a.textContent = "Buka berita pendukung"; li.append(a); links.append(li);
+            }
+            card.append(label, title, description, count, links);
+            if (["pending", "needs_review", "accepted", "rejected"].includes(item.status)) {
+                const actions = document.createElement("div"); actions.className = "flex gap-2 mt-4";
+                for (const decision of item.status === "accepted" ? ["rejected"] : item.status === "rejected" ? ["accepted"] : ["accepted", "rejected"]) {
+                    const button = document.createElement("button"); button.type = "button"; button.className = "btn-secondary"; button.dataset.candidateId = item.id; button.dataset.decision = decision; button.textContent = decision === "accepted" ? "Setujui klaster" : item.status === "accepted" ? "Batalkan persetujuan" : "Tolak"; actions.append(button);
+                }
+                card.append(actions);
+            }
+            list.append(card);
+        }
+    } catch (error) {
+        status.textContent = error.message;
+        list.replaceChildren();
+        const message = document.createElement("div"); message.className = "content-card text-red-700"; message.textContent = error.message; list.append(message);
+    }
+}
+document.getElementById("cluster-review-list")?.addEventListener("click", async event => {
+    const button = event.target.closest("button[data-candidate-id][data-decision]");
+    if (!button || !adminSessionActive) return;
+    const decision = button.dataset.decision;
+    button.disabled = true;
+    document.getElementById("cluster-review-status").textContent = "Menyimpan keputusan…";
+    try {
+        const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-decisions", { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ candidate_id: button.dataset.candidateId, decision }) }, 10000);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Keputusan belum dapat disimpan.");
+        document.getElementById("cluster-review-status").textContent = "Keputusan tersimpan. Feed akan memakai keputusan ini pada pemrosesan otomatis berikutnya.";
+        await loadClusterReview();
+    } catch (error) {
+        document.getElementById("cluster-review-status").textContent = error.message;
+        button.disabled = false;
+    }
+});
 function resetMevoReportForm() {
     document.getElementById("mevo-report-form").reset();
     document.getElementById("mevo-report-id").value = "";

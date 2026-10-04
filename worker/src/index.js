@@ -164,6 +164,16 @@ export default {
       }
     }
 
+    if (url.pathname === "/api/cluster-candidates" && request.method === "GET") {
+      if (!await validSession(request, env.SESSION_SECRET || "")) return json({ error: "Masuk sebagai admin untuk meninjau klaster." }, 401, {}, request);
+      try {
+        const candidates = await readClusterCandidates();
+        return json(candidates, 200, {}, request);
+      } catch (_) {
+        return json({ error: "Kandidat klaster belum dapat dimuat." }, 502, {}, request);
+      }
+    }
+
     if (url.pathname === "/api/auth/session" && request.method === "GET") {
       const authenticated = await validSession(request, env.SESSION_SECRET || "");
       return json({ authenticated }, 200, {}, request);
@@ -186,7 +196,7 @@ export default {
     }
 
     if (url.pathname === "/api/cluster-decisions" && request.method === "PUT") {
-      if (request.headers.get("Origin") !== "https://kgs-blog.github.io") return json({ error: "Permintaan tidak diizinkan." }, 403, {}, request);
+      if (!new Set(["https://blog.qcoid.com", "https://kgs-blog.github.io"]).has(request.headers.get("Origin"))) return json({ error: "Permintaan tidak diizinkan." }, 403, {}, request);
       if (!env.GITHUB_TOKEN) return json({ error: "Penyimpanan backend belum dikonfigurasi." }, 503, {}, request);
       if (!await validSession(request, env.SESSION_SECRET || "")) return json({ error: "Sesi editor berakhir. Silakan masuk kembali." }, 401, {}, request);
       let body;
