@@ -4158,17 +4158,17 @@ main {
                 <h2 class="font-serif text-2xl font-bold text-white mb-3">Q.co FOB & Landed Calculator</h2>
                 <div class="space-y-3 text-sm text-coffee-300 leading-relaxed">
                     <p>
-                        Kalkulator ini membantu menghitung harga kopi Indonesia <strong class="text-white">dari kebun sampai FOB</strong> berdasarkan data pasar global (C-Market). Semua parameter dapat diedit sesuai kondisi riil: Differential, Premium, Grade, Margin, biaya proses, kemasan, logistik, dokumen export, dan pallet.
+                        Kalkulator ini membantu memperkirakan harga kopi Indonesia <strong class="text-white">dari kebun sampai FOB</strong> dengan acuan C-Market. Angka acuan diperbarui melalui feed berkala; periksa waktu pembaruan dan sesuaikan parameter dengan kondisi transaksi Anda: Differential, Premium, Grade, Margin, biaya proses, kemasan, logistik, dokumen ekspor, dan pallet.
                     </p>
                     <p>
                         Termasuk estimasi <strong class="text-white">harga Landed ke port USA</strong> (New York, Los Angeles, Miami, Seattle) dengan perhitungan lengkap: ocean freight, customs broker, MPF, HMF, dan marine insurance — semua cost sampai coffee keluar dari port US.
                     </p>
                     <p>
-                        Semua hasil merupakan <strong class="text-white">benchmark</strong> agar harga tidak over-value atau under-value dari pasar dunia. Mendukung mode <strong class="text-white">Komersial</strong> dan <strong class="text-white">Specialty</strong> dengan rekomendasi differential dan premium per grade.
+                        Hasilnya adalah <strong class="text-white">estimasi untuk pembanding</strong>, bukan penawaran atau jaminan harga. Kalkulator mendukung mode <strong class="text-white">Komersial</strong> dan <strong class="text-white">Specialty</strong>; differential dan premium per grade dapat disesuaikan.
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2 mt-4">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/15 text-blue-300 text-xs font-medium border border-blue-500/20"><i class="fas fa-globe text-[10px]"></i>C-Market Live</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/15 text-blue-300 text-xs font-medium border border-blue-500/20"><i class="fas fa-globe text-[10px]"></i>Data acuan C-Market berkala</span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/15 text-green-300 text-xs font-medium border border-green-500/20"><i class="fas fa-ship text-[10px]"></i>FOB + Landed</span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/15 text-purple-300 text-xs font-medium border border-purple-500/20"><i class="fas fa-star text-[10px]"></i>Specialty & Komersial</span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/15 text-yellow-300 text-xs font-medium border border-yellow-500/20"><i class="fas fa-file-invoice text-[10px]"></i>Auto Quotation</span>
@@ -4177,6 +4177,17 @@ main {
         </div>
     </div>
 </div>
+</section>
+
+<section aria-labelledby="metode-kalkulator" class="py-8 bg-coffee-950 text-coffee-200">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="max-w-4xl border-l-4 border-coffee-500 bg-white/5 p-5 md:p-7">
+      <h2 id="metode-kalkulator" class="font-serif text-xl font-bold text-white mb-3">Cara membaca angka dan batas estimasi</h2>
+      <p class="text-sm leading-relaxed">Acuan Arabika C-Market dan indikator Robusta ICO berasal dari feed berkala; tanggal pembaruan ditampilkan pada kalkulator. Nilai yang tampak sebelum feed selesai dimuat adalah angka awal untuk simulasi, bukan kutipan harga terkini. Kurs, diferensial, premium, rasio cherry, biaya, dan margin dapat diubah sesuai transaksi.</p>
+      <p class="text-sm leading-relaxed mt-3">Perkiraan dasar Arabika: (C-Market dalam sen per pon ÷ 100 ÷ 0,453592) = USD/kg. Estimasi FOB menambahkan diferensial dan premium, biaya proses, kemasan, dokumen, logistik, serta biaya pallet per kg; margin diterapkan sesuai input. Estimasi landed menambahkan komponen pengiriman dan biaya pelabuhan yang ditampilkan pada rincian kalkulasi.</p>
+      <p class="text-sm leading-relaxed mt-3"><strong class="text-white">Batas penggunaan:</strong> hasil adalah alat pembanding, bukan harga transaksi, penawaran, atau jaminan laba. Harga aktual bergantung pada mutu dan kondisi lot, negosiasi buyer, volume, pelabuhan, tarif logistik, kurs, serta ketentuan yang berlaku. Periksa sumber data, tanggal acuan, dan rincian biaya sebelum mengambil keputusan.</p>
+    </div>
+  </div>
 </section>
 
 <!-- STEP BY STEP GUIDE — POPUP MODAL -->
@@ -4285,7 +4296,7 @@ main {
 <div class="max-w-7xl mx-auto px-6 lg:px-8">
     <div class="text-center mb-8">
         <h2 class="font-serif text-3xl font-bold text-white mb-2">☕ Kalkulator Kopi</h2>
-        <p class="text-sm text-coffee-300">Harga Dunia & Estimasi FOB — realtime dan interaktif</p>
+        <p class="text-sm text-coffee-300">Harga acuan berkala dan estimasi FOB — interaktif</p>
     </div><div class="grid lg:grid-cols-2 gap-6">
         <!-- LEFT: HARGA KOPI DUNIA -->
         <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
@@ -4358,7 +4369,7 @@ main {
 
             <!-- STATUS LAST UPDATE -->
             <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] text-coffee-400" id="coffee-last-update">Memuat feed harga...</span>
+                        <span class="text-[10px] text-coffee-400" id="coffee-last-update">Data acuan dimuat dari feed berkala; periksa tanggal pembaruan sebelum memakai angka.</span>
                 <a href="https://github.com/KGS-blog/Update-Coffee-Data/actions" target="_blank"
                    class="text-[10px] text-coffee-400 hover:text-coffee-300 underline">
                     <i class="fab fa-github mr-1"></i>Lihat pembaruan feed
@@ -4480,7 +4491,7 @@ main {
                         <label class="block text-[10px] text-coffee-400 uppercase tracking-wider mb-1">Kurs IDR/USD</label>
                         <div class="flex gap-1.5">
                             <input type="number" id="fob-kurs" step="1" value="16500" class="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm font-mono text-yellow-300 w-full" oninput="calculateFOBv2()">
-                            <button type="button" onclick="fetchKurs()" class="bg-white/10 hover:bg-white/20 text-coffee-300 px-2 py-2 rounded-lg text-xs transition-all border border-white/10 flex items-center gap-1" title="Refresh kurs real-time">
+                            <button type="button" onclick="fetchKurs()" class="bg-white/10 hover:bg-white/20 text-coffee-300 px-2 py-2 rounded-lg text-xs transition-all border border-white/10 flex items-center gap-1" title="Perbarui kurs dari feed">
                                 <i class="fas fa-sync-alt text-[10px]"></i>
                             </button>
                         </div>

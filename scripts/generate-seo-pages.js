@@ -39,6 +39,18 @@ function dateIso(article) {
 function articlePath(article, language) {
   return `/artikel/${slugify(article.title_id)}-${language}-${article.id}.html`;
 }
+function homeArticleCard(article) {
+  const title = escapeHtml(article.title_id || 'Artikel kopi');
+  const description = escapeHtml(article.desc_id || 'Artikel tentang kopi Indonesia.');
+  const category = escapeHtml(article.category || 'Kopi Indonesia');
+  const date = escapeHtml(article.date || '');
+  let imageUrl = article.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop';
+  try { if (!['https:', 'http:'].includes(new URL(imageUrl).protocol)) imageUrl = ''; } catch (_) { imageUrl = ''; }
+  const image = escapeHtml(imageUrl);
+  const url = SITE + articlePath(article, 'id');
+  const readingTime = article.readTime ? `${escapeHtml(article.readTime)} menit baca · ` : '';
+  return `<article class="card group"><a href="${url}" class="aspect-[16/10] overflow-hidden rounded-t-2xl block">${image ? `<img src="${image}" alt="${title}" class="w-full h-full object-cover" loading="lazy">` : ''}</a><div class="p-6"><div class="flex items-center gap-3 mb-3"><span class="tag">${category}</span><span class="text-xs text-coffee-400">${date}</span></div><h3 class="font-serif text-xl font-bold text-coffee-900 mb-2"><a href="${url}" class="text-inherit no-underline">${title}</a></h3><p class="text-coffee-600 text-sm line-clamp-3 mb-4">${description}</p><div class="text-sm text-coffee-500">${readingTime}Baca artikel</div></div></article>`;
+}
 function articlePage(article, language) {
   const english = language === 'en';
   const title = english ? article.title_en : article.title_id;
@@ -92,4 +104,22 @@ for (const article of published) {
 }
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(item => `  <url><loc>${item.loc}</loc>${item.lastmod ? `<lastmod>${item.lastmod}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
+
+// Keep the homepage article index readable from the initial HTML response.
+// The interactive UI may still replace these cards after articles.json loads.
+const homepagePath = path.join(ROOT, 'index.html');
+let homepage = fs.readFileSync(homepagePath, 'utf8');
+const cards = published.map(homeArticleCard).join('\n');
+const staticCards = `<!-- STATIC_ARTICLE_CARDS -->\n<style>#articles-grid .skeleton-card[data-skeleton]{display:none!important}</style>\n${cards}\n<!-- /STATIC_ARTICLE_CARDS -->`;
+if (homepage.includes('<!-- /STATIC_ARTICLE_CARDS -->')) homepage = homepage.replace(/<!-- STATIC_ARTICLE_CARDS -->[\s\S]*?<!-- \/STATIC_ARTICLE_CARDS -->/, staticCards);
+else homepage = homepage.replace('<!-- STATIC_ARTICLE_CARDS -->', staticCards);
+homepage = homepage.replace(/(<div[^>]*id="stat-articles"[^>]*>)[\s\S]*?(<\/div>)/, `$1${published.length}$2`);
+const articleListSchema = {
+  '@context': 'https://schema.org', '@type': 'ItemList', name: 'Artikel kopi terbaru',
+  itemListElement: published.map((article, index) => ({ '@type': 'ListItem', position: index + 1, url: SITE + articlePath(article, 'id'), name: article.title_id, description: article.desc_id || '' }))
+};
+const schemaTag = `<script type="application/ld+json">${JSON.stringify(articleListSchema).replace(/</g, '\\u003c')}</script>`;
+if (homepage.includes('<!-- STATIC_ARTICLE_LIST_SCHEMA -->')) homepage = homepage.replace('<!-- STATIC_ARTICLE_LIST_SCHEMA -->', schemaTag);
+else if (!homepage.includes('"@type":"ItemList"')) homepage = homepage.replace('</head>', `${schemaTag}\n</head>`);
+fs.writeFileSync(homepagePath, homepage);
 console.log(`Generated ${published.length} article records and ${urls.length - 3} localized article pages.`);
