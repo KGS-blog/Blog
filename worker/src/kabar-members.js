@@ -3,6 +3,7 @@ const STATE_COOKIE = "qco_kabar_google_state";
 const SESSION_DAYS = 30;
 const MAX_SUBMISSION_CHARS = 20000;
 const KABAR_ORIGIN = "https://kabarkopi.qcoid.com";
+const MEMBER_API_ORIGINS = new Set([KABAR_ORIGIN, "https://blog.qcoid.com", "https://kgs-blog.github.io"]);
 
 const json = (data, status = 200, headers = {}) => new Response(JSON.stringify(data), {
   status,
@@ -33,7 +34,7 @@ function stateCookie(token, maxAge = 600) {
 }
 function cors(request) {
   const origin = request.headers.get("Origin");
-  if (origin !== KABAR_ORIGIN) return {};
+  if (!MEMBER_API_ORIGINS.has(origin)) return {};
   return { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Vary": "Origin" };
 }
 function response(request, data, status = 200, headers = {}) {
