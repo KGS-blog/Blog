@@ -1332,10 +1332,11 @@ window.__qcoAnLang = function (lang) {
         <div id="mevo-report-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
         <form id="mevo-report-form" class="content-card space-y-3 mb-6">
             <input id="mevo-report-id" type="hidden">
-            <div class="grid md:grid-cols-2 gap-3"><label class="text-sm">Slug unik (gunakan akhiran -id atau -en)<input id="mevo-report-slug" class="w-full px-3 py-2 border rounded mt-1" required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="120"></label><label class="text-sm">Bahasa<select id="mevo-report-language" class="w-full px-3 py-2 border rounded mt-1"><option value="id">Indonesia</option><option value="en">English</option></select></label></div>
+            <div class="grid md:grid-cols-2 gap-3"><label class="text-sm">Slug (dibuat otomatis dari judul)<input id="mevo-report-slug" class="w-full px-3 py-2 border rounded mt-1 bg-gray-50" readonly required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="120"><span class="block text-xs text-coffee-500 mt-1">Alamat report dibuat otomatis dan diakhiri -id atau -en.</span></label><label class="text-sm">Bahasa<select id="mevo-report-language" class="w-full px-3 py-2 border rounded mt-1"><option value="id">Indonesia</option><option value="en">English</option></select></label></div>
             <label class="block text-sm">Judul<input id="mevo-report-title" class="w-full px-3 py-2 border rounded mt-1" required maxlength="240"></label>
             <label class="block text-sm">Cuplikan<textarea id="mevo-report-teaser" class="w-full px-3 py-2 border rounded mt-1" rows="2" maxlength="1200"></textarea></label>
-            <label class="block text-sm">Isi report dalam JSON<textarea id="mevo-report-json" class="w-full px-3 py-2 border rounded mt-1 font-mono text-xs" rows="12" required placeholder='{"summary":"...","sections":[{"heading":"...","paragraphs":["..."]}],"conclusion":"...","recommendations":[],"sources":[]}'></textarea></label>
+            <label class="block text-sm">Isi report<textarea id="mevo-report-body" class="w-full px-3 py-2 border rounded mt-1" rows="16" required placeholder="Tulis report seperti dokumen biasa. Pisahkan paragraf dengan satu baris kosong."></textarea><span class="block text-xs text-coffee-500 mt-1">Tulis atau tempel naskah biasa. Sistem menyimpannya dalam format yang diperlukan; Anda tidak perlu membuat JSON.</span></label>
+            <label class="block text-sm">Tautan sumber (opsional, satu URL per baris)<textarea id="mevo-report-sources" class="w-full px-3 py-2 border rounded mt-1" rows="3" placeholder="https://contoh.id/laporan"></textarea></label>
             <div class="flex flex-wrap gap-2"><button type="submit" class="btn-primary">Simpan sebagai draft</button><button type="button" class="btn-secondary" onclick="publishMevoReport()">Terbitkan untuk anggota</button><button type="button" class="btn-secondary" onclick="resetMevoReportForm()">Bersihkan</button></div>
         </form>
         <div id="mevo-report-list" class="space-y-4"><div class="content-card">Memuat report…</div></div>
@@ -3174,11 +3175,40 @@ document.getElementById("cluster-review-list")?.addEventListener("click", async 
 function resetMevoReportForm() {
     document.getElementById("mevo-report-form").reset();
     document.getElementById("mevo-report-id").value = "";
+    updateMevoReportSlug();
+}
+function updateMevoReportSlug() {
+    const title = document.getElementById("mevo-report-title").value;
+    const language = document.getElementById("mevo-report-language").value;
+    const slug = title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 110).replace(/-+$/g, "");
+    document.getElementById("mevo-report-slug").value = slug ? `${slug}-${language}` : "";
+}
+function mevoReportText(report) {
+    if (typeof report?.body === "string") return report.body;
+    const blocks = [];
+    if (report?.summary) blocks.push(report.summary);
+    if (report?.lead) blocks.push(report.lead);
+    for (const section of report?.sections || []) {
+        if (section.heading) blocks.push(section.heading);
+        if (Array.isArray(section.paragraphs)) blocks.push(...section.paragraphs);
+    }
+    if (report?.conclusion) blocks.push("Kesimpulan\n" + report.conclusion);
+    if (Array.isArray(report?.recommendations) && report.recommendations.length) {
+        blocks.push("Rekomendasi\n" + report.recommendations.map(item => [item.audience, item.action].filter(Boolean).join(": ")).join("\n"));
+    }
+    return blocks.join("\n\n");
+}
+function mevoReportSourceList(report) {
+    return (Array.isArray(report?.sources) ? report.sources : []).map(source => source?.url || "").filter(Boolean).join("\n");
 }
 function mevoReportPayload(status) {
-    let report;
-    try { report = JSON.parse(document.getElementById("mevo-report-json").value); }
-    catch (_) { throw new Error("Isi report harus berupa JSON yang valid."); }
+    const body = document.getElementById("mevo-report-body").value.trim();
+    const sources = document.getElementById("mevo-report-sources").value.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(url => {
+        try { const parsed = new URL(url); if (!["http:", "https:"].includes(parsed.protocol)) throw new Error(); return { title: parsed.hostname, url: parsed.href }; }
+        catch (_) { throw new Error("Periksa tautan sumber. Masukkan satu alamat https:// atau http:// per baris."); }
+    });
+    const report = { body, sources };
     return {
         id: document.getElementById("mevo-report-id").value,
         slug: document.getElementById("mevo-report-slug").value.trim(),
@@ -3232,7 +3262,8 @@ async function loadMevoReports() {
                 document.getElementById("mevo-report-language").value = report.language;
                 document.getElementById("mevo-report-title").value = report.title;
                 document.getElementById("mevo-report-teaser").value = report.teaser || "";
-                document.getElementById("mevo-report-json").value = JSON.stringify(report.report || {}, null, 2);
+                document.getElementById("mevo-report-body").value = mevoReportText(report.report || {});
+                document.getElementById("mevo-report-sources").value = mevoReportSourceList(report.report || {});
                 document.getElementById("mevo-report-form").scrollIntoView({ behavior: "smooth", block: "start" });
             });
             actions.append(edit);
@@ -3253,6 +3284,9 @@ async function loadMevoReports() {
     } catch (error) { status.textContent = error.message; }
 }
 document.getElementById("mevo-report-form")?.addEventListener("submit", event => { event.preventDefault(); saveMevoReport("draft"); });
+document.getElementById("mevo-report-title")?.addEventListener("input", updateMevoReportSlug);
+document.getElementById("mevo-report-language")?.addEventListener("change", updateMevoReportSlug);
+updateMevoReportSlug();
 function adminLogout() {
     fetch(BLOG_SYNC_API + "/auth/logout", { method: "POST", credentials: "include", cache: "no-store" }).catch(() => {});
     adminSessionActive = false;
