@@ -5,5 +5,12 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-05T07:41:38.230Z"
+  "updated_at": "2026-10-05T09:25:37.080Z",
+  "overrides": [
+    {
+      "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-05T09:25:37.080Z"
+    }
+  ]
 }
