@@ -394,9 +394,12 @@ async function memberMevoReports(request, env, slug = "") {
     if (!row) return response(request, { error: "Report by MEVO tidak ditemukan." }, 404);
     return response(request, { ...row, report: JSON.parse(row.report_json) });
   }
-  const rows = await env.DB.prepare(`SELECT slug, language, title, teaser, published_at
+  const rows = await env.DB.prepare(`SELECT slug, language, title, teaser, report_json, published_at
     FROM mevo_member_reports WHERE status = 'published' ORDER BY published_at DESC LIMIT 100`).all();
-  return response(request, { reports: rows.results || [] });
+  return response(request, { reports: (rows.results || []).map(row => ({
+    ...row,
+    report: JSON.parse(row.report_json)
+  })) });
 }
 
 async function adminMevoReports(request, env) {
