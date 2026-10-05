@@ -506,6 +506,10 @@ async function saveAdminMevoReport(request, env, idValue = "") {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 120) return response(request, { error: "Slug report tidak valid." }, 400);
   if (!["id", "en"].includes(language) || !["draft", "published", "archived"].includes(status)) return response(request, { error: "Bahasa atau status report tidak valid." }, 400);
   if (!title || title.length > 240 || teaser.length > 1200 || !report || typeof report !== "object" || Array.isArray(report)) return response(request, { error: "Judul, cuplikan, dan isi report JSON wajib diisi dengan format yang benar." }, 400);
+  const reportBody = typeof report.body === "string" ? report.body.trim() : "";
+  const hasStructuredBody = Boolean(report.summary || report.lead || report.conclusion || (Array.isArray(report.sections) && report.sections.length) || (Array.isArray(report.recommendations) && report.recommendations.length));
+  if (status === "published" && !reportBody && !hasStructuredBody) return response(request, { error: "Report belum dapat diterbitkan karena isi report masih kosong." }, 400);
+  if (status === "published" && (!Array.isArray(report.sources) || !report.sources.length)) return response(request, { error: "Tambahkan minimal satu tautan sumber pada kolom sumber atau di dalam naskah sebelum menerbitkan." }, 400);
   const timestamp = now();
   const current = idValue ? await env.DB.prepare("SELECT id, published_at, source_batch_id FROM mevo_member_reports WHERE id = ?").bind(idValue).first() : null;
   if (idValue && !current) return response(request, { error: "Report tidak ditemukan." }, 404);

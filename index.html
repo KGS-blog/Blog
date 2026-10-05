@@ -1329,6 +1329,7 @@ window.__qcoAnLang = function (lang) {
     </div>
     <div id="section-mevoreports" class="dashboard-section hidden">
         <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Report by MEVO</h3><p class="text-sm text-coffee-500 mt-1">Kelola report anggota. Report yang diunggah pipeline masuk sebagai draft sampai admin menerbitkannya.</p></div><button type="button" class="btn-secondary" onclick="loadMevoReports()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <div id="mevo-report-action-status" class="text-sm text-coffee-700 mb-3" role="status" aria-live="polite"></div>
         <div id="mevo-report-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
         <form id="mevo-report-form" class="content-card space-y-3 mb-6">
             <input id="mevo-report-id" type="hidden">
@@ -1336,7 +1337,7 @@ window.__qcoAnLang = function (lang) {
             <label class="block text-sm">Judul<input id="mevo-report-title" class="w-full px-3 py-2 border rounded mt-1" required maxlength="240"></label>
             <label class="block text-sm">Cuplikan<textarea id="mevo-report-teaser" class="w-full px-3 py-2 border rounded mt-1" rows="2" maxlength="1200"></textarea></label>
             <label class="block text-sm">Isi report<textarea id="mevo-report-body" class="w-full px-3 py-2 border rounded mt-1" rows="16" required placeholder="Tulis report seperti dokumen biasa. Pisahkan paragraf dengan satu baris kosong."></textarea><span class="block text-xs text-coffee-500 mt-1">Tulis atau tempel naskah biasa. Sistem menyimpannya dalam format yang diperlukan; Anda tidak perlu membuat JSON.</span></label>
-            <label class="block text-sm">Tautan sumber (opsional, satu URL per baris)<textarea id="mevo-report-sources" class="w-full px-3 py-2 border rounded mt-1" rows="3" placeholder="https://contoh.id/laporan"></textarea></label>
+            <label class="block text-sm">Tautan sumber (wajib untuk publikasi, satu URL per baris)<textarea id="mevo-report-sources" class="w-full px-3 py-2 border rounded mt-1" rows="3" placeholder="https://contoh.id/laporan"></textarea><span class="block text-xs text-coffee-500 mt-1">URL yang tercantum di dalam naskah akan dideteksi otomatis. Tautan sumber tetap sama di versi ID dan EN.</span></label>
             <p class="text-xs text-coffee-500">Saat diterbitkan, sistem membuat versi ID dan EN secara otomatis. Versi terjemahan diberi label dan sumber serta tautannya dipertahankan. Penerjemahan memakai Cloudflare Workers AI dan dapat menimbulkan biaya pemakaian.</p>
             <div class="flex flex-wrap gap-2"><button type="submit" class="btn-primary">Simpan sebagai draft</button><button type="button" class="btn-secondary" onclick="publishMevoReport()">Terbitkan dalam ID + EN</button><button type="button" class="btn-secondary" onclick="resetMevoReportForm()">Bersihkan</button></div>
         </form>
@@ -3201,11 +3202,16 @@ function mevoReportText(report) {
     return blocks.join("\n\n");
 }
 function mevoReportSourceList(report) {
-    return (Array.isArray(report?.sources) ? report.sources : []).map(source => source?.url || "").filter(Boolean).join("\n");
+    const urls = (Array.isArray(report?.sources) ? report.sources : []).map(source => source?.url || "");
+    if (typeof report?.body === "string") urls.push(...(report.body.match(/https?:\/\/[^\s<>)\]]+/gi) || []));
+    return [...new Set(urls.map(url => url.replace(/[.,;:!?]+$/g, "")).filter(Boolean))].join("\n");
 }
 function mevoReportPayload(status) {
     const body = document.getElementById("mevo-report-body").value.trim();
-    const sources = document.getElementById("mevo-report-sources").value.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(url => {
+    const sourceLines = document.getElementById("mevo-report-sources").value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+    const bodyUrls = body.match(/https?:\/\/[^\s<>)\]]+/gi) || [];
+    const sourceUrls = [...new Set([...sourceLines, ...bodyUrls].map(url => url.replace(/[.,;:!?]+$/g, "")))];
+    const sources = sourceUrls.map(url => {
         try { const parsed = new URL(url); if (!["http:", "https:"].includes(parsed.protocol)) throw new Error(); return { title: parsed.hostname, url: parsed.href }; }
         catch (_) { throw new Error("Periksa tautan sumber. Masukkan satu alamat https:// atau http:// per baris."); }
     });
@@ -3221,7 +3227,12 @@ function mevoReportPayload(status) {
     };
 }
 async function saveMevoReport(status) {
-    const note = document.getElementById("mevo-report-status");
+    const note = document.getElementById("mevo-report-action-status");
+    const submitButton = document.querySelector('#mevo-report-form button[type="submit"]');
+    const publishButton = document.querySelector('#mevo-report-form button[onclick="publishMevoReport()"]');
+    if (submitButton) submitButton.disabled = true;
+    if (publishButton) publishButton.disabled = true;
+    note.textContent = status === "published" ? "Menerbitkan report dan menyiapkan versi ID + EN…" : "Menyimpan report sebagai draft…";
     try {
         const item = mevoReportPayload(status);
         const path = item.id ? "/admin/mevo-reports/" + encodeURIComponent(item.id) : "/admin/mevo-reports";
@@ -3237,7 +3248,8 @@ async function saveMevoReport(status) {
             : "Report tersimpan sebagai draft.";
         resetMevoReportForm();
         await loadMevoReports();
-    } catch (error) { note.textContent = error.message; }
+    } catch (error) { note.textContent = `Gagal: ${error.message}`; }
+    finally { if (submitButton) submitButton.disabled = false; if (publishButton) publishButton.disabled = false; }
 }
 function publishMevoReport() { saveMevoReport("published"); }
 async function loadMevoReports() {
@@ -3275,7 +3287,8 @@ async function loadMevoReports() {
                 const translate = document.createElement("button"); translate.type = "button"; translate.className = "btn-secondary"; translate.textContent = "Buat / perbarui versi bahasa";
                 translate.addEventListener("click", async () => {
                     translate.disabled = true;
-                    status.textContent = "Membuat versi bahasa dengan penerjemah otomatis…";
+                    const actionStatus = document.getElementById("mevo-report-action-status");
+                    actionStatus.textContent = "Membuat versi bahasa dengan penerjemah otomatis…";
                     try {
                         const response = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
                             method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" },
@@ -3283,24 +3296,32 @@ async function loadMevoReports() {
                         });
                         const result = await response.json().catch(() => ({}));
                         if (!response.ok) throw new Error(result.error || "Versi bahasa gagal dibuat.");
-                        status.textContent = result.translation_preserved
+                        actionStatus.textContent = result.translation_preserved
                             ? `Versi ${result.translated_language.toUpperCase()} yang sudah disunting editor dipertahankan; tidak ditimpa terjemahan otomatis.`
                             : `Kedua bahasa diterbitkan: ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}. Periksa hasil terjemahan otomatis.`;
                         await loadMevoReports();
-                    } catch (error) { status.textContent = error.message; translate.disabled = false; }
+                    } catch (error) { actionStatus.textContent = `Gagal membuat versi bahasa: ${error.message}`; translate.disabled = false; }
                 });
                 actions.append(translate);
             }
             if (report.status !== "published") {
                 const publish = document.createElement("button"); publish.type = "button"; publish.className = "btn-primary"; publish.textContent = "Terbitkan";
                 publish.addEventListener("click", async () => {
-                    const response = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
-                        method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ slug: report.slug, language: report.language, title: report.title, teaser: report.teaser, report: report.report, status: "published" })
-                    });
-                    const result = await response.json().catch(() => ({}));
-                    if (!response.ok) { status.textContent = result.error || "Report gagal diterbitkan."; return; }
-                    await loadMevoReports();
+                    const actionStatus = document.getElementById("mevo-report-action-status");
+                    publish.disabled = true;
+                    actionStatus.textContent = "Menerbitkan report dan menyiapkan versi ID + EN…";
+                    try {
+                        const response = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
+                            method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ slug: report.slug, language: report.language, title: report.title, teaser: report.teaser, report: report.report, status: "published" })
+                        });
+                        const result = await response.json().catch(() => ({}));
+                        if (!response.ok) throw new Error(result.error || "Report gagal diterbitkan.");
+                        actionStatus.textContent = result.translation_preserved
+                            ? `Berhasil diterbitkan. Versi ${result.translated_language.toUpperCase()} yang sudah disunting editor tetap digunakan.`
+                            : `Berhasil diterbitkan dalam ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}. Periksa versi terjemahan.`;
+                        await loadMevoReports();
+                    } catch (error) { actionStatus.textContent = `Gagal menerbitkan: ${error.message}`; publish.disabled = false; }
                 }); actions.append(publish);
             }
             card.append(title, meta, teaser, actions); list.append(card);
