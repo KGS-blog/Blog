@@ -1333,7 +1333,7 @@ window.__qcoAnLang = function (lang) {
         <div id="mevo-report-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
         <form id="mevo-report-form" class="content-card space-y-3 mb-6">
             <input id="mevo-report-id" type="hidden">
-            <div class="grid md:grid-cols-2 gap-3"><label class="text-sm">Slug (dibuat otomatis dari judul)<input id="mevo-report-slug" class="w-full px-3 py-2 border rounded mt-1 bg-gray-50" readonly required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="120"><span class="block text-xs text-coffee-500 mt-1">Alamat report dibuat otomatis dan diakhiri -id atau -en.</span></label><label class="text-sm">Bahasa<select id="mevo-report-language" class="w-full px-3 py-2 border rounded mt-1"><option value="id">Indonesia</option><option value="en">English</option></select></label></div>
+            <div class="grid md:grid-cols-2 gap-3"><label class="text-sm">Slug (dibuat otomatis dari judul)<input id="mevo-report-slug" class="w-full px-3 py-2 border rounded mt-1 bg-gray-50" readonly required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="120"><span class="block text-xs text-coffee-500 mt-1">Alamat report dibuat otomatis dan diakhiri -id atau -en.</span></label><label class="text-sm">Bahasa naskah sumber<select id="mevo-report-language" class="w-full px-3 py-2 border rounded mt-1"><option value="id">Indonesia</option><option value="en">English</option></select><span id="mevo-report-language-hint" class="block text-xs text-coffee-500 mt-1">Pilih bahasa naskah yang Anda tempel. Versi pasangan dibuat saat diterbitkan.</span></label></div>
             <label class="block text-sm">Judul<input id="mevo-report-title" class="w-full px-3 py-2 border rounded mt-1" required maxlength="240"></label>
             <label class="block text-sm">Cuplikan<textarea id="mevo-report-teaser" class="w-full px-3 py-2 border rounded mt-1" rows="2" maxlength="1200"></textarea></label>
             <label class="block text-sm">Isi report<textarea id="mevo-report-body" class="w-full px-3 py-2 border rounded mt-1" rows="16" required placeholder="Tulis report seperti dokumen biasa. Pisahkan paragraf dengan satu baris kosong."></textarea><span class="block text-xs text-coffee-500 mt-1">Tulis atau tempel naskah biasa. Sistem menyimpannya dalam format yang diperlukan; Anda tidak perlu membuat JSON.</span></label>
@@ -3185,6 +3185,30 @@ function updateMevoReportSlug() {
     const slug = title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
         .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 110).replace(/-+$/g, "");
     document.getElementById("mevo-report-slug").value = slug ? `${slug}-${language}` : "";
+    updateMevoReportLanguageHint();
+}
+const MEVO_LANGUAGE_WORDS = {
+    id: new Set("yang dan di ke dari dengan untuk ini itu pada dalam adalah sebagai akan sudah belum oleh para tidak bisa dapat juga bahwa hanya hingga karena tetapi menjadi mereka kita kami anda kopi petani laporan setelah sebelum menunjukkan menilai sumber penelitian pengolahan nilai harga".split(" ")),
+    en: new Set("the and of to in for from with this that is are was were by as has have will can but into their they we you coffee farmers report after before shows assess sources research processing value price".split(" "))
+};
+function detectMevoLanguage(text) {
+    const words = String(text || "").toLowerCase().match(/[a-z]+/g) || [];
+    if (words.length < 40) return null;
+    let idScore = 0, enScore = 0;
+    for (const word of words) { if (MEVO_LANGUAGE_WORDS.id.has(word)) idScore++; if (MEVO_LANGUAGE_WORDS.en.has(word)) enScore++; }
+    if (idScore >= 6 && idScore >= enScore * 1.7) return "id";
+    if (enScore >= 6 && enScore >= idScore * 1.7) return "en";
+    return null;
+}
+function updateMevoReportLanguageHint() {
+    const hint = document.getElementById("mevo-report-language-hint");
+    if (!hint) return;
+    const selected = document.getElementById("mevo-report-language")?.value || "id";
+    const sample = `${document.getElementById("mevo-report-body")?.value || ""} ${document.getElementById("mevo-report-title")?.value || ""} ${document.getElementById("mevo-report-teaser")?.value || ""}`;
+    const detected = detectMevoLanguage(sample);
+    hint.textContent = detected && detected !== selected
+        ? `Naskah tampak berbahasa ${detected === "id" ? "Indonesia" : "Inggris"}. Pilih bahasa tersebut; saat diterbitkan, sistem membuat versi pasangannya.`
+        : "Pilih bahasa naskah yang Anda tempel. Versi pasangan dibuat saat diterbitkan.";
 }
 function mevoReportText(report) {
     if (typeof report?.body === "string") return report.body;
@@ -3208,6 +3232,11 @@ function mevoReportSourceList(report) {
 }
 function mevoReportPayload(status) {
     const body = document.getElementById("mevo-report-body").value.trim();
+    const language = document.getElementById("mevo-report-language").value;
+    const detectedLanguage = detectMevoLanguage(`${body} ${document.getElementById("mevo-report-title").value} ${document.getElementById("mevo-report-teaser").value}`);
+    if (detectedLanguage && detectedLanguage !== language) {
+        throw new Error(`Naskah tampak berbahasa ${detectedLanguage === "id" ? "Indonesia" : "Inggris"}. Pilih bahasa itu sebagai bahasa naskah sumber; sistem akan membuat versi pasangannya saat diterbitkan.`);
+    }
     const sourceLines = document.getElementById("mevo-report-sources").value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
     const bodyUrls = body.match(/https?:\/\/[^\s<>)\]]+/gi) || [];
     const sourceUrls = [...new Set([...sourceLines, ...bodyUrls].map(url => url.replace(/[.,;:!?]+$/g, "")))];
@@ -3219,7 +3248,7 @@ function mevoReportPayload(status) {
     return {
         id: document.getElementById("mevo-report-id").value,
         slug: document.getElementById("mevo-report-slug").value.trim(),
-        language: document.getElementById("mevo-report-language").value,
+        language,
         title: document.getElementById("mevo-report-title").value.trim(),
         teaser: document.getElementById("mevo-report-teaser").value.trim(),
         report,
@@ -3262,13 +3291,16 @@ async function loadMevoReports() {
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || "Report belum dapat dimuat.");
         const reports = data.reports || [];
-        status.textContent = reports.length + " report tersimpan. Draft hanya dapat dibaca admin.";
+        const draftCount = reports.filter(report => report.status === "draft").length;
+        const publishedCount = reports.filter(report => report.status === "published").length;
+        status.textContent = `${reports.length} report tersimpan: ${publishedCount} terbit, ${draftCount} draft. Draft tidak terlihat di area anggota.`;
         list.replaceChildren();
         if (!reports.length) { const empty = document.createElement("div"); empty.className = "content-card text-coffee-500"; empty.textContent = "Belum ada report. Buat report di formulir ini atau unggah melalui endpoint sinkronisasi MEVO."; list.append(empty); return; }
         reports.forEach(report => {
             const card = document.createElement("article"); card.className = "content-card";
             const title = document.createElement("h4"); title.className = "font-serif text-lg font-bold text-coffee-900"; title.textContent = report.title;
-            const meta = document.createElement("p"); meta.className = "text-xs text-coffee-500 my-2"; meta.textContent = `${report.language.toUpperCase()} · ${report.slug} · ${report.status} · ${report.generated_by || "admin"}`;
+            const sourceCount = mevoReportSourceList(report.report || {}).split("\n").filter(Boolean).length;
+            const meta = document.createElement("p"); meta.className = "text-xs text-coffee-500 my-2"; meta.textContent = `${report.language.toUpperCase()} · ${report.slug} · ${report.status} · ${sourceCount} sumber · ${report.generated_by || "admin"}`;
             const teaser = document.createElement("p"); teaser.className = "text-sm text-coffee-700"; teaser.textContent = report.teaser || "Tanpa cuplikan.";
             const actions = document.createElement("div"); actions.className = "flex gap-2 mt-3";
             const edit = document.createElement("button"); edit.type = "button"; edit.className = "btn-secondary"; edit.textContent = "Edit";
@@ -3331,6 +3363,8 @@ async function loadMevoReports() {
 document.getElementById("mevo-report-form")?.addEventListener("submit", event => { event.preventDefault(); saveMevoReport("draft"); });
 document.getElementById("mevo-report-title")?.addEventListener("input", updateMevoReportSlug);
 document.getElementById("mevo-report-language")?.addEventListener("change", updateMevoReportSlug);
+document.getElementById("mevo-report-body")?.addEventListener("input", updateMevoReportLanguageHint);
+document.getElementById("mevo-report-teaser")?.addEventListener("input", updateMevoReportLanguageHint);
 updateMevoReportSlug();
 function adminLogout() {
     fetch(BLOG_SYNC_API + "/auth/logout", { method: "POST", credentials: "include", cache: "no-store" }).catch(() => {});

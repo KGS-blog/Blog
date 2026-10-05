@@ -413,6 +413,30 @@ async function adminMevoReports(request, env) {
 
 const MEVO_TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
 const MAX_MEVO_TRANSLATION_CHARS = 100000;
+const MEVO_LANGUAGE_WORDS = {
+  id: new Set("yang dan di ke dari dengan untuk ini itu pada dalam adalah sebagai akan sudah belum oleh para tidak bisa dapat juga bahwa hanya hingga karena tetapi menjadi mereka kita kami anda kopi petani laporan setelah sebelum menunjukkan menilai sumber penelitian pengolahan nilai harga".split(" ")),
+  en: new Set("the and of to in for from with this that is are was were by as has have will can but into their they we you coffee farmers report after before shows assess sources research processing value price".split(" "))
+};
+
+function mevoLanguageText(value, key = "") {
+  if (typeof value === "string") return ["sources", "citations", "url", "href"].includes(key) ? "" : value;
+  if (Array.isArray(value)) return value.map(item => mevoLanguageText(item)).join(" ");
+  if (!value || typeof value !== "object") return "";
+  return Object.entries(value).map(([childKey, child]) => mevoLanguageText(child, childKey)).join(" ");
+}
+
+function detectMevoLanguage(text) {
+  const tokens = String(text || "").toLowerCase().match(/[a-z]+/g) || [];
+  if (tokens.length < 40) return null;
+  let idScore = 0, enScore = 0;
+  for (const token of tokens) {
+    if (MEVO_LANGUAGE_WORDS.id.has(token)) idScore++;
+    if (MEVO_LANGUAGE_WORDS.en.has(token)) enScore++;
+  }
+  if (idScore >= 6 && idScore >= enScore * 1.7) return "id";
+  if (enScore >= 6 && enScore >= idScore * 1.7) return "en";
+  return null;
+}
 
 async function translateMevoText(env, value, sourceLanguage, targetLanguage) {
   if (typeof value !== "string" || !value.trim()) return value;
@@ -510,6 +534,8 @@ async function saveAdminMevoReport(request, env, idValue = "") {
   const hasStructuredBody = Boolean(report.summary || report.lead || report.conclusion || (Array.isArray(report.sections) && report.sections.length) || (Array.isArray(report.recommendations) && report.recommendations.length));
   if (status === "published" && !reportBody && !hasStructuredBody) return response(request, { error: "Report belum dapat diterbitkan karena isi report masih kosong." }, 400);
   if (status === "published" && (!Array.isArray(report.sources) || !report.sources.length)) return response(request, { error: "Tambahkan minimal satu tautan sumber pada kolom sumber atau di dalam naskah sebelum menerbitkan." }, 400);
+  const detectedLanguage = detectMevoLanguage(`${title} ${teaser} ${mevoLanguageText(report)}`);
+  if (detectedLanguage && detectedLanguage !== language) return response(request, { error: `Isi naskah terdeteksi berbahasa ${detectedLanguage.toUpperCase()}, tetapi pilihan bahasa sumber adalah ${language.toUpperCase()}. Perbaiki pilihan bahasa agar pasangan terjemahan tidak tertukar.` }, 400);
   const timestamp = now();
   const current = idValue ? await env.DB.prepare("SELECT id, published_at, source_batch_id FROM mevo_member_reports WHERE id = ?").bind(idValue).first() : null;
   if (idValue && !current) return response(request, { error: "Report tidak ditemukan." }, 404);
@@ -524,12 +550,19 @@ async function saveAdminMevoReport(request, env, idValue = "") {
       console.error("MEVO report translation failed", error);
       return response(request, { error: `Report belum diterbitkan karena terjemahan otomatis gagal: ${error.message}` }, 502);
     }
-    translatedCurrent = await env.DB.prepare("SELECT id, slug, language, published_at, status, generated_by FROM mevo_member_reports WHERE slug = ?").bind(translated.slug).first();
-    // Never replace an editor-authored translation with machine-generated text.
-    // A published counterpart already completes the bilingual pair; leave it intact.
+    translatedCurrent = await env.DB.prepare("SELECT id, slug, language, title, teaser, report_json, published_at, status, generated_by FROM mevo_member_reports WHERE slug = ?").bind(translated.slug).first();
+    // Repair a counterpart that was previously saved under the wrong language,
+    // while preserving a valid editor-authored version in the target language.
     if (translatedCurrent && translatedCurrent.generated_by !== "admin-auto-translated") {
-      if (translatedCurrent.status === "published") translated = null;
-      else return response(request, { error: `Versi ${language === "id" ? "EN" : "ID"} dengan slug ${translated.slug} sudah ada sebagai draft. Terbitkan atau hapus draft itu terlebih dahulu.` }, 409);
+      let existingLanguage = null;
+      try { existingLanguage = detectMevoLanguage(`${translatedCurrent.title} ${translatedCurrent.teaser} ${mevoLanguageText(JSON.parse(translatedCurrent.report_json))}`); } catch (_) { /* malformed content is regenerated instead of shown as a valid counterpart */ }
+      if (existingLanguage === translated.language) {
+        if (translatedCurrent.status === "published") translated = null;
+        else return response(request, { error: `Versi ${translated.language.toUpperCase()} sudah ada sebagai draft. Periksa dan terbitkan draft tersebut terlebih dahulu.` }, 409);
+      } else if (!existingLanguage) {
+        if (translatedCurrent.status === "published") translated = null;
+        else return response(request, { error: `Versi ${translated.language.toUpperCase()} sudah ada sebagai draft dan bahasanya belum dapat dipastikan. Periksa draft tersebut terlebih dahulu.` }, 409);
+      }
     }
   }
   const statements = [env.DB.prepare(`INSERT INTO mevo_member_reports
