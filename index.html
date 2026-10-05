@@ -3124,9 +3124,10 @@ document.getElementById("cluster-review-list")?.addEventListener("click", async 
             const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-decisions", { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ article_url: url, cluster_id: clusterId }) }, 10000);
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error || "Klasifikasi artikel gagal disimpan.");
-            document.getElementById("cluster-review-status").textContent = "Keputusan editor tersimpan. Berita akan masuk ke klaster terpilih pada pemrosesan feed berikutnya.";
-            await loadClusterReview();
-        } catch (error) { document.getElementById("cluster-review-status").textContent = error.message; articleButton.disabled = false; }
+            articleButton.closest("article")?.remove();
+            document.getElementById("cluster-review-status").textContent = "Keputusan tersimpan dan artikel dikeluarkan dari antrean tinjauan. Feed publik memakai klaster pilihan pada pemrosesan berikutnya.";
+            showToast("Keputusan klaster tersimpan.", "success");
+        } catch (error) { document.getElementById("cluster-review-status").textContent = error.message; showToast(error.message, "error"); articleButton.disabled = false; }
         return;
     }
     const button = event.target.closest("button[data-candidate-id][data-decision]");

@@ -268,6 +268,16 @@ export default {
         document.updated_at = new Date().toISOString();
         const result = await writeGithubJson(env, CLUSTER_DECISIONS_FILE, document, latest.sha, articleDecision ? `Classify coffee news: ${clusterId}` : `Review coffee cluster: ${decision}`);
         if (result.conflict) return json({ error: "Keputusan lain baru saja tersimpan. Muat ulang halaman dan coba lagi.", conflict: true }, 409, {}, request);
+        if (articleDecision) {
+          try {
+            await saveClusterCandidates(env.DB, {
+              ...candidates,
+              unassigned_articles: (candidates.unassigned_articles || []).filter(article => article.url !== articleUrl)
+            });
+          } catch (queueError) {
+            console.error("Editor decision saved, but private review queue refresh failed", queueError);
+          }
+        }
         return json({ ...document, sha: result.sha }, 200, {}, request);
       } catch (_) {
         return json({ error: "Keputusan gagal disimpan. Coba lagi." }, 502, {}, request);
