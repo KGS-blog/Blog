@@ -3231,7 +3231,10 @@ async function saveMevoReport(status) {
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || "Report gagal disimpan.");
-        note.textContent = status === "published" ? `Report diterbitkan dalam ${item.language.toUpperCase()} + ${data.translated_language?.toUpperCase() || "bahasa pasangan"}. Terjemahan otomatis perlu diperiksa editor.` : "Report tersimpan sebagai draft.";
+        note.textContent = status === "published" ? (data.translation_preserved
+            ? `Report diterbitkan. Versi ${data.translated_language?.toUpperCase() || "bahasa pasangan"} yang sudah disunting editor tetap dipakai.`
+            : `Report diterbitkan dalam ${item.language.toUpperCase()} + ${data.translated_language?.toUpperCase() || "bahasa pasangan"}. Terjemahan otomatis perlu diperiksa editor.`)
+            : "Report tersimpan sebagai draft.";
         resetMevoReportForm();
         await loadMevoReports();
     } catch (error) { note.textContent = error.message; }
@@ -3280,7 +3283,9 @@ async function loadMevoReports() {
                         });
                         const result = await response.json().catch(() => ({}));
                         if (!response.ok) throw new Error(result.error || "Versi bahasa gagal dibuat.");
-                        status.textContent = `Kedua bahasa diterbitkan: ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}.`;
+                        status.textContent = result.translation_preserved
+                            ? `Versi ${result.translated_language.toUpperCase()} yang sudah disunting editor dipertahankan; tidak ditimpa terjemahan otomatis.`
+                            : `Kedua bahasa diterbitkan: ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}. Periksa hasil terjemahan otomatis.`;
                         await loadMevoReports();
                     } catch (error) { status.textContent = error.message; translate.disabled = false; }
                 });

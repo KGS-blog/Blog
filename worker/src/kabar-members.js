@@ -520,7 +520,13 @@ async function saveAdminMevoReport(request, env, idValue = "") {
       console.error("MEVO report translation failed", error);
       return response(request, { error: `Report belum diterbitkan karena terjemahan otomatis gagal: ${error.message}` }, 502);
     }
-    translatedCurrent = await env.DB.prepare("SELECT id, published_at FROM mevo_member_reports WHERE slug = ?").bind(translated.slug).first();
+    translatedCurrent = await env.DB.prepare("SELECT id, slug, language, published_at, status, generated_by FROM mevo_member_reports WHERE slug = ?").bind(translated.slug).first();
+    // Never replace an editor-authored translation with machine-generated text.
+    // A published counterpart already completes the bilingual pair; leave it intact.
+    if (translatedCurrent && translatedCurrent.generated_by !== "admin-auto-translated") {
+      if (translatedCurrent.status === "published") translated = null;
+      else return response(request, { error: `Versi ${language === "id" ? "EN" : "ID"} dengan slug ${translated.slug} sudah ada sebagai draft. Terbitkan atau hapus draft itu terlebih dahulu.` }, 409);
+    }
   }
   const statements = [env.DB.prepare(`INSERT INTO mevo_member_reports
     (id, slug, language, title, teaser, report_json, status, source_batch_id, generated_by, created_at, updated_at, published_at)
@@ -543,7 +549,7 @@ async function saveAdminMevoReport(request, env, idValue = "") {
         timestamp, timestamp, translatedCurrent?.published_at || timestamp));
   }
   await env.DB.batch(statements);
-  return response(request, { id: reportId, slug, status, saved: true, translated_language: translated?.language || null, translated_slug: translated?.slug || null }, 200);
+  return response(request, { id: reportId, slug, status, saved: true, translated_language: translated?.language || translatedCurrent?.language || null, translated_slug: translated?.slug || translatedCurrent?.slug || null, translation_preserved: Boolean(translatedCurrent && !translated) }, 200);
 }
 
 async function syncMevoReports(request, env) {
