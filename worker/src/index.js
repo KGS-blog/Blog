@@ -119,7 +119,11 @@ async function saveClusterCandidates(db, document) {
   await db.prepare("INSERT INTO kabar_workflow_documents (document_key, document_json, updated_at) VALUES (?, ?, ?) ON CONFLICT(document_key) DO UPDATE SET document_json = excluded.document_json, updated_at = excluded.updated_at")
     .bind(CLUSTER_CANDIDATES_KEY, JSON.stringify(document), new Date().toISOString()).run();
 }
-function validCandidateDocument(value) { return value && Array.isArray(value.candidates) && value.candidates.length <= 1000; }
+function validCandidateDocument(value) {
+  if (!value || !Array.isArray(value.candidates) || value.candidates.length > 1000) return false;
+  if (value.unassigned_articles !== undefined && (!Array.isArray(value.unassigned_articles) || value.unassigned_articles.length > 500)) return false;
+  return (value.unassigned_articles || []).every(article => article && typeof article.url === "string" && /^https?:\/\//i.test(article.url) && typeof article.title === "string");
+}
 async function matchesSecret(input, expected) {
   if (!input || !expected) return false;
   const [actual, target] = await Promise.all([input, expected].map(x => crypto.subtle.digest("SHA-256", new TextEncoder().encode(x))));
@@ -228,23 +232,41 @@ export default {
       try { body = await request.json(); } catch (_) { return json({ error: "Format permintaan tidak valid." }, 400, {}, request); }
       const candidateId = String(body.candidate_id || "");
       const decision = String(body.decision || "");
-      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(candidateId) || !["accepted", "rejected"].includes(decision)) {
-        return json({ error: "Keputusan klaster tidak valid." }, 400, {}, request);
+      const articleUrl = String(body.article_url || "");
+      const clusterId = String(body.cluster_id || "");
+      const articleDecision = Boolean(articleUrl);
+      if (articleDecision) {
+        let parsed;
+        try { parsed = new URL(articleUrl); } catch (_) { return json({ error: "URL berita tidak valid." }, 400, {}, request); }
+        if (!/^https?:$/.test(parsed.protocol) || !clusterId) return json({ error: "Pilih salah satu klaster yang tersedia." }, 400, {}, request);
+      } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(candidateId) || !["accepted", "rejected"].includes(decision)) {
+        return json({ error: "Keputusan kandidat klaster tidak valid." }, 400, {}, request);
       }
       try {
         const candidates = await readClusterCandidates.call(env);
-        if (!(candidates.candidates || []).some(candidate => candidate.id === candidateId)) {
+        const knownClusters = new Set(["lainnya", "harga-pasar", "produksi-panen", "kebijakan-regulasi", "event-kompetisi", "barista-teknik-seduh", "riset-tren-konsumen", "kedai-konsumsi-gaya-hidup", "ekspor-daya-saing", "pendidikan-industri", "brand-global"]);
+        for (const candidate of candidates.candidates || []) if (candidate.status === "accepted") knownClusters.add(candidate.id);
+        if (articleDecision && !knownClusters.has(clusterId)) return json({ error: "Pilih salah satu klaster yang tersedia." }, 400, {}, request);
+        if (articleDecision && !(candidates.unassigned_articles || []).some(article => article.url === articleUrl)) {
+          return json({ error: "Artikel tidak ditemukan di antrean Lainnya. Muat ulang halaman." }, 404, {}, request);
+        }
+        if (!articleDecision && !(candidates.candidates || []).some(candidate => candidate.id === candidateId)) {
           return json({ error: "Kandidat ini sudah tidak tersedia. Muat ulang halaman." }, 404, {}, request);
         }
         const latest = await readGithubJson(env, CLUSTER_DECISIONS_FILE);
         const document = latest.data || { version: 1, accepted_candidate_ids: [], rejected_candidate_ids: [] };
         if (!validDecisionDocument(document)) return json({ error: "Format keputusan klaster tidak valid." }, 502, {}, request);
-        document.accepted_candidate_ids = document.accepted_candidate_ids.filter(id => id !== candidateId);
-        document.rejected_candidate_ids = document.rejected_candidate_ids.filter(id => id !== candidateId);
-        document[decision === "accepted" ? "accepted_candidate_ids" : "rejected_candidate_ids"].push(candidateId);
+        if (articleDecision) {
+          const overrides = Array.isArray(document.overrides) ? document.overrides : [];
+          document.overrides = [...overrides.filter(item => String(item.url || item.tautan || "") !== articleUrl), { url: articleUrl, cluster_id: clusterId, decided_at: new Date().toISOString() }];
+        } else {
+          document.accepted_candidate_ids = document.accepted_candidate_ids.filter(id => id !== candidateId);
+          document.rejected_candidate_ids = document.rejected_candidate_ids.filter(id => id !== candidateId);
+          document[decision === "accepted" ? "accepted_candidate_ids" : "rejected_candidate_ids"].push(candidateId);
+        }
         document.version = 1;
         document.updated_at = new Date().toISOString();
-        const result = await writeGithubJson(env, CLUSTER_DECISIONS_FILE, document, latest.sha, `Review coffee cluster: ${decision}`);
+        const result = await writeGithubJson(env, CLUSTER_DECISIONS_FILE, document, latest.sha, articleDecision ? `Classify coffee news: ${clusterId}` : `Review coffee cluster: ${decision}`);
         if (result.conflict) return json({ error: "Keputusan lain baru saja tersimpan. Muat ulang halaman dan coba lagi.", conflict: true }, 409, {}, request);
         return json({ ...document, sha: result.sha }, 200, {}, request);
       } catch (_) {

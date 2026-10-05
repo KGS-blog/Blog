@@ -1323,7 +1323,7 @@ window.__qcoAnLang = function (lang) {
         <div id="field-moderation-list" class="space-y-4"><div class="content-card">Memuat antrean…</div></div>
     </div>
     <div id="section-clusters" class="dashboard-section hidden">
-        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Tinjau kandidat klaster Kabar Kopi</h3><p class="text-sm text-coffee-500 mt-1">Panel ini hanya tersedia setelah admin masuk. Keputusan diterapkan pada proses pengolahan feed berikutnya.</p></div><button type="button" class="btn-secondary" onclick="loadClusterReview()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Tinjau klaster Kabar Kopi</h3><p class="text-sm text-coffee-500 mt-1">Artikel yang belum cocok dengan yakin ditampilkan satu per satu di Lainnya. Baca konteks dan sumber asli, pilih klaster, lalu tetapkan keputusan editor. Perubahan masuk ke feed pada pemrosesan berikutnya.</p></div><button type="button" class="btn-secondary" onclick="loadClusterReview()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
         <div id="cluster-review-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
         <div id="cluster-review-list" class="space-y-4"><div class="content-card">Pilih muat ulang untuk mengambil kandidat.</div></div>
     </div>
@@ -3055,11 +3055,33 @@ async function loadClusterReview() {
         const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-candidates", { credentials: "include", cache: "no-store" }, 10000);
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || "Kandidat klaster belum dapat dimuat.");
+        const articles = data.unassigned_articles || [];
         const candidates = (data.candidates || []).filter(item => ["pending", "needs_review", "accepted", "rejected"].includes(item.status));
-        status.textContent = candidates.length + " kandidat klaster.";
+        status.textContent = articles.length + " artikel Lainnya · " + candidates.length + " usulan klaster.";
         list.replaceChildren();
-        if (!candidates.length) {
+        if (!candidates.length && !articles.length) {
             const empty = document.createElement("div"); empty.className = "content-card text-coffee-500"; empty.textContent = "Belum ada kandidat klaster yang perlu ditinjau."; list.append(empty); return;
+        }
+        const clusterChoices = [
+            ["harga-pasar", "Harga & Pasar"], ["produksi-panen", "Produksi & Panen"], ["kebijakan-regulasi", "Kebijakan & Regulasi"],
+            ["event-kompetisi", "Event & Kompetisi"], ["barista-teknik-seduh", "Barista & Teknik Seduh"], ["riset-tren-konsumen", "Riset & Tren Konsumen"],
+            ["kedai-konsumsi-gaya-hidup", "Kedai, Konsumsi & Gaya Hidup"], ["ekspor-daya-saing", "Ekspor & Daya Saing"],
+            ["pendidikan-industri", "Pendidikan & Industri"], ["brand-global", "Brand Global"], ["lainnya", "Tetap di Lainnya"]
+        ];
+        for (const candidate of candidates) if (candidate.status === "accepted" && !clusterChoices.some(choice => choice[0] === candidate.id)) clusterChoices.splice(clusterChoices.length - 1, 0, [candidate.id, candidate.name]);
+        for (const item of articles) {
+            const card = document.createElement("article"); card.className = "content-card";
+            const label = document.createElement("span"); label.className = "text-xs font-bold uppercase tracking-wide text-coffee-600"; label.textContent = "Artikel belum terklasifikasi · perlu keputusan editor";
+            const title = document.createElement("h4"); title.className = "font-serif text-lg font-bold text-coffee-900 mt-2"; title.textContent = item.title || "Artikel tanpa judul";
+            const meta = document.createElement("p"); meta.className = "text-xs text-coffee-500 mt-1"; meta.textContent = [item.source, item.published_at, item.context_status === "context_unavailable" ? "Konteks isi belum tersedia" : "Konteks penerbit tersedia"].filter(Boolean).join(" · ");
+            const excerpt = document.createElement("p"); excerpt.className = "text-sm text-coffee-600 mt-2"; excerpt.textContent = item.excerpt || "Belum ada cuplikan isi dari sumber. Buka artikel untuk menilai konteksnya.";
+            const sourceLink = document.createElement("a"); sourceLink.href = item.url; sourceLink.target = "_blank"; sourceLink.rel = "noopener noreferrer"; sourceLink.className = "inline-block mt-2 underline text-sm"; sourceLink.textContent = "Buka sumber asli";
+            const controls = document.createElement("div"); controls.className = "flex flex-wrap items-center gap-2 mt-4";
+            const select = document.createElement("select"); select.className = "border border-coffee-300 rounded px-3 py-2"; select.dataset.articleCluster = item.url;
+            const placeholder = document.createElement("option"); placeholder.value = ""; placeholder.textContent = "Pilih klaster tujuan"; select.append(placeholder);
+            for (const [id, name] of clusterChoices) { const option = document.createElement("option"); option.value = id; option.textContent = name; select.append(option); }
+            const approve = document.createElement("button"); approve.type = "button"; approve.className = "btn-primary"; approve.textContent = "Tetapkan klaster"; approve.dataset.articleUrl = item.url;
+            controls.append(select, approve); card.append(label, title, meta, excerpt, sourceLink, controls); list.append(card);
         }
         for (const item of candidates) {
             const card = document.createElement("article"); card.className = "content-card";
@@ -3090,6 +3112,23 @@ async function loadClusterReview() {
     }
 }
 document.getElementById("cluster-review-list")?.addEventListener("click", async event => {
+    const articleButton = event.target.closest("button[data-article-url]");
+    if (articleButton && adminSessionActive) {
+        const url = articleButton.dataset.articleUrl;
+        const select = [...document.querySelectorAll("select[data-article-cluster]")].find(item => item.dataset.articleCluster === url);
+        const clusterId = select?.value || "";
+        if (!clusterId) { showToast("Pilih klaster tujuan terlebih dahulu.", "error"); return; }
+        articleButton.disabled = true;
+        document.getElementById("cluster-review-status").textContent = "Menyimpan klasifikasi editor…";
+        try {
+            const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-decisions", { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ article_url: url, cluster_id: clusterId }) }, 10000);
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || "Klasifikasi artikel gagal disimpan.");
+            document.getElementById("cluster-review-status").textContent = "Keputusan editor tersimpan. Berita akan masuk ke klaster terpilih pada pemrosesan feed berikutnya.";
+            await loadClusterReview();
+        } catch (error) { document.getElementById("cluster-review-status").textContent = error.message; articleButton.disabled = false; }
+        return;
+    }
     const button = event.target.closest("button[data-candidate-id][data-decision]");
     if (!button || !adminSessionActive) return;
     const decision = button.dataset.decision;
