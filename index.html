@@ -1337,7 +1337,8 @@ window.__qcoAnLang = function (lang) {
             <label class="block text-sm">Cuplikan<textarea id="mevo-report-teaser" class="w-full px-3 py-2 border rounded mt-1" rows="2" maxlength="1200"></textarea></label>
             <label class="block text-sm">Isi report<textarea id="mevo-report-body" class="w-full px-3 py-2 border rounded mt-1" rows="16" required placeholder="Tulis report seperti dokumen biasa. Pisahkan paragraf dengan satu baris kosong."></textarea><span class="block text-xs text-coffee-500 mt-1">Tulis atau tempel naskah biasa. Sistem menyimpannya dalam format yang diperlukan; Anda tidak perlu membuat JSON.</span></label>
             <label class="block text-sm">Tautan sumber (opsional, satu URL per baris)<textarea id="mevo-report-sources" class="w-full px-3 py-2 border rounded mt-1" rows="3" placeholder="https://contoh.id/laporan"></textarea></label>
-            <div class="flex flex-wrap gap-2"><button type="submit" class="btn-primary">Simpan sebagai draft</button><button type="button" class="btn-secondary" onclick="publishMevoReport()">Terbitkan untuk anggota</button><button type="button" class="btn-secondary" onclick="resetMevoReportForm()">Bersihkan</button></div>
+            <p class="text-xs text-coffee-500">Saat diterbitkan, sistem membuat versi ID dan EN secara otomatis. Versi terjemahan diberi label dan sumber serta tautannya dipertahankan. Penerjemahan memakai Cloudflare Workers AI dan dapat menimbulkan biaya pemakaian.</p>
+            <div class="flex flex-wrap gap-2"><button type="submit" class="btn-primary">Simpan sebagai draft</button><button type="button" class="btn-secondary" onclick="publishMevoReport()">Terbitkan dalam ID + EN</button><button type="button" class="btn-secondary" onclick="resetMevoReportForm()">Bersihkan</button></div>
         </form>
         <div id="mevo-report-list" class="space-y-4"><div class="content-card">Memuat report…</div></div>
     </div>
@@ -3230,7 +3231,7 @@ async function saveMevoReport(status) {
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || "Report gagal disimpan.");
-        note.textContent = status === "published" ? "Report diterbitkan untuk anggota." : "Report tersimpan sebagai draft.";
+        note.textContent = status === "published" ? `Report diterbitkan dalam ${item.language.toUpperCase()} + ${data.translated_language?.toUpperCase() || "bahasa pasangan"}. Terjemahan otomatis perlu diperiksa editor.` : "Report tersimpan sebagai draft.";
         resetMevoReportForm();
         await loadMevoReports();
     } catch (error) { note.textContent = error.message; }
@@ -3267,6 +3268,24 @@ async function loadMevoReports() {
                 document.getElementById("mevo-report-form").scrollIntoView({ behavior: "smooth", block: "start" });
             });
             actions.append(edit);
+            if (report.status === "published") {
+                const translate = document.createElement("button"); translate.type = "button"; translate.className = "btn-secondary"; translate.textContent = "Buat / perbarui versi bahasa";
+                translate.addEventListener("click", async () => {
+                    translate.disabled = true;
+                    status.textContent = "Membuat versi bahasa dengan penerjemah otomatis…";
+                    try {
+                        const response = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
+                            method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ slug: report.slug, language: report.language, title: report.title, teaser: report.teaser, report: report.report, status: "published" })
+                        });
+                        const result = await response.json().catch(() => ({}));
+                        if (!response.ok) throw new Error(result.error || "Versi bahasa gagal dibuat.");
+                        status.textContent = `Kedua bahasa diterbitkan: ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}.`;
+                        await loadMevoReports();
+                    } catch (error) { status.textContent = error.message; translate.disabled = false; }
+                });
+                actions.append(translate);
+            }
             if (report.status !== "published") {
                 const publish = document.createElement("button"); publish.type = "button"; publish.className = "btn-primary"; publish.textContent = "Terbitkan";
                 publish.addEventListener("click", async () => {

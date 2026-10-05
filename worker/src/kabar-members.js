@@ -411,6 +411,88 @@ async function adminMevoReports(request, env) {
   return response(request, { reports: (rows.results || []).map(row => ({ ...row, report: JSON.parse(row.report_json) })) });
 }
 
+const MEVO_TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
+const MAX_MEVO_TRANSLATION_CHARS = 100000;
+
+async function translateMevoText(env, value, sourceLanguage, targetLanguage) {
+  if (typeof value !== "string" || !value.trim()) return value;
+  const protectedUrls = [];
+  const protectedText = value.replace(/https?:\/\/[^\s<>)\]]+/gi, url => {
+    const token = `MEVOURLTOKEN${protectedUrls.length}X`;
+    protectedUrls.push(url);
+    return token;
+  });
+  const sections = protectedText.split(/(\n\s*\n)/);
+  const translatedSections = [];
+  for (const section of sections) {
+    if (!section.trim() || /^\n\s*\n$/.test(section)) {
+      translatedSections.push(section);
+      continue;
+    }
+    const chunks = [];
+    let remaining = section;
+    while (remaining.length > 1400) {
+      let splitAt = remaining.lastIndexOf(" ", 1400);
+      if (splitAt < 600) splitAt = 1400;
+      chunks.push(remaining.slice(0, splitAt));
+      remaining = remaining.slice(splitAt).trimStart();
+    }
+    if (remaining) chunks.push(remaining);
+    const translatedChunks = [];
+    for (const chunk of chunks) {
+      const result = await env.AI.run(MEVO_TRANSLATION_MODEL, {
+        text: chunk,
+        source_lang: sourceLanguage,
+        target_lang: targetLanguage
+      });
+      const translated = String(result?.translated_text || "").trim();
+      if (!translated) throw new Error("Model penerjemah tidak mengembalikan hasil.");
+      translatedChunks.push(translated);
+    }
+    translatedSections.push(translatedChunks.join(" "));
+  }
+  let translatedText = translatedSections.join("");
+  protectedUrls.forEach((url, index) => {
+    translatedText = translatedText.replaceAll(`MEVOURLTOKEN${index}X`, url);
+  });
+  return translatedText;
+}
+
+async function translateMevoValue(env, value, sourceLanguage, targetLanguage) {
+  if (typeof value === "string") return translateMevoText(env, value, sourceLanguage, targetLanguage);
+  if (Array.isArray(value)) return Promise.all(value.map(item => translateMevoValue(env, item, sourceLanguage, targetLanguage)));
+  if (!value || typeof value !== "object") return value;
+  const result = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (["sources", "citations", "url", "href", "id", "slug", "source_batch_id", "generated_by", "created_at", "updated_at", "published_at", "period_start", "period_end", "machine_translated_from", "machine_translation_model"].includes(key)) {
+      result[key] = item;
+    } else {
+      result[key] = await translateMevoValue(env, item, sourceLanguage, targetLanguage);
+    }
+  }
+  return result;
+}
+
+async function translateMevoReport(env, item, targetLanguage) {
+  if (!env.AI) throw new Error("Penerjemah otomatis belum tersedia pada Worker.");
+  const sourceLanguage = item.language;
+  const serializedLength = item.title.length + item.teaser.length + JSON.stringify(item.report).length;
+  if (serializedLength > MAX_MEVO_TRANSLATION_CHARS) throw new Error("Report terlalu panjang untuk diterjemahkan otomatis. Pecah menjadi beberapa report atau terbitkan versi bahasa secara terpisah.");
+  const translatedReport = await translateMevoValue(env, item.report, sourceLanguage, targetLanguage);
+  translatedReport.machine_translated_from = sourceLanguage;
+  translatedReport.machine_translation_model = MEVO_TRANSLATION_MODEL;
+  const translatedTitle = await translateMevoText(env, item.title, sourceLanguage, targetLanguage);
+  const translatedTeaser = await translateMevoText(env, item.teaser, sourceLanguage, targetLanguage);
+  const stem = item.slug.replace(/-(id|en)$/i, "");
+  return {
+    slug: `${(stem || "report").slice(0, 113)}-${targetLanguage}`,
+    language: targetLanguage,
+    title: translatedTitle,
+    teaser: translatedTeaser,
+    report: translatedReport
+  };
+}
+
 async function saveAdminMevoReport(request, env, idValue = "") {
   if (!env.DB) return response(request, { error: "Penyimpanan Report by MEVO belum dikonfigurasi." }, 503);
   if (!await adminSession(request, env)) return response(request, { error: "Sesi admin diperlukan." }, 401);
@@ -428,7 +510,19 @@ async function saveAdminMevoReport(request, env, idValue = "") {
   const current = idValue ? await env.DB.prepare("SELECT id, published_at, source_batch_id FROM mevo_member_reports WHERE id = ?").bind(idValue).first() : null;
   if (idValue && !current) return response(request, { error: "Report tidak ditemukan." }, 404);
   const reportId = current?.id || id();
-  await env.DB.prepare(`INSERT INTO mevo_member_reports
+  const item = { slug, language, title, teaser, report };
+  let translated = null;
+  let translatedCurrent = null;
+  if (status === "published") {
+    try {
+      translated = await translateMevoReport(env, item, language === "id" ? "en" : "id");
+    } catch (error) {
+      console.error("MEVO report translation failed", error);
+      return response(request, { error: `Report belum diterbitkan karena terjemahan otomatis gagal: ${error.message}` }, 502);
+    }
+    translatedCurrent = await env.DB.prepare("SELECT id, published_at FROM mevo_member_reports WHERE slug = ?").bind(translated.slug).first();
+  }
+  const statements = [env.DB.prepare(`INSERT INTO mevo_member_reports
     (id, slug, language, title, teaser, report_json, status, source_batch_id, generated_by, created_at, updated_at, published_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, language=excluded.language, title=excluded.title,
@@ -436,8 +530,20 @@ async function saveAdminMevoReport(request, env, idValue = "") {
       updated_at=excluded.updated_at, published_at=excluded.published_at`)
     .bind(reportId, slug, language, title, teaser, JSON.stringify(report), status,
       String(body?.source_batch_id || current?.source_batch_id || "").slice(0, 120) || null, "admin", timestamp, timestamp,
-      status === "published" ? (current?.published_at || timestamp) : null).run();
-  return response(request, { id: reportId, slug, status, saved: true }, 200);
+      status === "published" ? (current?.published_at || timestamp) : null)];
+  if (translated) {
+    statements.push(env.DB.prepare(`INSERT INTO mevo_member_reports
+      (id, slug, language, title, teaser, report_json, status, source_batch_id, generated_by, created_at, updated_at, published_at)
+      VALUES (?, ?, ?, ?, ?, ?, 'published', ?, 'admin-auto-translated', ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, language=excluded.language, title=excluded.title,
+        teaser=excluded.teaser, report_json=excluded.report_json, status='published',
+        generated_by='admin-auto-translated', updated_at=excluded.updated_at, published_at=excluded.published_at`)
+      .bind(translatedCurrent?.id || id(), translated.slug, translated.language, translated.title, translated.teaser,
+        JSON.stringify(translated.report), String(body?.source_batch_id || current?.source_batch_id || "").slice(0, 120) || null,
+        timestamp, timestamp, translatedCurrent?.published_at || timestamp));
+  }
+  await env.DB.batch(statements);
+  return response(request, { id: reportId, slug, status, saved: true, translated_language: translated?.language || null, translated_slug: translated?.slug || null }, 200);
 }
 
 async function syncMevoReports(request, env) {

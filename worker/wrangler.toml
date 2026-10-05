@@ -3,6 +3,9 @@ main = "src/index.js"
 compatibility_date = "2026-10-02"
 workers_dev = false
 
+[ai]
+binding = "AI"
+
 routes = [
   { pattern = "blog-api.qcoid.com", custom_domain = true }
 ]
