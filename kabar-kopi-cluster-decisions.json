@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-05T10:02:29.012Z",
+  "updated_at": "2026-10-05T10:03:05.487Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -21,6 +21,11 @@
       "url": "https://lifestyle.bisnis.com/read/20261005/223/2009613/grup-kawan-lama-resmi-boyong-merek-kopi-asal-shanghai-m-stand-ke-indonesia",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-05T10:02:29.012Z"
+    },
+    {
+      "url": "https://kupang.tribunnews.com/provinsi-ntt/982088/fce-2026-hari-ketiga-penggiat-kopi-ntt-diajak-tingkatkan-kualitas-hingga-buka-peluang-ekspor",
+      "cluster_id": "event-kompetisi",
+      "decided_at": "2026-10-05T10:03:05.487Z"
     }
   ]
 }
