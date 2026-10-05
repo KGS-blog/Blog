@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "accepted_candidate_ids": [
+  "accepted_candidate_ids": [],
+  "rejected_candidate_ids": [
     "budaya-sastra-kopi"
   ],
-  "rejected_candidate_ids": [],
-  "updated_at": "2026-10-03T06:56:32.494Z"
+  "updated_at": "2026-10-05T07:41:00.115Z"
 }
