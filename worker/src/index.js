@@ -235,10 +235,11 @@ export default {
       const articleUrl = String(body.article_url || "");
       const clusterId = String(body.cluster_id || "");
       const articleDecision = Boolean(articleUrl);
+      const irrelevantDecision = articleDecision && decision === "irrelevant";
       if (articleDecision) {
         let parsed;
         try { parsed = new URL(articleUrl); } catch (_) { return json({ error: "URL berita tidak valid." }, 400, {}, request); }
-        if (!/^https?:$/.test(parsed.protocol) || !clusterId) return json({ error: "Pilih salah satu klaster yang tersedia." }, 400, {}, request);
+        if (!/^https?:$/.test(parsed.protocol) || (!irrelevantDecision && !clusterId)) return json({ error: "Pilih klaster atau tandai artikel tidak relevan." }, 400, {}, request);
       } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(candidateId) || !["accepted", "rejected"].includes(decision)) {
         return json({ error: "Keputusan kandidat klaster tidak valid." }, 400, {}, request);
       }
@@ -246,7 +247,7 @@ export default {
         const candidates = await readClusterCandidates.call(env);
         const knownClusters = new Set(["lainnya", "harga-pasar", "produksi-panen", "kebijakan-regulasi", "event-kompetisi", "barista-teknik-seduh", "riset-tren-konsumen", "kedai-konsumsi-gaya-hidup", "ekspor-daya-saing", "pendidikan-industri", "brand-global"]);
         for (const candidate of candidates.candidates || []) if (candidate.status === "accepted") knownClusters.add(candidate.id);
-        if (articleDecision && !knownClusters.has(clusterId)) return json({ error: "Pilih salah satu klaster yang tersedia." }, 400, {}, request);
+        if (articleDecision && !irrelevantDecision && !knownClusters.has(clusterId)) return json({ error: "Pilih salah satu klaster yang tersedia." }, 400, {}, request);
         if (articleDecision && !(candidates.unassigned_articles || []).some(article => article.url === articleUrl)) {
           return json({ error: "Artikel tidak ditemukan di antrean Lainnya. Muat ulang halaman." }, 404, {}, request);
         }
@@ -258,7 +259,7 @@ export default {
         if (!validDecisionDocument(document)) return json({ error: "Format keputusan klaster tidak valid." }, 502, {}, request);
         if (articleDecision) {
           const overrides = Array.isArray(document.overrides) ? document.overrides : [];
-          document.overrides = [...overrides.filter(item => String(item.url || item.tautan || "") !== articleUrl), { url: articleUrl, cluster_id: clusterId, decided_at: new Date().toISOString() }];
+          document.overrides = [...overrides.filter(item => String(item.url || item.tautan || "") !== articleUrl), { url: articleUrl, cluster_id: irrelevantDecision ? "tidak-relevan" : clusterId, ...(irrelevantDecision ? { decision: "irrelevant", reason: String(body.reason || "Ditandai tidak relevan oleh editor.").slice(0, 500) } : {}), decided_at: new Date().toISOString() }];
         } else {
           document.accepted_candidate_ids = document.accepted_candidate_ids.filter(id => id !== candidateId);
           document.rejected_candidate_ids = document.rejected_candidate_ids.filter(id => id !== candidateId);
@@ -266,7 +267,7 @@ export default {
         }
         document.version = 1;
         document.updated_at = new Date().toISOString();
-        const result = await writeGithubJson(env, CLUSTER_DECISIONS_FILE, document, latest.sha, articleDecision ? `Classify coffee news: ${clusterId}` : `Review coffee cluster: ${decision}`);
+        const result = await writeGithubJson(env, CLUSTER_DECISIONS_FILE, document, latest.sha, articleDecision ? irrelevantDecision ? "Mark coffee feed article irrelevant" : `Classify coffee news: ${clusterId}` : `Review coffee cluster: ${decision}`);
         if (result.conflict) return json({ error: "Keputusan lain baru saja tersimpan. Muat ulang halaman dan coba lagi.", conflict: true }, 409, {}, request);
         if (articleDecision) {
           try {

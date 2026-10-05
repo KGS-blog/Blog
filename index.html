@@ -3057,7 +3057,8 @@ async function loadClusterReview() {
         if (!response.ok) throw new Error(data.error || "Kandidat klaster belum dapat dimuat.");
         const articles = data.unassigned_articles || [];
         const candidates = (data.candidates || []).filter(item => ["pending", "needs_review", "accepted", "rejected"].includes(item.status));
-        status.textContent = articles.length + " artikel Lainnya · " + candidates.length + " usulan klaster.";
+        const activeCandidates = candidates.filter(item => item.status === "pending" || item.status === "needs_review").length;
+        status.textContent = articles.length + " artikel Lainnya perlu ditinjau · " + activeCandidates + " usulan klaster menunggu keputusan.";
         list.replaceChildren();
         if (!candidates.length && !articles.length) {
             const empty = document.createElement("div"); empty.className = "content-card text-coffee-500"; empty.textContent = "Belum ada kandidat klaster yang perlu ditinjau."; list.append(empty); return;
@@ -3073,15 +3074,23 @@ async function loadClusterReview() {
             const card = document.createElement("article"); card.className = "content-card";
             const label = document.createElement("span"); label.className = "text-xs font-bold uppercase tracking-wide text-coffee-600"; label.textContent = "Artikel belum terklasifikasi · perlu keputusan editor";
             const title = document.createElement("h4"); title.className = "font-serif text-lg font-bold text-coffee-900 mt-2"; title.textContent = item.title || "Artikel tanpa judul";
-            const meta = document.createElement("p"); meta.className = "text-xs text-coffee-500 mt-1"; meta.textContent = [item.source, item.published_at, item.context_status === "context_unavailable" ? "Konteks isi belum tersedia" : "Konteks penerbit tersedia"].filter(Boolean).join(" · ");
-            const excerpt = document.createElement("p"); excerpt.className = "text-sm text-coffee-600 mt-2"; excerpt.textContent = item.excerpt || "Belum ada cuplikan isi dari sumber. Buka artikel untuk menilai konteksnya.";
+            const meta = document.createElement("p"); meta.className = "text-xs text-coffee-500 mt-1"; meta.textContent = [item.source, item.published_at].filter(Boolean).join(" · ");
+            const contextLabel = document.createElement("p"); contextLabel.className = "text-xs font-bold uppercase tracking-wide text-coffee-600 mt-4"; contextLabel.textContent = item.context_status === "context_unavailable" ? "Konteks artikel · belum berhasil diambil" : item.context_status === "feed_excerpt" || item.context_status === "feed_excerpt_only" ? "Cuplikan RSS · konteks terbatas" : "Konteks isi yang berhasil diambil";
+            const excerpt = document.createElement("p"); excerpt.className = "text-sm text-coffee-700 mt-1 whitespace-pre-wrap"; excerpt.textContent = item.excerpt || "Belum ada cuplikan isi dari sumber. Buka artikel asli sebelum menentukan relevansi atau klaster.";
+            const review = item.relevance_review;
+            const correlation = document.createElement("div"); correlation.className = "mt-3 rounded border border-coffee-200 bg-coffee-50 p-3 text-sm";
+            const relation = review?.title_context_match === "match" ? "Judul dan isi sejalan" : review?.title_context_match === "mismatch" ? "Judul dan isi tampak tidak selaras" : "Kecocokan judul–isi belum pasti";
+            const relevance = review?.relevance === "irrelevant" ? "Saran AI: kemungkinan tidak relevan dengan industri kopi" : review?.relevance === "relevant" ? "Saran AI: isi berkaitan dengan industri kopi" : "Saran AI: relevansi belum pasti";
+            correlation.textContent = relation + " · " + relevance + (review?.reason ? ". " + review.reason : "");
+            if (review?.evidence) { const proof = document.createElement("p"); proof.className = "text-xs text-coffee-500 mt-1"; proof.textContent = "Dasar pemeriksaan: “" + review.evidence + "”"; correlation.append(proof); }
             const sourceLink = document.createElement("a"); sourceLink.href = item.url; sourceLink.target = "_blank"; sourceLink.rel = "noopener noreferrer"; sourceLink.className = "inline-block mt-2 underline text-sm"; sourceLink.textContent = "Buka sumber asli";
             const controls = document.createElement("div"); controls.className = "flex flex-wrap items-center gap-2 mt-4";
             const select = document.createElement("select"); select.className = "border border-coffee-300 rounded px-3 py-2"; select.dataset.articleCluster = item.url;
             const placeholder = document.createElement("option"); placeholder.value = ""; placeholder.textContent = "Pilih klaster tujuan"; select.append(placeholder);
             for (const [id, name] of clusterChoices) { const option = document.createElement("option"); option.value = id; option.textContent = name; select.append(option); }
             const approve = document.createElement("button"); approve.type = "button"; approve.className = "btn-primary"; approve.textContent = "Tetapkan klaster"; approve.dataset.articleUrl = item.url;
-            controls.append(select, approve); card.append(label, title, meta, excerpt, sourceLink, controls); list.append(card);
+            const irrelevant = document.createElement("button"); irrelevant.type = "button"; irrelevant.className = "btn-secondary text-red-700"; irrelevant.textContent = "Tandai tidak relevan"; irrelevant.dataset.irrelevantUrl = item.url;
+            controls.append(select, approve, irrelevant); card.append(label, title, meta, contextLabel, excerpt, correlation, sourceLink, controls); list.append(card);
         }
         for (const item of candidates) {
             const card = document.createElement("article"); card.className = "content-card";
@@ -3112,6 +3121,22 @@ async function loadClusterReview() {
     }
 }
 document.getElementById("cluster-review-list")?.addEventListener("click", async event => {
+    const irrelevantButton = event.target.closest("button[data-irrelevant-url]");
+    if (irrelevantButton && adminSessionActive) {
+        const url = irrelevantButton.dataset.irrelevantUrl;
+        if (!window.confirm("Tandai artikel ini tidak relevan? Artikel tidak akan masuk klaster maupun feed publik setelah pemrosesan berikutnya.")) return;
+        irrelevantButton.disabled = true;
+        document.getElementById("cluster-review-status").textContent = "Menyimpan keputusan relevansi editor…";
+        try {
+            const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-decisions", { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ article_url: url, decision: "irrelevant", reason: "Editor memastikan penyebutan kopi bukan pokok berita." }) }, 10000);
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || "Keputusan relevansi gagal disimpan.");
+            irrelevantButton.closest("article")?.remove();
+            document.getElementById("cluster-review-status").textContent = "Artikel ditandai tidak relevan dan keluar dari feed publik pada pemrosesan berikutnya.";
+            showToast("Artikel ditandai tidak relevan.", "success");
+        } catch (error) { document.getElementById("cluster-review-status").textContent = error.message; showToast(error.message, "error"); irrelevantButton.disabled = false; }
+        return;
+    }
     const articleButton = event.target.closest("button[data-article-url]");
     if (articleButton && adminSessionActive) {
         const url = articleButton.dataset.articleUrl;
