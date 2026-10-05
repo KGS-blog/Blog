@@ -3079,8 +3079,8 @@ async function loadClusterReview() {
             const excerpt = document.createElement("p"); excerpt.className = "text-sm text-coffee-700 mt-1 whitespace-pre-wrap"; excerpt.textContent = item.excerpt || "Belum ada cuplikan isi dari sumber. Buka artikel asli sebelum menentukan relevansi atau klaster.";
             const review = item.relevance_review;
             const correlation = document.createElement("div"); correlation.className = "mt-3 rounded border border-coffee-200 bg-coffee-50 p-3 text-sm";
-            const relation = review?.title_context_match === "match" ? "Judul dan isi sejalan" : review?.title_context_match === "mismatch" ? "Judul dan isi tampak tidak selaras" : "Kecocokan judul–isi belum pasti";
-            const relevance = review?.relevance === "irrelevant" ? "Saran AI: kemungkinan tidak relevan dengan industri kopi" : review?.relevance === "relevant" ? "Saran AI: isi berkaitan dengan industri kopi" : "Saran AI: relevansi belum pasti";
+            const relation = !review ? "Belum ada pemeriksaan judul–isi" : review.title_context_match === "match" ? "Judul dan isi sejalan" : review.title_context_match === "mismatch" ? "Judul dan isi tampak tidak selaras" : "Kecocokan judul–isi belum pasti";
+            const relevance = !review ? "Belum ada saran relevansi AI" : review.relevance === "irrelevant" ? "Saran AI: kemungkinan tidak relevan dengan industri kopi" : review.relevance === "relevant" ? "Saran AI: isi berkaitan dengan industri kopi" : "Saran AI: relevansi belum pasti";
             correlation.textContent = relation + " · " + relevance + (review?.reason ? ". " + review.reason : "");
             if (review?.evidence) { const proof = document.createElement("p"); proof.className = "text-xs text-coffee-500 mt-1"; proof.textContent = "Dasar pemeriksaan: “" + review.evidence + "”"; correlation.append(proof); }
             const sourceLink = document.createElement("a"); sourceLink.href = item.url; sourceLink.target = "_blank"; sourceLink.rel = "noopener noreferrer"; sourceLink.className = "inline-block mt-2 underline text-sm"; sourceLink.textContent = "Buka sumber asli";
