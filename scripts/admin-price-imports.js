@@ -88,7 +88,7 @@ function renderPriceImport(item) {
     header.append(title, meta, fileLink); card.append(header);
     const rows = Array.isArray(item.suggestions) ? item.suggestions : [];
     if (rows.length) {
-        const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "Periksa setiap kolom dengan berkas asli. Pilih jenis sumber dengan benar: catatan langsung dari lapangan tidak memerlukan URL; isi nama pihak dan keterangan/bukti lapangannya. Untuk sumber publik, pilih tautan URL HTTPS. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
+        const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "OCR akan mencoba membaca nama sumber dari judul, kepala dokumen, logo, atau byline. Periksa kecocokannya dengan berkas asli sebelum menyetujui. Catatan langsung dari lapangan tidak memerlukan URL; pilih jenis sumber lapangan dan pastikan nama pihak serta keterangan/bukti lapangannya benar. Untuk sumber publik, gunakan URL HTTPS yang tercetak atau terverifikasi. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
         rows.forEach((row, index) => {
             const section = document.createElement("section"); section.className = "border border-coffee-100 rounded-xl p-3 space-y-2";
             const label = document.createElement("h5"); label.className = "font-bold text-coffee-800"; label.textContent = `Listing ${index + 1} · keyakinan OCR: ${row.confidence || "low"}`; section.append(label);
