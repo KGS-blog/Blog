@@ -10,6 +10,63 @@ function priceImportSelect(label, value, key, options) {
     options.forEach(([optionValue, optionLabel]) => { const option = document.createElement("option"); option.value = optionValue; option.textContent = optionLabel; option.selected = String(value || "") === optionValue; select.append(option); });
     wrap.append(select); return wrap;
 }
+function validatePriceImportRows(card) {
+    const fieldLabels = {
+        source: "Nama sumber", source_url: "URL HTTPS sumber", product: "Nama produk",
+        type: "Jenis", form: "Bentuk", currency: "Mata uang", unit: "Satuan jumlah"
+    };
+    const rows = [...card.querySelectorAll("section")];
+    const problems = [];
+    let firstInvalid = null;
+    rows.forEach((section, index) => {
+        const fields = Object.fromEntries([...section.querySelectorAll("[data-price-field]")].map(input => [input.dataset.priceField, input]));
+        const missing = [];
+        for (const key of ["source", "source_url", "product", "type", "form", "currency", "unit"]) {
+            const input = fields[key];
+            const value = input?.value.trim() || "";
+            let valid = Boolean(value);
+            if (key === "source_url" && valid) {
+                try { valid = new URL(value).protocol === "https:"; } catch (_) { valid = false; }
+            }
+            if (!valid) {
+                missing.push(fieldLabels[key]);
+                if (input) {
+                    input.setAttribute("aria-invalid", "true");
+                    input.style.borderColor = "#b91c1c";
+                    input.style.outline = "2px solid #fecaca";
+                    input.addEventListener("input", () => {
+                        input.removeAttribute("aria-invalid");
+                        input.style.removeProperty("border-color");
+                        input.style.removeProperty("outline");
+                    }, { once: true });
+                    firstInvalid ||= input;
+                }
+            }
+        }
+        const price = Number(fields.price?.value || 0);
+        const low = Number(fields.price_min?.value || 0);
+        const high = Number(fields.price_max?.value || 0);
+        if (!(price > 0) && !(low > 0 && high >= low)) {
+            missing.push("Harga tunggal atau rentang minimum–maksimum");
+            for (const key of ["price", "price_min", "price_max"]) {
+                const input = fields[key];
+                if (!input) continue;
+                input.setAttribute("aria-invalid", "true");
+                input.style.borderColor = "#b91c1c";
+                input.style.outline = "2px solid #fecaca";
+                input.addEventListener("input", () => {
+                    input.removeAttribute("aria-invalid");
+                    input.style.removeProperty("border-color");
+                    input.style.removeProperty("outline");
+                }, { once: true });
+                firstInvalid ||= input;
+            }
+        }
+        if (missing.length) problems.push(`Listing ${index + 1}: ${missing.join(", ")}`);
+    });
+    if (problems.length) firstInvalid?.focus();
+    return problems;
+}
 function renderPriceImport(item) {
     const card = document.createElement("article"); card.className = "content-card space-y-3";
     const header = document.createElement("div"); header.className = "flex flex-wrap items-center justify-between gap-2";
@@ -53,6 +110,16 @@ function renderPriceImport(item) {
     return card;
 }
 async function savePriceImportDecision(id, card, status) {
+    if (status === "approved") {
+        const problems = validatePriceImportRows(card);
+        if (problems.length) {
+            const actionStatus = document.getElementById("price-import-action-status");
+            actionStatus.dataset.state = "error";
+            actionStatus.className = "rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800 self-center";
+            actionStatus.textContent = `Belum disimpan. Lengkapi kolom yang ditandai: ${problems.join(" · ")}.`;
+            return;
+        }
+    }
     const buttons = [...card.querySelectorAll("button")]; buttons.forEach(button => { button.disabled = true; });
     const actionStatus = document.getElementById("price-import-action-status");
     actionStatus.dataset.state = "pending";
