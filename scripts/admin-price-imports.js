@@ -14,7 +14,10 @@ function renderPriceImport(item) {
     const card = document.createElement("article"); card.className = "content-card space-y-3";
     const header = document.createElement("div"); header.className = "flex flex-wrap items-center justify-between gap-2";
     const title = document.createElement("h4"); title.className = "font-serif text-lg font-bold text-coffee-900"; title.textContent = item.filename;
-    const meta = document.createElement("span"); meta.className = "text-xs text-coffee-500"; meta.textContent = `${item.status} · ${new Date(item.created_at).toLocaleString("id-ID")}`;
+    const meta = document.createElement("span");
+    const statusLabel = { pending: "Menunggu pemeriksaan", approved: "Tersimpan · disetujui", ignored: "Tersimpan · diabaikan" }[item.status] || item.status;
+    const statusTone = item.status === "approved" ? "bg-green-100 text-green-800" : item.status === "ignored" ? "bg-gray-100 text-gray-700" : "bg-amber-100 text-amber-900";
+    meta.className = `inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone}`; meta.textContent = `${statusLabel} · ${new Date(item.created_at).toLocaleString("id-ID")}`;
     const fileLink = document.createElement("a"); fileLink.className = "btn-secondary inline-block"; fileLink.href = `${BLOG_SYNC_API}/admin/price-list-imports/${encodeURIComponent(item.id)}/file`; fileLink.target = "_blank"; fileLink.rel = "noopener noreferrer"; fileLink.textContent = "Lihat berkas asli";
     header.append(title, meta, fileLink); card.append(header);
     const rows = Array.isArray(item.suggestions) ? item.suggestions : [];
@@ -50,17 +53,34 @@ function renderPriceImport(item) {
     return card;
 }
 async function savePriceImportDecision(id, card, status) {
-    const button = card.querySelector("button"); if (button) button.disabled = true;
+    const buttons = [...card.querySelectorAll("button")]; buttons.forEach(button => { button.disabled = true; });
+    const actionStatus = document.getElementById("price-import-action-status");
+    actionStatus.dataset.state = "pending";
+    actionStatus.className = "rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-900 self-center";
+    actionStatus.textContent = status === "approved" ? "Menyimpan persetujuan…" : "Menyimpan keputusan untuk mengabaikan dokumen…";
     const payload = { status };
     if (status === "approved") payload.suggestions = [...card.querySelectorAll("section")].map(section => {
         const row = {}; section.querySelectorAll("[data-price-field]").forEach(input => { const raw = input.value.trim(); row[input.dataset.priceField] = input.type === "number" ? (raw ? Number(raw) : null) : raw; }); return row;
     });
     try {
         const response = await fetch(`${BLOG_SYNC_API}/admin/price-list-imports/${encodeURIComponent(id)}`, { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-        const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || "Keputusan belum tersimpan.");
-        document.getElementById("price-import-action-status").textContent = status === "approved" ? "Baris harga disetujui. Masuk ke data publik pada pipeline berikutnya setelah deduplikasi." : "Dokumen ditandai untuk diabaikan.";
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `Server menolak penyimpanan (HTTP ${response.status}).`);
+        if (data.saved !== true) throw new Error("Server belum mengonfirmasi bahwa keputusan tersimpan.");
+        actionStatus.dataset.state = "success";
+        actionStatus.className = "rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-sm font-semibold text-green-900 self-center";
+        actionStatus.textContent = status === "approved"
+            ? "Tersimpan: baris harga disetujui. Data akan masuk ke proses pipeline berikutnya setelah deduplikasi."
+            : "Tersimpan: dokumen ditandai untuk diabaikan.";
         await loadPriceListImports();
-    } catch (error) { document.getElementById("price-import-action-status").textContent = `Gagal: ${error.message}`; if (button) button.disabled = false; }
+    } catch (error) {
+        actionStatus.dataset.state = "error";
+        actionStatus.className = "rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800 self-center";
+        actionStatus.textContent = error instanceof TypeError
+            ? "Belum ada konfirmasi dari server. Muat ulang antrean untuk memastikan status sebelum mencoba lagi."
+            : `Gagal menyimpan: ${error.message}`;
+        buttons.forEach(button => { button.disabled = false; });
+    }
 }
 async function loadPriceListImports() {
     const list = document.getElementById("price-import-list"); if (!list || !adminSessionActive) return;
