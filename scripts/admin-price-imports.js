@@ -91,7 +91,16 @@ function renderPriceImport(item) {
         const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "OCR akan mencoba membaca nama sumber dari judul, kepala dokumen, logo, atau byline. Periksa kecocokannya dengan berkas asli sebelum menyetujui. Catatan langsung dari lapangan tidak memerlukan URL; tanggal otomatis memakai tanggal unggah jika dokumen tidak mencantumkan tanggal. Tanggal unggah ini adalah tanggal pencatatan, bukan tanggal yang diklaim tercetak pada sumber. Untuk sumber publik, gunakan URL HTTPS yang tercetak atau terverifikasi. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
         rows.forEach((row, index) => {
             const section = document.createElement("section"); section.className = "border border-coffee-100 rounded-xl p-3 space-y-2";
-            const label = document.createElement("h5"); label.className = "font-bold text-coffee-800"; label.textContent = `Listing ${index + 1} · keyakinan OCR: ${row.confidence || "low"}`; section.append(label);
+            const rowHead = document.createElement("div"); rowHead.className = "flex items-center justify-between gap-2";
+            const label = document.createElement("h5"); label.className = "font-bold text-coffee-800"; label.textContent = `Listing ${index + 1} · keyakinan OCR: ${row.confidence || "low"}`; rowHead.append(label);
+            if (item.status === "pending") {
+                const remove = document.createElement("button"); remove.type = "button"; remove.className = "btn-secondary text-red-700"; remove.textContent = "Hapus baris";
+                remove.addEventListener("click", () => {
+                    if (confirm(`Hapus Listing ${index + 1} dari hasil ekstraksi?`)) savePriceImportDecision(item.id, card, "pending", section);
+                });
+                rowHead.append(remove);
+            }
+            section.append(rowHead);
             const grid = document.createElement("div"); grid.className = "grid sm:grid-cols-2 lg:grid-cols-4 gap-2";
             const sourceType = priceImportSelect("Jenis sumber", row.source_type || "url", "source_type", [["url", "Tautan publik (URL)"], ["field", "Sumber langsung dari lapangan"]]);
             const sourceName = priceImportField("Nama sumber / pihak lapangan", row.source, "source");
@@ -125,7 +134,7 @@ function renderPriceImport(item) {
     }
     return card;
 }
-async function savePriceImportDecision(id, card, status) {
+async function savePriceImportDecision(id, card, status, removeSection = null) {
     if (status === "approved") {
         const problems = validatePriceImportRows(card);
         if (problems.length) {
@@ -140,9 +149,9 @@ async function savePriceImportDecision(id, card, status) {
     const actionStatus = document.getElementById("price-import-action-status");
     actionStatus.dataset.state = "pending";
     actionStatus.className = "rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-900 self-center";
-    actionStatus.textContent = status === "approved" ? "Menyimpan persetujuan…" : "Menyimpan keputusan untuk mengabaikan dokumen…";
+    actionStatus.textContent = status === "approved" ? "Menyimpan persetujuan…" : status === "ignored" ? "Menyimpan keputusan untuk mengabaikan dokumen…" : "Menghapus baris dan menyimpan antrean…";
     const payload = { status };
-    if (status === "approved") payload.suggestions = [...card.querySelectorAll("section")].map(section => {
+    if (status === "approved" || status === "pending") payload.suggestions = [...card.querySelectorAll("section")].filter(section => section !== removeSection).map(section => {
         const row = {}; section.querySelectorAll("[data-price-field]").forEach(input => { const raw = input.value.trim(); row[input.dataset.priceField] = input.type === "number" ? (raw ? Number(raw) : null) : raw; }); return row;
     });
     try {
@@ -154,7 +163,8 @@ async function savePriceImportDecision(id, card, status) {
         actionStatus.className = "rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-sm font-semibold text-green-900 self-center";
         actionStatus.textContent = status === "approved"
             ? "Tersimpan: baris harga disetujui. Data akan masuk ke proses pipeline berikutnya setelah deduplikasi."
-            : "Tersimpan: dokumen ditandai untuk diabaikan.";
+            : status === "ignored" ? "Tersimpan: dokumen ditandai untuk diabaikan."
+                : "Tersimpan: baris dihapus dari hasil ekstraksi.";
         await loadPriceListImports();
     } catch (error) {
         actionStatus.dataset.state = "error";

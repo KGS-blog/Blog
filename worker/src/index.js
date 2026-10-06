@@ -276,7 +276,7 @@ export default {
       if (!env.MEVO_SYNC_SECRET || !await matchesSecret(request.headers.get("Authorization")?.replace(/^Bearer\s+/i, ""), env.MEVO_SYNC_SECRET)) return json({ error: "Not found." }, 404, {}, request);
       if (!env.DB) return json({ error: "Database unavailable." }, 503, {}, request);
       if (request.method === "GET") {
-        const rows = await env.DB.prepare("SELECT id, filename, suggestions_json, created_at FROM price_list_imports WHERE status = 'approved' ORDER BY created_at ASC LIMIT ?").bind(PRICE_IMPORTS_LIMIT).all();
+        const rows = await env.DB.prepare("SELECT id, filename, suggestions_json, created_at FROM price_list_imports WHERE status IN ('approved', 'imported') ORDER BY created_at ASC LIMIT ?").bind(PRICE_IMPORTS_LIMIT).all();
         return json({ listings: (rows.results || []).map(row => ({ id: row.id, filename: row.filename, created_at: row.created_at, listings: JSON.parse(row.suggestions_json) })) }, 200, {}, request);
       }
       let body; try { body = await request.json(); } catch (_) { return json({ error: "Invalid request." }, 400, {}, request); }
@@ -356,7 +356,7 @@ export default {
       if (!await validSession(request, env.SESSION_SECRET || "")) return json({ error: "Sesi admin diperlukan." }, 401, {}, request);
       let body; try { body = await request.json(); } catch (_) { return json({ error: "Format permintaan tidak valid." }, 400, {}, request); }
       const status = String(body?.status || "");
-      if (!["approved", "ignored"].includes(status)) return json({ error: "Pilih setujui atau abaikan." }, 400, {}, request);
+      if (!["pending", "approved", "ignored"].includes(status)) return json({ error: "Pilih hapus baris, setujui, atau abaikan." }, 400, {}, request);
       const suggestions = safePriceSuggestions(body?.suggestions);
       if (status === "approved" && (!suggestions.length || suggestions.some(row => {
         const sourceIsValid = row.source_type === "field"
