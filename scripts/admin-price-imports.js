@@ -99,6 +99,7 @@ function renderPriceImport(item) {
             const sourceDetail = priceImportField("Keterangan sumber lapangan", row.source_detail || row.evidence, "source_detail"); sourceDetail.dataset.sourceKind = "field";
             grid.append(
                 priceImportField("Nama produk", row.product, "product"), priceImportSelect("Jenis", row.type, "type", [["", "Pilih jenis"], ["Arabika", "Arabika"], ["Robusta", "Robusta"]]),
+                priceImportSelect("Tingkat harga", row.price_level || "unspecified", "price_level", [["unspecified", "Tidak disebut / periksa"], ["customer", "Customer"], ["reseller", "Reseller"], ["retail", "Eceran"], ["wholesale", "Grosir"], ["farmgate", "Tingkat petani"]]),
                 priceImportSelect("Bentuk", row.form, "form", [["", "Pilih bentuk"], ["Biji kopi mentah", "Biji hijau / green bean"], ["Biji kopi sangrai", "Biji sangrai / roasted bean"], ["Kopi bubuk", "Kopi bubuk"]]),
                 priceImportField("Proses", row.process, "process"), priceImportField("Asal", row.origin, "origin"),
                 priceImportField("Harga tunggal", row.price, "price", "number"), priceImportField("Harga minimum", row.price_min, "price_min", "number"), priceImportField("Harga maksimum", row.price_max, "price_max", "number"),
