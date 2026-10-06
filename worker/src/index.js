@@ -125,8 +125,10 @@ async function saveClusterCandidates(db, document) {
 function safePriceSuggestions(value) {
   const rows = Array.isArray(value) ? value : Array.isArray(value?.listings) ? value.listings : [];
   return rows.slice(0, 100).map(row => ({
+    source_type: ["url", "field"].includes(row?.source_type) ? row.source_type : "url",
     source: String(row?.source || "").slice(0, 160),
     source_url: String(row?.source_url || "").slice(0, 1000),
+    source_detail: String(row?.source_detail || "").slice(0, 500),
     product: String(row?.product || "").slice(0, 240),
     type: ["Arabika", "Robusta"].includes(row?.type) ? row.type : "",
     form: ["Biji kopi mentah", "Biji kopi sangrai", "Kopi bubuk"].includes(row?.form) ? row.form : "",
@@ -331,8 +333,13 @@ export default {
       const status = String(body?.status || "");
       if (!["approved", "ignored"].includes(status)) return json({ error: "Pilih setujui atau abaikan." }, 400, {}, request);
       const suggestions = safePriceSuggestions(body?.suggestions);
-      if (status === "approved" && (!suggestions.length || suggestions.some(row => !row.source || !/^https:\/\//i.test(row.source_url) || !row.product || !row.type || !row.form || !row.currency || (!row.price && !(row.price_min && row.price_max)) || !row.unit))) {
-        return json({ error: "Lengkapi sumber dan URL HTTPS, produk, jenis, bentuk, mata uang, harga, dan satuan pada setiap baris sebelum menyetujui." }, 400, {}, request);
+      if (status === "approved" && (!suggestions.length || suggestions.some(row => {
+        const sourceIsValid = row.source_type === "field"
+          ? Boolean(row.source && row.source_detail)
+          : Boolean(row.source && /^https:\/\//i.test(row.source_url));
+        return !sourceIsValid || !row.product || !row.type || !row.form || !row.currency || (!row.price && !(row.price_min && row.price_max)) || !row.unit;
+      }))) {
+        return json({ error: "Lengkapi nama sumber; pilih URL HTTPS untuk sumber publik atau jenis sumber lapangan beserta keterangannya; lalu lengkapi produk, jenis, bentuk, mata uang, harga, dan satuan pada setiap baris." }, 400, {}, request);
       }
       const result = await env.DB?.prepare("UPDATE price_list_imports SET suggestions_json = ?, status = ?, updated_at = ? WHERE id = ? AND status = 'pending'").bind(JSON.stringify(suggestions), status, new Date().toISOString(), priceUpdateMatch[1]).run();
       if (!result?.meta?.changes) return json({ error: "Item tidak ditemukan atau sudah diproses." }, 404, {}, request);

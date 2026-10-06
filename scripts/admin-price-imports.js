@@ -10,9 +10,16 @@ function priceImportSelect(label, value, key, options) {
     options.forEach(([optionValue, optionLabel]) => { const option = document.createElement("option"); option.value = optionValue; option.textContent = optionLabel; option.selected = String(value || "") === optionValue; select.append(option); });
     wrap.append(select); return wrap;
 }
+function updatePriceSourceFields(section) {
+    const kind = section.querySelector('[data-price-field="source_type"]')?.value || "url";
+    const urlField = section.querySelector('[data-source-kind="url"]');
+    const detailField = section.querySelector('[data-source-kind="field"]');
+    if (urlField) { urlField.hidden = kind === "field"; urlField.querySelector("input").disabled = kind === "field"; }
+    if (detailField) { detailField.hidden = kind !== "field"; detailField.querySelector("input").disabled = kind !== "field"; }
+}
 function validatePriceImportRows(card) {
     const fieldLabels = {
-        source: "Nama sumber", source_url: "URL HTTPS sumber", product: "Nama produk",
+        source: "Nama sumber", source_url: "URL HTTPS sumber", source_detail: "Keterangan sumber lapangan", product: "Nama produk",
         type: "Jenis", form: "Bentuk", currency: "Mata uang", unit: "Satuan jumlah"
     };
     const rows = [...card.querySelectorAll("section")];
@@ -21,7 +28,9 @@ function validatePriceImportRows(card) {
     rows.forEach((section, index) => {
         const fields = Object.fromEntries([...section.querySelectorAll("[data-price-field]")].map(input => [input.dataset.priceField, input]));
         const missing = [];
-        for (const key of ["source", "source_url", "product", "type", "form", "currency", "unit"]) {
+        const sourceType = fields.source_type?.value || "url";
+        const requiredFields = ["source", "product", "type", "form", "currency", "unit", ...(sourceType === "field" ? ["source_detail"] : ["source_url"])];
+        for (const key of requiredFields) {
             const input = fields[key];
             const value = input?.value.trim() || "";
             let valid = Boolean(value);
@@ -79,11 +88,15 @@ function renderPriceImport(item) {
     header.append(title, meta, fileLink); card.append(header);
     const rows = Array.isArray(item.suggestions) ? item.suggestions : [];
     if (rows.length) {
-        const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "Periksa setiap kolom dengan berkas asli. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
+        const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "Periksa setiap kolom dengan berkas asli. Pilih jenis sumber dengan benar: catatan langsung dari lapangan tidak memerlukan URL; isi nama pihak dan keterangan/bukti lapangannya. Untuk sumber publik, pilih tautan URL HTTPS. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
         rows.forEach((row, index) => {
             const section = document.createElement("section"); section.className = "border border-coffee-100 rounded-xl p-3 space-y-2";
             const label = document.createElement("h5"); label.className = "font-bold text-coffee-800"; label.textContent = `Listing ${index + 1} · keyakinan OCR: ${row.confidence || "low"}`; section.append(label);
             const grid = document.createElement("div"); grid.className = "grid sm:grid-cols-2 lg:grid-cols-4 gap-2";
+            const sourceType = priceImportSelect("Jenis sumber", row.source_type || "url", "source_type", [["url", "Tautan publik (URL)"], ["field", "Sumber langsung dari lapangan"]]);
+            const sourceName = priceImportField("Nama sumber / pihak lapangan", row.source, "source");
+            const sourceUrl = priceImportField("URL HTTPS sumber", row.source_url, "source_url", "url"); sourceUrl.dataset.sourceKind = "url";
+            const sourceDetail = priceImportField("Keterangan sumber lapangan", row.source_detail || row.evidence, "source_detail"); sourceDetail.dataset.sourceKind = "field";
             grid.append(
                 priceImportField("Nama produk", row.product, "product"), priceImportSelect("Jenis", row.type, "type", [["", "Pilih jenis"], ["Arabika", "Arabika"], ["Robusta", "Robusta"]]),
                 priceImportSelect("Bentuk", row.form, "form", [["", "Pilih bentuk"], ["Biji kopi mentah", "Biji hijau / green bean"], ["Biji kopi sangrai", "Biji sangrai / roasted bean"], ["Kopi bubuk", "Kopi bubuk"]]),
@@ -91,8 +104,10 @@ function renderPriceImport(item) {
                 priceImportField("Harga tunggal", row.price, "price", "number"), priceImportField("Harga minimum", row.price_min, "price_min", "number"), priceImportField("Harga maksimum", row.price_max, "price_max", "number"),
                 priceImportSelect("Mata uang", row.currency, "currency", [["", "Pilih mata uang"], ["IDR", "IDR · Rupiah"], ["USD", "USD"]]),
                 priceImportField("Jumlah kemasan", row.amount, "amount", "number"), priceImportField("Satuan jumlah", row.unit, "unit"), priceImportField("Tanggal pada sumber", row.source_date, "source_date"),
-                priceImportField("Nama sumber", row.source, "source"), priceImportField("URL HTTPS sumber", row.source_url, "source_url", "url")
+                sourceType, sourceName, sourceUrl, sourceDetail
             );
+            sourceType.querySelector("select").addEventListener("change", () => updatePriceSourceFields(section));
+            updatePriceSourceFields(section);
             const evidence = document.createElement("p"); evidence.className = "text-xs text-coffee-500"; evidence.textContent = `Bukti OCR: ${row.evidence || "Tidak ada kutipan bukti yang dikenali."}`;
             section.append(grid, evidence); card.append(section);
         });
