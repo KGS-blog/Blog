@@ -1214,6 +1214,7 @@ window.__qcoAnLang = function (lang) {
     <div onclick="showDashboardSection('fieldnotes')" id="nav-fieldnotes" class="sidebar-item"><i class="fas fa-coffee w-5"></i><span>Kiriman Kabar Kopi</span></div>
     <div onclick="showDashboardSection('clusters'); loadClusterReview()" id="nav-clusters" class="sidebar-item"><i class="fas fa-layer-group w-5"></i><span>Tinjau Klaster Kopi</span></div>
     <div onclick="showDashboardSection('mevoreports')" id="nav-mevoreports" class="sidebar-item"><i class="fas fa-chart-line w-5"></i><span>Report by MEVO</span></div>
+    <div onclick="showDashboardSection('priceimports')" id="nav-priceimports" class="sidebar-item"><i class="fas fa-file-upload w-5"></i><span>Harga kopi · OCR</span></div>
 
     <div onclick="showDashboardSection('categories')" id="nav-categories" class="sidebar-item"><i class="fas fa-tags w-5"></i><span>Kategori</span></div>
 </nav>
@@ -1342,6 +1343,15 @@ window.__qcoAnLang = function (lang) {
             <div class="flex flex-wrap gap-2"><button type="submit" class="btn-primary">Simpan sebagai draft</button><button type="button" class="btn-secondary" onclick="publishMevoReport()">Terbitkan dalam ID + EN</button><button type="button" class="btn-secondary" onclick="resetMevoReportForm()">Bersihkan</button></div>
         </form>
         <div id="mevo-report-list" class="space-y-4"><div class="content-card">Memuat report…</div></div>
+    </div>
+    <div id="section-priceimports" class="dashboard-section hidden">
+        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Unggah daftar harga kopi</h3><p class="text-sm text-coffee-500 mt-1">PDF, JPG, PNG, atau WEBP · OCR membuat saran kolom, admin memeriksa lalu menyetujui tiap dokumen.</p></div><button type="button" class="btn-secondary" onclick="loadPriceListImports()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <p class="text-sm text-coffee-600 mb-4">Berkas dan hasil OCR disimpan privat. OCR dapat salah membaca angka atau satuan; data baru masuk ke feed harga setelah semua baris diperiksa dan disetujui, lalu diproses pipeline berikutnya.</p>
+        <form id="price-import-form" class="content-card space-y-3 mb-5">
+            <label class="block text-sm">Berkas PDF/gambar <input id="price-import-file" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" class="block w-full mt-1 px-3 py-2 border rounded" required><span class="block text-xs text-coffee-500 mt-1">Maksimum 1 MB per berkas. Masukkan harga dengan nilai penuh dalam mata uang pada dokumen, bukan singkatan seperti “150” untuk Rp150.000.</span></label>
+            <div class="flex flex-wrap gap-2"><button type="submit" id="price-import-submit" class="btn-primary">Unggah dan jalankan OCR</button><span id="price-import-action-status" class="text-sm text-coffee-600 self-center" role="status" aria-live="polite"></span></div>
+        </form>
+        <div id="price-import-list" class="space-y-4"><div class="content-card">Muat ulang untuk melihat antrean dokumen.</div></div>
     </div>
 </div>
 </main>
@@ -3391,6 +3401,7 @@ function showDashboardSection(section) {
     if (section === "statistics") { }
     if (section === "fieldnotes") loadFieldModeration();
     if (section === "mevoreports") loadMevoReports();
+    if (section === "priceimports") loadPriceListImports();
     document.getElementById("dashboard-title").textContent = ({fieldnotes:"Suara Komunitas", mevoreports:"Report by MEVO"})[section] || (window.dashboardTitles && window.dashboardTitles[section]) || "Overview";
     if (window.innerWidth < 768) {
         document.getElementById("dashboard-sidebar").classList.add("-translate-x-full");
@@ -4954,6 +4965,6 @@ document.addEventListener("DOMContentLoaded", function() {
   } catch (e) { console.warn("Kalkulator kopi dilewati:", e.message); }
 });
 </script>
-
+<script src="./scripts/admin-price-imports.js"></script>
 </body>
 </html>

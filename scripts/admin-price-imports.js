@@ -1,0 +1,87 @@
+function priceImportField(label, value, key, type = "text") {
+    const wrap = document.createElement("label"); wrap.className = "block text-xs text-coffee-600"; wrap.append(document.createTextNode(label));
+    const input = document.createElement("input"); input.type = type; input.dataset.priceField = key; input.className = "w-full px-2 py-1 border rounded mt-1 text-sm"; input.value = value == null ? "" : String(value);
+    if (type === "number") { input.step = "any"; input.min = "0"; }
+    wrap.append(input); return wrap;
+}
+function priceImportSelect(label, value, key, options) {
+    const wrap = document.createElement("label"); wrap.className = "block text-xs text-coffee-600"; wrap.append(document.createTextNode(label));
+    const select = document.createElement("select"); select.dataset.priceField = key; select.className = "w-full px-2 py-1 border rounded mt-1 text-sm";
+    options.forEach(([optionValue, optionLabel]) => { const option = document.createElement("option"); option.value = optionValue; option.textContent = optionLabel; option.selected = String(value || "") === optionValue; select.append(option); });
+    wrap.append(select); return wrap;
+}
+function renderPriceImport(item) {
+    const card = document.createElement("article"); card.className = "content-card space-y-3";
+    const header = document.createElement("div"); header.className = "flex flex-wrap items-center justify-between gap-2";
+    const title = document.createElement("h4"); title.className = "font-serif text-lg font-bold text-coffee-900"; title.textContent = item.filename;
+    const meta = document.createElement("span"); meta.className = "text-xs text-coffee-500"; meta.textContent = `${item.status} · ${new Date(item.created_at).toLocaleString("id-ID")}`;
+    const fileLink = document.createElement("a"); fileLink.className = "btn-secondary inline-block"; fileLink.href = `${BLOG_SYNC_API}/admin/price-list-imports/${encodeURIComponent(item.id)}/file`; fileLink.target = "_blank"; fileLink.rel = "noopener noreferrer"; fileLink.textContent = "Lihat berkas asli";
+    header.append(title, meta, fileLink); card.append(header);
+    const rows = Array.isArray(item.suggestions) ? item.suggestions : [];
+    if (rows.length) {
+        const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "Periksa setiap kolom dengan berkas asli. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
+        rows.forEach((row, index) => {
+            const section = document.createElement("section"); section.className = "border border-coffee-100 rounded-xl p-3 space-y-2";
+            const label = document.createElement("h5"); label.className = "font-bold text-coffee-800"; label.textContent = `Listing ${index + 1} · keyakinan OCR: ${row.confidence || "low"}`; section.append(label);
+            const grid = document.createElement("div"); grid.className = "grid sm:grid-cols-2 lg:grid-cols-4 gap-2";
+            grid.append(
+                priceImportField("Nama produk", row.product, "product"), priceImportSelect("Jenis", row.type, "type", [["", "Pilih jenis"], ["Arabika", "Arabika"], ["Robusta", "Robusta"]]),
+                priceImportSelect("Bentuk", row.form, "form", [["", "Pilih bentuk"], ["Biji kopi mentah", "Biji hijau / green bean"], ["Biji kopi sangrai", "Biji sangrai / roasted bean"], ["Kopi bubuk", "Kopi bubuk"]]),
+                priceImportField("Proses", row.process, "process"), priceImportField("Asal", row.origin, "origin"),
+                priceImportField("Harga tunggal", row.price, "price", "number"), priceImportField("Harga minimum", row.price_min, "price_min", "number"), priceImportField("Harga maksimum", row.price_max, "price_max", "number"),
+                priceImportSelect("Mata uang", row.currency, "currency", [["", "Pilih mata uang"], ["IDR", "IDR · Rupiah"], ["USD", "USD"]]),
+                priceImportField("Jumlah kemasan", row.amount, "amount", "number"), priceImportField("Satuan jumlah", row.unit, "unit"), priceImportField("Tanggal pada sumber", row.source_date, "source_date"),
+                priceImportField("Nama sumber", row.source, "source"), priceImportField("URL HTTPS sumber", row.source_url, "source_url", "url")
+            );
+            const evidence = document.createElement("p"); evidence.className = "text-xs text-coffee-500"; evidence.textContent = `Bukti OCR: ${row.evidence || "Tidak ada kutipan bukti yang dikenali."}`;
+            section.append(grid, evidence); card.append(section);
+        });
+    }
+    const details = document.createElement("details"); details.className = "text-sm";
+    const summary = document.createElement("summary"); summary.className = "cursor-pointer font-semibold"; summary.textContent = "Teks OCR lengkap untuk pemeriksaan";
+    const pre = document.createElement("pre"); pre.className = "mt-2 p-3 bg-coffee-50 rounded whitespace-pre-wrap text-xs max-h-96 overflow-auto"; pre.textContent = item.ocr_markdown || "OCR belum menghasilkan teks.";
+    details.append(summary, pre); card.append(details);
+    if (item.status === "pending") {
+        const actions = document.createElement("div"); actions.className = "flex flex-wrap gap-2";
+        const approve = document.createElement("button"); approve.type = "button"; approve.className = "btn-primary"; approve.textContent = "Setujui baris terisi"; approve.addEventListener("click", () => savePriceImportDecision(item.id, card, "approved"));
+        const ignore = document.createElement("button"); ignore.type = "button"; ignore.className = "btn-secondary"; ignore.textContent = "Abaikan dokumen"; ignore.addEventListener("click", () => savePriceImportDecision(item.id, card, "ignored"));
+        actions.append(approve, ignore); card.append(actions);
+    }
+    return card;
+}
+async function savePriceImportDecision(id, card, status) {
+    const button = card.querySelector("button"); if (button) button.disabled = true;
+    const payload = { status };
+    if (status === "approved") payload.suggestions = [...card.querySelectorAll("section")].map(section => {
+        const row = {}; section.querySelectorAll("[data-price-field]").forEach(input => { const raw = input.value.trim(); row[input.dataset.priceField] = input.type === "number" ? (raw ? Number(raw) : null) : raw; }); return row;
+    });
+    try {
+        const response = await fetch(`${BLOG_SYNC_API}/admin/price-list-imports/${encodeURIComponent(id)}`, { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || "Keputusan belum tersimpan.");
+        document.getElementById("price-import-action-status").textContent = status === "approved" ? "Baris harga disetujui. Masuk ke data publik pada pipeline berikutnya setelah deduplikasi." : "Dokumen ditandai untuk diabaikan.";
+        await loadPriceListImports();
+    } catch (error) { document.getElementById("price-import-action-status").textContent = `Gagal: ${error.message}`; if (button) button.disabled = false; }
+}
+async function loadPriceListImports() {
+    const list = document.getElementById("price-import-list"); if (!list || !adminSessionActive) return;
+    list.replaceChildren(); const loading = document.createElement("div"); loading.className = "content-card"; loading.textContent = "Memuat antrean berkas…"; list.append(loading);
+    try {
+        const response = await fetchWithTimeout(`${BLOG_SYNC_API}/admin/price-list-imports`, { credentials: "include", cache: "no-store" }, 20000);
+        const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || "Antrean unggahan belum dapat dimuat.");
+        list.replaceChildren(); const imports = data.imports || [];
+        if (!imports.length) { const empty = document.createElement("div"); empty.className = "content-card text-coffee-500"; empty.textContent = "Belum ada dokumen harga yang diunggah."; list.append(empty); return; }
+        imports.forEach(item => list.append(renderPriceImport(item)));
+    } catch (error) { list.replaceChildren(); const message = document.createElement("div"); message.className = "content-card text-red-700"; message.textContent = error.message; list.append(message); }
+}
+document.getElementById("price-import-form")?.addEventListener("submit", async event => {
+    event.preventDefault(); const file = document.getElementById("price-import-file").files?.[0]; const status = document.getElementById("price-import-action-status"); const button = document.getElementById("price-import-submit");
+    if (!file) { status.textContent = "Pilih PDF atau gambar."; return; }
+    button.disabled = true; status.textContent = "Mengunggah dan menjalankan OCR. Berkas tidak akan diterbitkan otomatis…";
+    try {
+        const form = new FormData(); form.append("file", file);
+        const response = await fetch(`${BLOG_SYNC_API}/admin/price-list-imports`, { method: "POST", credentials: "include", cache: "no-store", body: form });
+        const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || "Unggahan/OCR gagal.");
+        status.textContent = data.notice || "OCR selesai. Periksa hasil sebelum menyetujui."; event.target.reset(); await loadPriceListImports();
+    } catch (error) { status.textContent = `Gagal: ${error.message}`; }
+    finally { button.disabled = false; }
+});
