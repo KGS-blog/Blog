@@ -88,7 +88,7 @@ function renderPriceImport(item) {
     header.append(title, meta, fileLink); card.append(header);
     const rows = Array.isArray(item.suggestions) ? item.suggestions : [];
     if (rows.length) {
-        const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "OCR akan mencoba membaca nama sumber dari judul, kepala dokumen, logo, atau byline. Periksa kecocokannya dengan berkas asli sebelum menyetujui. Catatan langsung dari lapangan tidak memerlukan URL; pilih jenis sumber lapangan dan pastikan nama pihak serta keterangan/bukti lapangannya benar. Untuk sumber publik, gunakan URL HTTPS yang tercetak atau terverifikasi. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
+        const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "OCR akan mencoba membaca nama sumber dari judul, kepala dokumen, logo, atau byline. Periksa kecocokannya dengan berkas asli sebelum menyetujui. Catatan langsung dari lapangan tidak memerlukan URL; tanggal otomatis memakai tanggal unggah jika dokumen tidak mencantumkan tanggal. Tanggal unggah ini adalah tanggal pencatatan, bukan tanggal yang diklaim tercetak pada sumber. Untuk sumber publik, gunakan URL HTTPS yang tercetak atau terverifikasi. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
         rows.forEach((row, index) => {
             const section = document.createElement("section"); section.className = "border border-coffee-100 rounded-xl p-3 space-y-2";
             const label = document.createElement("h5"); label.className = "font-bold text-coffee-800"; label.textContent = `Listing ${index + 1} · keyakinan OCR: ${row.confidence || "low"}`; section.append(label);
@@ -98,13 +98,13 @@ function renderPriceImport(item) {
             const sourceUrl = priceImportField("URL HTTPS sumber", row.source_url, "source_url", "url"); sourceUrl.dataset.sourceKind = "url";
             const sourceDetail = priceImportField("Keterangan sumber lapangan", row.source_detail || row.evidence, "source_detail"); sourceDetail.dataset.sourceKind = "field";
             grid.append(
-                priceImportField("Nama produk", row.product, "product"), priceImportSelect("Jenis", row.type, "type", [["", "Pilih jenis"], ["Arabika", "Arabika"], ["Robusta", "Robusta"]]),
+                priceImportField("Nama produk", row.product, "product"), priceImportSelect("Jenis", row.type, "type", [["", "Pilih jenis"], ["Arabika", "Arabika"], ["Robusta", "Robusta"], ["Excelsa", "Excelsa"], ["Liberica", "Liberica"], ["Blend", "Blend"]]),
                 priceImportSelect("Tingkat harga", row.price_level || "unspecified", "price_level", [["unspecified", "Tidak disebut / periksa"], ["customer", "Customer"], ["reseller", "Reseller"], ["retail", "Eceran"], ["wholesale", "Grosir"], ["farmgate", "Tingkat petani"]]),
                 priceImportSelect("Bentuk", row.form, "form", [["", "Pilih bentuk"], ["Biji kopi mentah", "Biji hijau / green bean"], ["Biji kopi sangrai", "Biji sangrai / roasted bean"], ["Kopi bubuk", "Kopi bubuk"]]),
                 priceImportField("Proses", row.process, "process"), priceImportField("Asal", row.origin, "origin"),
                 priceImportField("Harga tunggal", row.price, "price", "number"), priceImportField("Harga minimum", row.price_min, "price_min", "number"), priceImportField("Harga maksimum", row.price_max, "price_max", "number"),
                 priceImportSelect("Mata uang", row.currency, "currency", [["", "Pilih mata uang"], ["IDR", "IDR · Rupiah"], ["USD", "USD"]]),
-                priceImportField("Jumlah kemasan", row.amount, "amount", "number"), priceImportField("Satuan jumlah", row.unit, "unit"), priceImportField("Tanggal pada sumber", row.source_date, "source_date"),
+                priceImportField("Jumlah kemasan", row.amount, "amount", "number"), priceImportField("Satuan jumlah", row.unit, "unit"), priceImportField("Tanggal sumber / dicatat", row.source_date || (row.source_type === "field" ? String(item.created_at || "").slice(0, 10) : ""), "source_date", "date"),
                 sourceType, sourceName, sourceUrl, sourceDetail
             );
             sourceType.querySelector("select").addEventListener("change", () => updatePriceSourceFields(section));
