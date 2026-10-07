@@ -392,14 +392,75 @@ async function memberMevoReports(request, env, slug = "") {
     const row = await env.DB.prepare(`SELECT slug, language, title, teaser, report_json, published_at
       FROM mevo_member_reports WHERE slug = ? AND status = 'published'`).bind(slug).first();
     if (!row) return response(request, { error: "Report by MEVO tidak ditemukan." }, 404);
-    return response(request, { ...row, report: JSON.parse(row.report_json) });
+    const pdf = await env.DB.prepare("SELECT filename FROM mevo_report_files WHERE report_key = ?").bind(mevoReportKey(slug)).first();
+    return response(request, { ...row, pdf_filename: pdf?.filename || "", report: JSON.parse(row.report_json) });
   }
   const rows = await env.DB.prepare(`SELECT slug, language, title, teaser, report_json, published_at
     FROM mevo_member_reports WHERE status = 'published' ORDER BY published_at DESC LIMIT 100`).all();
-  return response(request, { reports: (rows.results || []).map(row => ({
+  const files = await env.DB.prepare("SELECT report_key, filename FROM mevo_report_files").all();
+  const filenames = new Map((files.results || []).map(file => [file.report_key, file.filename]));
+  return response(request, { member: { display_name: member.display_name, email: member.email, newsletter_opt_in: Boolean(member.newsletter_opt_in) }, reports: (rows.results || []).map(row => ({
     ...row,
+    pdf_filename: filenames.get(mevoReportKey(row.slug)) || "",
     report: JSON.parse(row.report_json)
   })) });
+}
+
+function mevoReportKey(slug) {
+  return String(slug || "").toLowerCase().replace(/-(?:id|en)$/i, "");
+}
+
+async function saveMevoReportPdf(request, env, idValue) {
+  if (!env.DB) return response(request, { error: "Penyimpanan privat Report by MEVO belum dikonfigurasi." }, 503);
+  if (!await adminSession(request, env)) return response(request, { error: "Sesi admin diperlukan." }, 401);
+  let form;
+  try { form = await request.formData(); } catch (_) { return response(request, { error: "Berkas PDF tidak dapat dibaca." }, 400); }
+  const file = form.get("pdf");
+  if (!(file instanceof File) || file.size < 8 || file.size > 750 * 1024) return response(request, { error: "Pilih PDF maksimal 750 KB." }, 400);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (new TextDecoder().decode(bytes.slice(0, 5)) !== "%PDF-") return response(request, { error: "Berkas yang dipilih bukan PDF yang valid." }, 400);
+  const report = await env.DB.prepare("SELECT slug FROM mevo_member_reports WHERE id = ?").bind(idValue).first();
+  if (!report) return response(request, { error: "Simpan draft report sebelum mengunggah PDF." }, 404);
+  const filename = String(file.name || "report-mevo-bilingual.pdf").replace(/[\r\n"\\/]/g, "_").slice(0, 180) || "report-mevo-bilingual.pdf";
+  const reportKey = mevoReportKey(report.slug);
+  await env.DB.prepare(`INSERT INTO mevo_report_files (report_key, filename, pdf_blob, file_size, content_type, updated_at)
+    VALUES (?, ?, ?, ?, 'application/pdf', ?)
+    ON CONFLICT(report_key) DO UPDATE SET filename=excluded.filename, pdf_blob=excluded.pdf_blob,
+      file_size=excluded.file_size, content_type=excluded.content_type, updated_at=excluded.updated_at`)
+    .bind(reportKey, filename, bytes, bytes.byteLength, now()).run();
+  return response(request, { saved: true, filename, size: bytes.byteLength });
+}
+
+async function downloadMevoReportPdf(request, env, slug) {
+  if (!env.DB) return response(request, { error: "Penyimpanan privat Report by MEVO belum dikonfigurasi." }, 503);
+  const member = await memberForRequest(request, env);
+  if (!member) return response(request, { error: "Masuk untuk mengunduh full report MEVO." }, 401);
+  if (!member.profile_complete) return response(request, { error: "Lengkapi profil anggota untuk mengunduh full report MEVO." }, 403);
+  const body = await bodyJson(request);
+  const purpose = String(body?.purpose || "");
+  if (!["personal_research", "business", "education", "media_publication", "other"].includes(purpose)) return response(request, { error: "Pilih tujuan penggunaan report sebelum mengunduh." }, 400);
+  if (body?.newsletter_consent !== true) return response(request, { error: "Persetujuan menerima newsletter Kabar Kopi diperlukan sebelum mengunduh." }, 400);
+  if (body?.usage_agreement !== true) return response(request, { error: "Setujui ketentuan penggunaan dan atribusi sebelum mengunduh." }, 400);
+  const report = await env.DB.prepare("SELECT slug FROM mevo_member_reports WHERE slug = ? AND status = 'published'").bind(slug).first();
+  if (!report) return response(request, { error: "Report by MEVO tidak ditemukan." }, 404);
+  const file = await env.DB.prepare("SELECT filename, pdf_blob FROM mevo_report_files WHERE report_key = ?").bind(mevoReportKey(slug)).first();
+  if (!file) return response(request, { error: "PDF dwibahasa belum tersedia untuk report ini." }, 404);
+  if (!file.pdf_blob) return response(request, { error: "Berkas PDF belum tersedia di penyimpanan privat." }, 404);
+  await env.DB.batch([
+    env.DB.prepare("UPDATE members SET newsletter_opt_in = 1, updated_at = ? WHERE id = ?").bind(now(), member.id),
+    env.DB.prepare(`INSERT INTO mevo_report_downloads (id, member_id, report_key, purpose, newsletter_consent, usage_agreement, agreement_version, created_at)
+      VALUES (?, ?, ?, ?, 1, 1, 'mevo-pdf-v1', ?)`)
+      .bind(id(), member.id, mevoReportKey(slug), purpose, now())
+  ]);
+  const filename = String(file.filename || "report-mevo.pdf").replace(/[\r\n"\\/]/g, "_");
+  const encodedFilename = encodeURIComponent(filename).replace(/['()]/g, char => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+  return new Response(new Uint8Array(file.pdf_blob), { status: 200, headers: {
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename="report-mevo.pdf"; filename*=UTF-8''${encodedFilename}`,
+    "Cache-Control": "private, no-store",
+    "X-Content-Type-Options": "nosniff",
+    ...cors(request)
+  } });
 }
 
 async function adminMevoReports(request, env) {
@@ -408,7 +469,9 @@ async function adminMevoReports(request, env) {
   const rows = await env.DB.prepare(`SELECT id, slug, language, title, teaser, report_json, status,
     source_batch_id, generated_by, created_at, updated_at, published_at
     FROM mevo_member_reports ORDER BY updated_at DESC LIMIT 200`).all();
-  return response(request, { reports: (rows.results || []).map(row => ({ ...row, report: JSON.parse(row.report_json) })) });
+  const files = await env.DB.prepare("SELECT report_key, filename FROM mevo_report_files").all();
+  const filenames = new Map((files.results || []).map(file => [file.report_key, file.filename]));
+  return response(request, { reports: (rows.results || []).map(row => ({ ...row, pdf_filename: filenames.get(mevoReportKey(row.slug)) || "", report: JSON.parse(row.report_json) })) });
 }
 
 const MEVO_TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
@@ -534,6 +597,9 @@ async function saveAdminMevoReport(request, env, idValue = "") {
   const hasStructuredBody = Boolean(report.summary || report.lead || report.conclusion || (Array.isArray(report.sections) && report.sections.length) || (Array.isArray(report.recommendations) && report.recommendations.length));
   if (status === "published" && !reportBody && !hasStructuredBody) return response(request, { error: "Report belum dapat diterbitkan karena isi report masih kosong." }, 400);
   if (status === "published" && (!Array.isArray(report.sources) || !report.sources.length)) return response(request, { error: "Tambahkan minimal satu tautan sumber pada kolom sumber atau di dalam naskah sebelum menerbitkan." }, 400);
+  if (status === "published" && !await env.DB.prepare("SELECT report_key FROM mevo_report_files WHERE report_key = ?").bind(mevoReportKey(slug)).first()) {
+    return response(request, { error: "Unggah PDF full report dwibahasa sebelum menerbitkan report." }, 400);
+  }
   const detectedLanguage = detectMevoLanguage(`${title} ${teaser} ${mevoLanguageText(report)}`);
   if (detectedLanguage && detectedLanguage !== language) return response(request, { error: `Isi naskah terdeteksi berbahasa ${detectedLanguage.toUpperCase()}, tetapi pilihan bahasa sumber adalah ${language.toUpperCase()}. Perbaiki pilihan bahasa agar pasangan terjemahan tidak tertukar.` }, 400);
   const timestamp = now();
@@ -656,12 +722,16 @@ export async function handleKabarMemberRequest(request, env, url) {
   if (premiumMatch && request.method === "GET") return premiumArticle(request, env, premiumMatch[1]);
   if (path === "/api/admin/premium/sync" && request.method === "POST") return syncPremium(request, env);
   if (path === "/api/member/mevo-reports" && request.method === "GET") return memberMevoReports(request, env);
+  const memberMevoPdfMatch = path.match(/^\/api\/member\/mevo-reports\/([a-z0-9-]+)\/pdf$/);
+  if (memberMevoPdfMatch && request.method === "POST") return downloadMevoReportPdf(request, env, memberMevoPdfMatch[1]);
   const memberMevoMatch = path.match(/^\/api\/member\/mevo-reports\/([a-z0-9-]+)$/);
   if (memberMevoMatch && request.method === "GET") return memberMevoReports(request, env, memberMevoMatch[1]);
   if (path === "/api/admin/mevo-reports" && request.method === "GET") return adminMevoReports(request, env);
   if (path === "/api/admin/mevo-reports" && request.method === "POST") return saveAdminMevoReport(request, env);
   const adminMevoMatch = path.match(/^\/api\/admin\/mevo-reports\/([a-f0-9-]+)$/);
   if (adminMevoMatch && request.method === "POST") return saveAdminMevoReport(request, env, adminMevoMatch[1]);
+  const adminMevoPdfMatch = path.match(/^\/api\/admin\/mevo-reports\/([a-f0-9-]+)\/pdf$/);
+  if (adminMevoPdfMatch && request.method === "POST") return saveMevoReportPdf(request, env, adminMevoPdfMatch[1]);
   if (path === "/api/admin/mevo-reports/sync" && request.method === "POST") return syncMevoReports(request, env);
   return null;
 }
