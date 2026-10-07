@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:06:43.339Z",
+  "updated_at": "2026-10-07T18:06:54.183Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -231,6 +231,11 @@
       "url": "https://megapolitan.antaranews.com/berita/447661/menanam-harapan-untuk-perempuan-dan-petani-muda-di-lereng-kintamani",
       "cluster_id": "produksi-panen",
       "decided_at": "2026-10-07T18:06:43.339Z"
+    },
+    {
+      "url": "https://kertakoffie.com/harga-green-bean-kopi-arabika",
+      "cluster_id": "harga-pasar",
+      "decided_at": "2026-10-07T18:06:54.183Z"
     }
   ]
 }
