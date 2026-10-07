@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:04:59.515Z",
+  "updated_at": "2026-10-07T18:05:05.256Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -186,6 +186,11 @@
       "url": "https://www.kemendag.go.id/berita/siaran-pers/bertemu-dengan-menteri-investasi-dan-perdagangan-luar-negeri-mesir-mendag-busan-dorong-pertemuan-ke-2-jtc-pada-2026",
       "cluster_id": "ekspor-daya-saing",
       "decided_at": "2026-10-07T18:04:59.515Z"
+    },
+    {
+      "url": "https://jawapos.com/zodiak/2608170120/ramalan-kesehatan-zodiak-leo-senin-17-agustus-2026-kurangi-kopi-dan-jaga-tenggorokan",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-07T18:05:05.256Z"
     }
   ]
 }
