@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:03:47.797Z",
+  "updated_at": "2026-10-07T18:03:55.456Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -144,6 +144,11 @@
       "url": "https://jawapos.com/kuliner/2609260299/lagi-viral-5-rekomendasi-salt-bread-di-alam-sutra-pencinta-pastry-wajib-coba",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-07T18:03:47.797Z"
+    },
+    {
+      "url": "https://mediaindonesia.com/kuliner/938001/tren-kuliner-urban-bergeser-smoothie-hingga-bowl-makin-diminati",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-07T18:03:55.456Z"
     }
   ]
 }
