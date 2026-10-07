@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:03:02.481Z",
+  "updated_at": "2026-10-07T18:03:12.907Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -114,6 +114,11 @@
       "url": "https://entertainment.kompas.com/read/2026/09/12/154700566/tiba-di-jakarta-cheng-lei-penasaran-kopi-indonesia-",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-07T18:03:02.481Z"
+    },
+    {
+      "url": "https://regional.kompas.com/read/2026/09/11/182550778/di-kayu-aro-petani-kerinci-merayakan-kopi-yang-mulai-mendunia",
+      "cluster_id": "pendidikan-industri",
+      "decided_at": "2026-10-07T18:03:12.907Z"
     }
   ]
 }
