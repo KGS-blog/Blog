@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:02:25.687Z",
+  "updated_at": "2026-10-07T18:02:34.628Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -99,6 +99,11 @@
       "decision": "irrelevant",
       "reason": "Editor memastikan penyebutan kopi bukan pokok berita.",
       "decided_at": "2026-10-07T18:02:25.687Z"
+    },
+    {
+      "url": "https://kompas.com/tren/read/2026/09/27/193000065/bawa-es-kopi-saat-wawancara-kerja-gen-z-dinilai-terlalu-santai-",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-07T18:02:34.628Z"
     }
   ]
 }
