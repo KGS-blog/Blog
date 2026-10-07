@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:06:33.719Z",
+  "updated_at": "2026-10-07T18:06:43.339Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -226,6 +226,11 @@
       "url": "https://jurnal.unigal.ac.id/mimbaragribisnis/article/download/22081/pdf_1",
       "cluster_id": "produksi-panen",
       "decided_at": "2026-10-07T18:06:33.719Z"
+    },
+    {
+      "url": "https://megapolitan.antaranews.com/berita/447661/menanam-harapan-untuk-perempuan-dan-petani-muda-di-lereng-kintamani",
+      "cluster_id": "produksi-panen",
+      "decided_at": "2026-10-07T18:06:43.339Z"
     }
   ]
 }
