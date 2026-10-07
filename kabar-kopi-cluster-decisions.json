@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:03:12.907Z",
+  "updated_at": "2026-10-07T18:03:20.856Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -119,6 +119,11 @@
       "url": "https://regional.kompas.com/read/2026/09/11/182550778/di-kayu-aro-petani-kerinci-merayakan-kopi-yang-mulai-mendunia",
       "cluster_id": "pendidikan-industri",
       "decided_at": "2026-10-07T18:03:12.907Z"
+    },
+    {
+      "url": "https://kompas.com/food/read/2026/09/11/163100675/ampas-kopi-ternyata-bisa-diubah-menjadi-material-bangunan-kok-bisa-",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-07T18:03:20.856Z"
     }
   ]
 }
