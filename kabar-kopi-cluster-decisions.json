@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T17:59:10.886Z",
+  "updated_at": "2026-10-07T18:00:13.629Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -33,6 +33,13 @@
       "decision": "irrelevant",
       "reason": "Editor memastikan penyebutan kopi bukan pokok berita.",
       "decided_at": "2026-10-07T17:59:10.886Z"
+    },
+    {
+      "url": "https://www.bankbsi.co.id/promo/coffee-drive-ev-hybrid-experience-bekasi",
+      "cluster_id": "tidak-relevan",
+      "decision": "irrelevant",
+      "reason": "Editor memastikan penyebutan kopi bukan pokok berita.",
+      "decided_at": "2026-10-07T18:00:13.629Z"
     }
   ]
 }
