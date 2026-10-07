@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:00:58.781Z",
+  "updated_at": "2026-10-07T18:01:09.956Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -67,6 +67,11 @@
       "url": "https://www.beritasatu.com/internasional/3031198/10-destinasi-kopi-terbaik-dunia-2026-ho-chi-minh-city-nomor-2",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-07T18:00:58.781Z"
+    },
+    {
+      "url": "https://kupang.tribunnews.com/provinsi-ntt/982021/gubernur-bi-destry-damayanti-ungkap-potensi-besar-tenun-ntt-hingga-kopi",
+      "cluster_id": "pendidikan-industri",
+      "decided_at": "2026-10-07T18:01:09.956Z"
     }
   ]
 }
