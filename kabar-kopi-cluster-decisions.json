@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:00:29.080Z",
+  "updated_at": "2026-10-07T18:00:31.812Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -45,6 +45,11 @@
       "url": "https://www.kompasiana.com/lini17077/6ab4ef8a34777c746c6bded2/lini-kopi-surabaya-coffe-homey-di-surabaya-selatan",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-07T18:00:29.080Z"
+    },
+    {
+      "url": "https://pelakita.id/2026/10/05/dari-dunia-hitam-kopi-seko-ke-sorowako-bahar-makkutana-bawa-semangat-koperasi-luwu-utara-ke-harkopnas-79/",
+      "cluster_id": "produksi-panen",
+      "decided_at": "2026-10-07T18:00:31.812Z"
     }
   ]
 }
