@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:02:11.219Z",
+  "updated_at": "2026-10-07T18:02:25.687Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -92,6 +92,13 @@
       "url": "https://antaranews.com/berita/5762016/secangkir-kopi-sejuta-kehangatan-lrt-jabodebek-semakin-dekat-dengan-pengguna",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-07T18:02:11.219Z"
+    },
+    {
+      "url": "https://insight.jakpat.net/thai-tea-preferences-who-rules-the-market/",
+      "cluster_id": "tidak-relevan",
+      "decision": "irrelevant",
+      "reason": "Editor memastikan penyebutan kopi bukan pokok berita.",
+      "decided_at": "2026-10-07T18:02:25.687Z"
     }
   ]
 }
