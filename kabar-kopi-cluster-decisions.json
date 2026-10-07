@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:05:16.811Z",
+  "updated_at": "2026-10-07T18:05:24.822Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -201,6 +201,11 @@
       "url": "https://jawapos.com/lifestyle/2608080231/tak-melulu-kopi-5-minuman-ini-bisa-bantu-lawan-kantuk-dan-tambah-energi",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-07T18:05:16.811Z"
+    },
+    {
+      "url": "https://jawapos.com/lifestyle/2608060270/kopi-tak-hanya-bikin-melek-ini-4-manfaat-kesehatan-yang-jarang-diketahui",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-07T18:05:24.822Z"
     }
   ]
 }
