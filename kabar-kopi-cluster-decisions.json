@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:04:04.402Z",
+  "updated_at": "2026-10-07T18:04:10.438Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -156,6 +156,11 @@
       "decision": "irrelevant",
       "reason": "Editor memastikan penyebutan kopi bukan pokok berita.",
       "decided_at": "2026-10-07T18:04:04.402Z"
+    },
+    {
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/dorong-akses-pasar-dua-arah-kemendag-perkuat-perdagangan-indonesia-cili",
+      "cluster_id": "kebijakan-regulasi",
+      "decided_at": "2026-10-07T18:04:10.438Z"
     }
   ]
 }
