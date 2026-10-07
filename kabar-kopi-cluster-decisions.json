@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:01:56.236Z",
+  "updated_at": "2026-10-07T18:02:11.219Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -87,6 +87,11 @@
       "url": "https://kompas.com/homey/read/2026/09/28/200000176/jangan-langsung-buang-ampas-kopi-bisa-disulap-jadi-kompos",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-07T18:01:56.236Z"
+    },
+    {
+      "url": "https://antaranews.com/berita/5762016/secangkir-kopi-sejuta-kehangatan-lrt-jabodebek-semakin-dekat-dengan-pengguna",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-07T18:02:11.219Z"
     }
   ]
 }
