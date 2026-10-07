@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:04:49.890Z",
+  "updated_at": "2026-10-07T18:04:59.515Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -181,6 +181,11 @@
       "url": "https://www.kemendag.go.id/berita/siaran-pers/gandeng-ritel-modern-untuk-perluas-akses-pasar-umkm-mendag-busan-resmikan-pojok-product-placement-pilihan-busan",
       "cluster_id": "ekspor-daya-saing",
       "decided_at": "2026-10-07T18:04:49.890Z"
+    },
+    {
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/bertemu-dengan-menteri-investasi-dan-perdagangan-luar-negeri-mesir-mendag-busan-dorong-pertemuan-ke-2-jtc-pada-2026",
+      "cluster_id": "ekspor-daya-saing",
+      "decided_at": "2026-10-07T18:04:59.515Z"
     }
   ]
 }
