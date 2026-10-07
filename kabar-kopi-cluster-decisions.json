@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:03:38.472Z",
+  "updated_at": "2026-10-07T18:03:47.797Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -139,6 +139,11 @@
       "url": "https://lifestyle.kompas.com/read/2026/09/01/100600720/kombinasi-kopi-dan-membaca-di-pagi-hari-ini-manfaatnya",
       "cluster_id": "kedai-konsumsi-gaya-hidup",
       "decided_at": "2026-10-07T18:03:38.472Z"
+    },
+    {
+      "url": "https://jawapos.com/kuliner/2609260299/lagi-viral-5-rekomendasi-salt-bread-di-alam-sutra-pencinta-pastry-wajib-coba",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-07T18:03:47.797Z"
     }
   ]
 }
