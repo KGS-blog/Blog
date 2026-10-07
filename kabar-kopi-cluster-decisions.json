@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:04:32.189Z",
+  "updated_at": "2026-10-07T18:04:40.495Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -171,6 +171,11 @@
       "url": "https://www.kemendag.go.id/berita/siaran-pers/kemendag-selaraskan-program-pengembangan-ekspor-untuk-pacu-ekspor-jawa-dan-sumatra",
       "cluster_id": "ekspor-daya-saing",
       "decided_at": "2026-10-07T18:04:32.189Z"
+    },
+    {
+      "url": "https://www.kemendag.go.id/berita/siaran-pers/periode-januari-juli-2026-business-matching-kemendag-fasilitasi-1021-umkm-dan-catatkan-rp595-triliun",
+      "cluster_id": "ekspor-daya-saing",
+      "decided_at": "2026-10-07T18:04:40.495Z"
     }
   ]
 }
