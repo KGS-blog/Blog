@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-05T10:03:05.487Z",
+  "updated_at": "2026-10-07T17:59:10.886Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -26,6 +26,13 @@
       "url": "https://kupang.tribunnews.com/provinsi-ntt/982088/fce-2026-hari-ketiga-penggiat-kopi-ntt-diajak-tingkatkan-kualitas-hingga-buka-peluang-ekspor",
       "cluster_id": "event-kompetisi",
       "decided_at": "2026-10-05T10:03:05.487Z"
+    },
+    {
+      "url": "https://flores.tribunnews.com/nagekeo/65894/sebelum-meninggal-wabup-nagekeo-sempat-minum-kopi-usai-antar-semen-perbaiki-jalan",
+      "cluster_id": "tidak-relevan",
+      "decision": "irrelevant",
+      "reason": "Editor memastikan penyebutan kopi bukan pokok berita.",
+      "decided_at": "2026-10-07T17:59:10.886Z"
     }
   ]
 }
