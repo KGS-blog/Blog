@@ -1414,9 +1414,10 @@ window.__qcoAnLang = function (lang) {
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Title (EN) <span class="text-red-500">*</span></label><input type="text" name="title_en" class="input-field" required placeholder="Example: Journey to SCA Expo"></div>
                 </div>
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
-                    <div><label class="block text-sm font-medium text-coffee-700 mb-1">Kategori <span class="text-red-500">*</span></label><select name="category" class="input-field" required><option value="kopi-indonesia">Kopi Indonesia</option><option value="perjalanan">Perjalanan</option><option value="riset-pasar">Riset & Pasar</option><option value="pemasaran">Pemasaran</option><option value="pengalaman">Pengalaman</option></select></div>
+                    <div><label class="block text-sm font-medium text-coffee-700 mb-1">Kategori Blog <span class="text-red-500">*</span></label><select name="category" class="input-field" required><option value="kopi-indonesia">Kopi Indonesia</option><option value="perjalanan">Perjalanan</option><option value="riset-pasar">Riset & Pasar</option><option value="pemasaran">Pemasaran</option><option value="pengalaman">Pengalaman</option></select></div>
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Status <span class="text-red-500">*</span></label><select name="status" class="input-field" required><option value="Draft">Draft (Simpan sebagai konsep)</option><option value="Published">Published (Langsung publikasikan)</option></select></div>
                 </div>
+                <div class="mb-4 rounded-xl border border-coffee-100 bg-coffee-50 p-4"><label class="block text-sm font-medium text-coffee-700 mb-1">Penempatan tambahan di Kabar Kopi</label><select name="kabar_pillar" class="input-field"><option value="">Tidak ditampilkan di Kabar Kopi</option><option value="data-tren">Sorotan Data & Tren</option><option value="berita">Sorotan Berita Terkini</option></select><p class="text-xs text-coffee-500 mt-2">Pilihan ini terpisah dari Kategori Blog. Sorotan tampil selama 7 hari; data dan feed tetap tersedia di bawahnya. Sinkronisasi Kabar Kopi berjalan berkala dan dapat memerlukan waktu hingga 6 jam.</p></div>
                 <div class="mb-4"><label class="block text-sm font-medium text-coffee-700 mb-1">Image URL</label><input type="url" name="image" class="input-field" placeholder="https://images.unsplash.com/..."><p class="text-xs text-coffee-400 mt-1">Kosongkan untuk menggunakan gambar default</p></div>
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Deskripsi Singkat (ID) <span class="text-red-500">*</span></label><textarea name="desc_id" rows="2" class="input-field resize-none" required placeholder="Deskripsi singkat artikel dalam Bahasa Indonesia"></textarea></div>
@@ -1447,9 +1448,10 @@ window.__qcoAnLang = function (lang) {
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Title (EN) <span class="text-red-500">*</span></label><input type="text" id="edit-title-en" class="input-field" required></div>
                 </div>
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
-                    <div><label class="block text-sm font-medium text-coffee-700 mb-1">Kategori <span class="text-red-500">*</span></label><select id="edit-category" class="input-field" required><option value="kopi-indonesia">Kopi Indonesia</option><option value="perjalanan">Perjalanan</option><option value="riset-pasar">Riset & Pasar</option><option value="pemasaran">Pemasaran</option><option value="pengalaman">Pengalaman</option></select></div>
+                    <div><label class="block text-sm font-medium text-coffee-700 mb-1">Kategori Blog <span class="text-red-500">*</span></label><select id="edit-category" class="input-field" required><option value="kopi-indonesia">Kopi Indonesia</option><option value="perjalanan">Perjalanan</option><option value="riset-pasar">Riset & Pasar</option><option value="pemasaran">Pemasaran</option><option value="pengalaman">Pengalaman</option></select></div>
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Status <span class="text-red-500">*</span></label><select id="edit-status" class="input-field" required><option value="Draft">Draft (Simpan sebagai konsep)</option><option value="Published">Published (Langsung publikasikan)</option></select></div>
                 </div>
+                <div class="mb-4 rounded-xl border border-coffee-100 bg-coffee-50 p-4"><label class="block text-sm font-medium text-coffee-700 mb-1">Penempatan tambahan di Kabar Kopi</label><select id="edit-kabar-pillar" class="input-field"><option value="">Tidak ditampilkan di Kabar Kopi</option><option value="data-tren">Sorotan Data & Tren</option><option value="berita">Sorotan Berita Terkini</option></select><p class="text-xs text-coffee-500 mt-2">Pilihan ini tidak mengubah kategori Blog. Sorotan tampil 7 hari setelah diterbitkan, lalu kembali ke tampilan data atau feed. Sinkronisasi berkala dapat memerlukan waktu hingga 6 jam.</p></div>
                 <div class="mb-4"><label class="block text-sm font-medium text-coffee-700 mb-1">Image URL</label><input type="url" id="edit-image" class="input-field" placeholder="https://images.unsplash.com/..."></div>
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
                     <div><label class="block text-sm font-medium text-coffee-700 mb-1">Deskripsi Singkat (ID) <span class="text-red-500">*</span></label><textarea id="edit-desc-id" rows="2" class="input-field resize-none" required></textarea></div>
@@ -2576,6 +2578,7 @@ async function submitNewArticle(e) {
     const title_en = form.title_en.value.trim();
     const content_id = document.getElementById("new-content-id").value.trim();
     const content_en = document.getElementById("new-content-en").value.trim();
+    const kabarPillar = form.kabar_pillar.value;
     if (!title_id || !title_en) { showToast("Judul ID dan EN wajib diisi!", "error"); return; }
     if (!content_id || !content_en) { showToast("Konten ID dan EN wajib diisi!", "error"); return; }
     if (content_en.length < 50) { showToast("Konten EN terlalu pendek! Tulis minimal 50 karakter.", "error"); return; }
@@ -2585,8 +2588,11 @@ async function submitNewArticle(e) {
     btn.disabled = true; btn.innerHTML = "<i class='fas fa-spinner fa-spin mr-2'></i>Menyimpan...";
     statusDiv.classList.remove("hidden");
     showSaveStatus("saving", "Menyimpan artikel ke repo bersama...");
+    const publishedAt = form.status.value === "Published" ? new Date().toISOString() : null;
     const newArticle = {
         id: Date.now(), title_id, title_en, category: form.category.value, status: form.status.value,
+        kabar_pillar: kabarPillar, kabar_featured_at: kabarPillar ? publishedAt : null,
+        ...(publishedAt ? { datePublished: publishedAt } : {}),
         image: form.image.value.trim() || "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=375&fit=crop",
         date: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
         readTime: "5", desc_id: form.desc_id.value.trim(), desc_en: form.desc_en.value.trim(),
@@ -2624,6 +2630,7 @@ function editArticle(id) {
     document.getElementById("edit-title-en").value = art.title_en || "";
     document.getElementById("edit-category").value = art.category || "perjalanan";
     document.getElementById("edit-status").value = art.status || "Draft";
+    document.getElementById("edit-kabar-pillar").value = art.kabar_pillar || "";
     document.getElementById("edit-image").value = art.image || "";
     document.getElementById("edit-desc-id").value = art.desc_id || "";
     document.getElementById("edit-desc-en").value = art.desc_en || "";
@@ -2651,12 +2658,22 @@ async function updateArticle(e) {
     const newContentEn = document.getElementById("edit-content-en").value.trim();
     if (!newContentEn || newContentEn.length < 50) { showToast("Konten EN wajib diisi minimal 50 karakter!", "error"); isSaving = false; btn.disabled = false; btn.innerHTML = "<i class='fas fa-save mr-2'></i>Update Artikel"; return; }
     const previousArticles = articlesData.map(a => ({ ...a }));
+    const currentArticle = articlesData[idx];
+    const nextStatus = document.getElementById("edit-status").value;
+    const nextKabarPillar = document.getElementById("edit-kabar-pillar").value;
+    const publishedAt = nextStatus === "Published" ? (currentArticle.status === "Published" ? currentArticle.datePublished || currentArticle.kabar_featured_at || new Date().toISOString() : new Date().toISOString()) : null;
+    const kabarFeaturedAt = nextStatus === "Published" && nextKabarPillar
+        ? (currentArticle.status === "Published" && currentArticle.kabar_pillar === nextKabarPillar && currentArticle.kabar_featured_at ? currentArticle.kabar_featured_at : new Date().toISOString())
+        : null;
     const updatedArticle = {
         ...articlesData[idx],
         title_id: document.getElementById("edit-title-id").value.trim(),
         title_en: document.getElementById("edit-title-en").value.trim(),
         category: document.getElementById("edit-category").value,
-        status: document.getElementById("edit-status").value,
+        status: nextStatus,
+        kabar_pillar: nextKabarPillar,
+        kabar_featured_at: kabarFeaturedAt,
+        datePublished: publishedAt,
         image: document.getElementById("edit-image").value.trim() || articlesData[idx].image,
         desc_id: document.getElementById("edit-desc-id").value.trim(),
         desc_en: document.getElementById("edit-desc-en").value.trim(),
@@ -2702,6 +2719,14 @@ async function toggleArticleStatus(id) {
     if (!art) return;
     const previousArticles = articlesData.map(a => ({ ...a }));
     art.status = art.status === "Published" ? "Draft" : "Published";
+    if (art.status === "Published") {
+        const publishedAt = new Date().toISOString();
+        art.datePublished = publishedAt;
+        art.date = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+        if (art.kabar_pillar) art.kabar_featured_at = publishedAt;
+    } else {
+        art.kabar_featured_at = null;
+    }
     try { await saveSharedArticles(); }
     catch (error) { await restoreArticlesAfterFailure(previousArticles, error); showToast(error.message, "error"); return; }
     refreshArticleViews();
@@ -2771,7 +2796,7 @@ function renderDashboardArticles() {
         const title = currentLang === "id" ? art.title_id : art.title_en;
         return `<tr class="hover:bg-coffee-50 transition-colors">
             <td class="px-6 py-4"><div class="font-medium text-coffee-900">${title}</div><div class="text-xs text-coffee-400 mt-1">${art.readTime} menit baca</div></td>
-            <td class="px-6 py-4"><span class="tag">${catLabel}</span></td>
+            <td class="px-6 py-4"><span class="tag">${catLabel}</span>${art.kabar_pillar ? `<div class="text-xs text-coffee-500 mt-2">Kabar Kopi · ${art.kabar_pillar === "data-tren" ? "Data & Tren" : "Berita Terkini"}</div>` : ""}</td>
             <td class="px-6 py-4"><button type="button" onclick="toggleArticleStatus(${art.id})" class="cursor-pointer transition-all hover:opacity-80 ${isPublished ? "status-badge-published" : "status-badge-draft"}"><i class="fas ${isPublished ? "fa-check-circle" : "fa-pencil-ruler"} mr-1"></i>${isPublished ? "Published" : "Draft"}</button></td>
             <td class="px-6 py-4 text-sm text-coffee-500">${art.date}</td>
             <td class="px-6 py-4"><div class="flex gap-1"><button type="button" class="p-2 text-coffee-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors" onclick="editArticle(${art.id})" title="Edit"><i class="fas fa-pen"></i></button><button type="button" class="p-2 text-coffee-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors" onclick="deleteArticle(${art.id})" title="Hapus"><i class="fas fa-trash"></i></button></div></td>
