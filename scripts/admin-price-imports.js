@@ -77,15 +77,24 @@ function validatePriceImportRows(card) {
     return problems;
 }
 function renderPriceImport(item) {
-    const card = document.createElement("article"); card.className = "content-card space-y-3";
+    const isApproved = ["approved", "imported"].includes(item.status);
+    const card = document.createElement(isApproved ? "details" : "article"); card.className = "content-card space-y-3";
     const header = document.createElement("div"); header.className = "flex flex-wrap items-center justify-between gap-2";
     const title = document.createElement("h4"); title.className = "font-serif text-lg font-bold text-coffee-900"; title.textContent = item.filename;
     const meta = document.createElement("span");
-    const statusLabel = { pending: "Menunggu pemeriksaan", approved: "Tersimpan · disetujui", ignored: "Tersimpan · diabaikan" }[item.status] || item.status;
-    const statusTone = item.status === "approved" ? "bg-green-100 text-green-800" : item.status === "ignored" ? "bg-gray-100 text-gray-700" : "bg-amber-100 text-amber-900";
+    const statusLabel = { pending: "Menunggu pemeriksaan", approved: "Tersimpan · disetujui", imported: "Sudah masuk pipeline", ignored: "Tersimpan · diabaikan" }[item.status] || item.status;
+    const statusTone = ["approved", "imported"].includes(item.status) ? "bg-green-100 text-green-800" : item.status === "ignored" ? "bg-gray-100 text-gray-700" : "bg-amber-100 text-amber-900";
     meta.className = `inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone}`; meta.textContent = `${statusLabel} · ${new Date(item.created_at).toLocaleString("id-ID")}`;
     const fileLink = document.createElement("a"); fileLink.className = "btn-secondary inline-block"; fileLink.href = `${BLOG_SYNC_API}/admin/price-list-imports/${encodeURIComponent(item.id)}/file`; fileLink.target = "_blank"; fileLink.rel = "noopener noreferrer"; fileLink.textContent = "Lihat berkas asli";
-    header.append(title, meta, fileLink); card.append(header);
+    if (isApproved) {
+        const summary = document.createElement("summary"); summary.className = "flex flex-wrap items-center justify-between gap-2 cursor-pointer";
+        const label = document.createElement("div"); label.className = "flex flex-wrap items-center gap-3"; label.append(title, meta);
+        const hint = document.createElement("span"); hint.className = "text-xs text-coffee-500"; hint.textContent = "Klik untuk memeriksa isi";
+        summary.append(label, hint); card.append(summary);
+        header.append(fileLink); card.append(header);
+    } else {
+        header.append(title, meta, fileLink); card.append(header);
+    }
     const rows = Array.isArray(item.suggestions) ? item.suggestions : [];
     if (rows.length) {
         const help = document.createElement("p"); help.className = "text-xs text-coffee-500"; help.textContent = "OCR akan mencoba membaca nama sumber dari judul, kepala dokumen, logo, atau byline. Periksa kecocokannya dengan berkas asli sebelum menyetujui. Catatan langsung dari lapangan tidak memerlukan URL; tanggal otomatis memakai tanggal unggah jika dokumen tidak mencantumkan tanggal. Tanggal unggah ini adalah tanggal pencatatan, bukan tanggal yang diklaim tercetak pada sumber. Untuk sumber publik, gunakan URL HTTPS yang tercetak atau terverifikasi. Rentang harga tetap rentang; jenis, bentuk, mata uang, dan satuan yang tidak terbaca harus dilengkapi sebelum setuju."; card.append(help);
