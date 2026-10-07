@@ -5,7 +5,7 @@
     "budaya-sastra-kopi",
     "kriminal-keamanan-komoditas-kopi"
   ],
-  "updated_at": "2026-10-07T18:01:30.631Z",
+  "updated_at": "2026-10-07T18:01:56.236Z",
   "overrides": [
     {
       "url": "https://koran-jakarta.com/2026-10-05/m-stand-dari-shanghai-hadir-di-jakarta-bawa-konsep-modern-coffee-lifestyle",
@@ -82,6 +82,11 @@
       "url": "https://probolinggokab.go.id/dkupp-kabupaten-probolinggo-perkuat-communal-branding-gula-aren-dan-kopi/",
       "cluster_id": "kebijakan-regulasi",
       "decided_at": "2026-10-07T18:01:30.631Z"
+    },
+    {
+      "url": "https://kompas.com/homey/read/2026/09/28/200000176/jangan-langsung-buang-ampas-kopi-bisa-disulap-jadi-kompos",
+      "cluster_id": "kedai-konsumsi-gaya-hidup",
+      "decided_at": "2026-10-07T18:01:56.236Z"
     }
   ]
 }
