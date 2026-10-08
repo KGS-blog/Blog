@@ -32,6 +32,15 @@ gtag('config', 'G-QEG849B3YY');
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>if(new URLSearchParams(location.search).get('embed')==='1')document.documentElement.classList.add('calculator-embed');</script>
+<style>
+html.calculator-embed body{margin:0!important;background:#21170f!important}
+html.calculator-embed body>*:not(#kalkulator-desc):not(#panduan-kalkulator):not(#guide-popup):not(#kalkulator-kopi):not(#grade-origin-tools):not([aria-labelledby="metode-kalkulator"]){display:none!important}
+html.calculator-embed #kalkulator-desc,html.calculator-embed #panduan-kalkulator,html.calculator-embed #kalkulator-kopi,html.calculator-embed #grade-origin-tools,html.calculator-embed [aria-labelledby="metode-kalkulator"]{display:block!important}
+html.calculator-embed #kalkulator-desc{padding-top:18px!important}
+html.calculator-embed #grade-origin-tools{padding-top:36px!important;padding-bottom:36px!important}
+html.calculator-embed .max-w-7xl{max-width:100%!important}
+</style>
 <title>FOB Coffee Price Calculator for Indonesia | Q.co</title>
 
 <!-- SEO & Social Meta -->
@@ -5295,6 +5304,13 @@ function showShareToast(msg) {
     } else {
         alert(msg);
     }
+}
+</script>
+<script>
+if(document.documentElement.classList.contains('calculator-embed')){
+  const sendCalculatorHeight=()=>parent.postMessage({type:'kk-calculator-resize',height:document.documentElement.scrollHeight},'*');
+  addEventListener('load',sendCalculatorHeight);addEventListener('resize',sendCalculatorHeight);
+  new ResizeObserver(sendCalculatorHeight).observe(document.documentElement);
 }
 </script>
 </body>
