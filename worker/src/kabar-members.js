@@ -474,6 +474,24 @@ async function adminMevoReports(request, env) {
   return response(request, { reports: (rows.results || []).map(row => ({ ...row, pdf_filename: filenames.get(mevoReportKey(row.slug)) || "", report: JSON.parse(row.report_json) })) });
 }
 
+async function adminMembers(request, env) {
+  if (!env.DB) return response(request, { error: "Penyimpanan anggota belum dikonfigurasi." }, 503);
+  if (!await adminSession(request, env)) return response(request, { error: "Sesi admin diperlukan." }, 401);
+  const count = await env.DB.prepare("SELECT COUNT(*) AS total FROM members").first();
+  const rows = await env.DB.prepare(`SELECT m.display_name, m.email, m.member_role, m.role_other,
+      m.newsletter_opt_in, m.status AS account_status, m.created_at, m.profile_completed_at,
+      ms.status AS membership_status, ms.access_source, ms.starts_at
+    FROM members m LEFT JOIN memberships ms ON ms.member_id = m.id
+    ORDER BY m.created_at DESC LIMIT 500`).all();
+  const members = (rows.results || []).map(row => ({
+    ...row,
+    newsletter_opt_in: Boolean(row.newsletter_opt_in),
+    profile_complete: Boolean(row.profile_completed_at),
+    is_member: row.membership_status === "active"
+  }));
+  return response(request, { members, total: Number(count?.total || 0), returned: members.length, truncated: Number(count?.total || 0) > members.length });
+}
+
 const MEVO_TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
 const MAX_MEVO_TRANSLATION_CHARS = 100000;
 const MEVO_LANGUAGE_WORDS = {
@@ -727,6 +745,7 @@ export async function handleKabarMemberRequest(request, env, url) {
   const memberMevoMatch = path.match(/^\/api\/member\/mevo-reports\/([a-z0-9-]+)$/);
   if (memberMevoMatch && request.method === "GET") return memberMevoReports(request, env, memberMevoMatch[1]);
   if (path === "/api/admin/mevo-reports" && request.method === "GET") return adminMevoReports(request, env);
+  if (path === "/api/admin/members" && request.method === "GET") return adminMembers(request, env);
   if (path === "/api/admin/mevo-reports" && request.method === "POST") return saveAdminMevoReport(request, env);
   const adminMevoMatch = path.match(/^\/api\/admin\/mevo-reports\/([a-f0-9-]+)$/);
   if (adminMevoMatch && request.method === "POST") return saveAdminMevoReport(request, env, adminMevoMatch[1]);

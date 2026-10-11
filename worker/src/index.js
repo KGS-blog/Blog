@@ -383,10 +383,24 @@ export default {
       const clusterId = String(body.cluster_id || "");
       const articleDecision = Boolean(articleUrl);
       const irrelevantDecision = articleDecision && decision === "irrelevant";
+      const editorReason = String(body.reason || "").trim().slice(0, 500);
+      const editorReasonType = String(body.reason_type || "").trim().slice(0, 60);
+      const incomingModel = body.model_suggestion && typeof body.model_suggestion === "object" ? body.model_suggestion : {};
+      const modelSuggestion = {
+        suggested_cluster_id: String(incomingModel.suggested_cluster_id || "").slice(0, 80),
+        thematic_statement: String(incomingModel.thematic_statement || "").slice(0, 500),
+        reason: String(incomingModel.reason || "").slice(0, 500),
+        evidence: String(incomingModel.evidence || "").slice(0, 300),
+        method: String(incomingModel.method || "thematic_context_v1").slice(0, 60)
+      };
       if (articleDecision) {
         let parsed;
         try { parsed = new URL(articleUrl); } catch (_) { return json({ error: "URL berita tidak valid." }, 400, {}, request); }
         if (!/^https?:$/.test(parsed.protocol) || (!irrelevantDecision && !clusterId)) return json({ error: "Pilih klaster atau tandai artikel tidak relevan." }, 400, {}, request);
+        if (editorReason.length < 15 || !editorReasonType) return json({ error: "Pilih jenis alasan dan tulis alasan editor minimal 15 karakter." }, 400, {}, request);
+        if (irrelevantDecision && !["coffee_incidental", "other"].includes(editorReasonType)) return json({ error: "Pilih alasan yang sesuai untuk keputusan tidak relevan." }, 400, {}, request);
+        if (!irrelevantDecision && clusterId === "lainnya" && !["no_cluster_fit", "insufficient_context", "title_body_mismatch", "other"].includes(editorReasonType)) return json({ error: "Pilih alasan yang sesuai untuk tetap di Lainnya." }, 400, {}, request);
+        if (!irrelevantDecision && clusterId !== "lainnya" && !["cluster_scope_match", "title_body_mismatch", "other"].includes(editorReasonType)) return json({ error: "Pilih alasan yang sesuai untuk klaster terpilih." }, 400, {}, request);
       } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(candidateId) || !["accepted", "rejected"].includes(decision)) {
         return json({ error: "Keputusan kandidat klaster tidak valid." }, 400, {}, request);
       }
@@ -406,7 +420,7 @@ export default {
         if (!validDecisionDocument(document)) return json({ error: "Format keputusan klaster tidak valid." }, 502, {}, request);
         if (articleDecision) {
           const overrides = Array.isArray(document.overrides) ? document.overrides : [];
-          document.overrides = [...overrides.filter(item => String(item.url || item.tautan || "") !== articleUrl), { url: articleUrl, cluster_id: irrelevantDecision ? "tidak-relevan" : clusterId, ...(irrelevantDecision ? { decision: "irrelevant", reason: String(body.reason || "Ditandai tidak relevan oleh editor.").slice(0, 500) } : {}), decided_at: new Date().toISOString() }];
+          document.overrides = [...overrides.filter(item => String(item.url || item.tautan || "") !== articleUrl), { url: articleUrl, cluster_id: irrelevantDecision ? "tidak-relevan" : clusterId, decision: irrelevantDecision ? "irrelevant" : "classified", reason: editorReason, reason_type: editorReasonType, model_suggestion: modelSuggestion, decided_at: new Date().toISOString() }];
         } else {
           document.accepted_candidate_ids = document.accepted_candidate_ids.filter(id => id !== candidateId);
           document.rejected_candidate_ids = document.rejected_candidate_ids.filter(id => id !== candidateId);

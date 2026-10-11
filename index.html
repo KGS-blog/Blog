@@ -1215,6 +1215,7 @@ window.__qcoAnLang = function (lang) {
     <div onclick="showDashboardSection('fieldnotes')" id="nav-fieldnotes" class="sidebar-item"><i class="fas fa-coffee w-5"></i><span>Kiriman Kabar Kopi</span></div>
     <div onclick="showDashboardSection('clusters'); loadClusterReview()" id="nav-clusters" class="sidebar-item"><i class="fas fa-layer-group w-5"></i><span>Tinjau Klaster Kopi</span></div>
     <div onclick="showDashboardSection('mevoreports')" id="nav-mevoreports" class="sidebar-item"><i class="fas fa-chart-line w-5"></i><span>Report by MEVO</span></div>
+    <div onclick="showDashboardSection('members')" id="nav-members" class="sidebar-item"><i class="fas fa-users w-5"></i><span>Anggota</span></div>
     <div onclick="showDashboardSection('priceimports')" id="nav-priceimports" class="sidebar-item"><i class="fas fa-file-upload w-5"></i><span>Harga kopi · OCR</span></div>
 
     <div onclick="showDashboardSection('categories')" id="nav-categories" class="sidebar-item"><i class="fas fa-tags w-5"></i><span>Kategori</span></div>
@@ -1325,13 +1326,14 @@ window.__qcoAnLang = function (lang) {
         <div id="field-moderation-list" class="space-y-4"><div class="content-card">Memuat antrean…</div></div>
     </div>
     <div id="section-clusters" class="dashboard-section hidden">
-        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Tinjau klaster Kabar Kopi</h3><p class="text-sm text-coffee-500 mt-1">Artikel yang belum cocok dengan yakin ditampilkan satu per satu di Lainnya. Baca konteks dan sumber asli, pilih klaster, lalu tetapkan keputusan editor. Perubahan masuk ke feed pada pemrosesan berikutnya.</p></div><button type="button" class="btn-secondary" onclick="loadClusterReview()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Tinjau klaster Kabar Kopi</h3><p class="text-sm text-coffee-500 mt-1">Artikel yang belum cocok dengan yakin ditampilkan satu per satu di Lainnya. Baca konteks dan sumber asli, nilai saran model, lalu catat alasan keputusan editor agar menjadi referensi pada peninjauan berikutnya.</p></div><button type="button" class="btn-secondary" onclick="loadClusterReview()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <details class="content-card mb-4"><summary class="cursor-pointer font-semibold text-coffee-800">Cara model menilai artikel</summary><ol class="list-decimal pl-5 mt-3 space-y-1 text-sm text-coffee-700"><li>Membaca isi yang berhasil diambil dari sumber, bukan hanya judul.</li><li>Menulis parafrasa tema utama, lalu membandingkannya dengan batas makna setiap klaster.</li><li>Memeriksa apakah judul sejalan dengan isi dan apakah bukti benar-benar ditemukan dalam konteks artikel.</li><li>Memberi saran klaster atau menahan artikel di Lainnya. Saran ini belum menjadi keputusan editor dan tidak ada voting dengan model lama.</li><li>Hanya keputusan eksplisit editor yang menjadi referensi; setelah terkumpul minimal 20 referensi berkonteks lengkap, maksimal dua contoh editorial terdekat ikut dikirim dalam prompt. Ini pembelajaran melalui contoh kontekstual, bukan pelatihan ulang atau memori permanen model; contoh bukan aturan otomatis.</li></ol></details>
         <div id="cluster-review-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
         <div id="cluster-review-list" class="space-y-4"><div class="content-card">Pilih muat ulang untuk mengambil kandidat.</div></div>
     </div>
     <div id="section-mevoreports" class="dashboard-section hidden">
         <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Report by MEVO</h3><p class="text-sm text-coffee-500 mt-1">Editorial MEVO tampil sebagai bacaan publik. Full report dwibahasa tersedia sebagai PDF untuk anggota.</p></div><button type="button" class="btn-secondary" onclick="loadMevoReports()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
-        <div id="mevo-report-action-status" class="text-sm text-coffee-700 mb-3" role="status" aria-live="polite"></div>
+        <div id="mevo-report-action-status" class="text-sm text-coffee-700 mb-3" role="status" aria-live="polite" aria-atomic="true" style="display:none;padding:12px 14px;border:1px solid #d8cabb;border-radius:10px;background:#fff;line-height:1.5"></div>
         <div id="mevo-report-status" class="text-sm text-coffee-500 mb-4" aria-live="polite"></div>
         <form id="mevo-report-form" class="content-card space-y-3 mb-6">
             <input id="mevo-report-id" type="hidden">
@@ -1345,6 +1347,12 @@ window.__qcoAnLang = function (lang) {
             <div class="flex flex-wrap gap-2"><button type="submit" class="btn-primary">Simpan sebagai draft</button><button type="button" class="btn-secondary" onclick="publishMevoReport()">Terbitkan dalam ID + EN</button><button type="button" class="btn-secondary" onclick="resetMevoReportForm()">Bersihkan</button></div>
         </form>
         <div id="mevo-report-list" class="space-y-4"><div class="content-card">Memuat report…</div></div>
+    </div>
+    <div id="section-members" class="dashboard-section hidden">
+        <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Pembaca anggota</h3><p class="text-sm text-coffee-500 mt-1">Daftar ini hanya tersedia untuk admin. Gunakan data kontak sesuai pilihan privasi anggota.</p></div><button type="button" class="btn-secondary" onclick="loadAdminMembers()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
+        <div id="admin-members-status" class="text-sm text-coffee-600 mb-4" role="status" aria-live="polite">Memuat daftar anggota…</div>
+        <label class="block text-sm text-coffee-700 mb-4">Cari nama, email, atau peran<input id="admin-members-search" type="search" class="w-full md:max-w-xl px-3 py-2 border border-coffee-200 rounded-lg mt-1" placeholder="Ketik untuk menyaring daftar"></label>
+        <div id="admin-members-list" class="content-card overflow-x-auto"><p class="text-coffee-500">Memuat data anggota…</p></div>
     </div>
     <div id="section-priceimports" class="dashboard-section hidden">
         <div class="flex items-center justify-between gap-4 mb-6"><div><h3 class="font-serif text-xl font-bold text-coffee-900">Unggah daftar harga kopi</h3><p class="text-sm text-coffee-500 mt-1">PDF, JPG, PNG, atau WEBP · OCR membuat saran kolom, admin memeriksa lalu menyetujui tiap dokumen.</p></div><button type="button" class="btn-secondary" onclick="loadPriceListImports()"><i class="fas fa-sync-alt mr-2"></i>Muat ulang</button></div>
@@ -3123,7 +3131,12 @@ async function loadClusterReview() {
             const relation = !review ? "Belum ada pemeriksaan judul–isi" : review.title_context_match === "match" ? "Judul dan isi sejalan" : review.title_context_match === "mismatch" ? "Judul dan isi tampak tidak selaras" : "Kecocokan judul–isi belum pasti";
             const relevance = !review ? "Belum ada saran relevansi AI" : review.relevance === "irrelevant" ? "Saran AI: kemungkinan tidak relevan dengan industri kopi" : review.relevance === "relevant" ? "Saran AI: isi berkaitan dengan industri kopi" : "Saran AI: relevansi belum pasti";
             correlation.textContent = relation + " · " + relevance + (review?.reason ? ". " + review.reason : "");
+            if (review?.thematic_statement) { const theme = document.createElement("p"); theme.className = "mt-2 font-medium text-coffee-800"; theme.textContent = "Tema yang dibaca mesin: " + review.thematic_statement; correlation.append(theme); }
+            if (review?.suggested_cluster_id) { const suggested = clusterChoices.find(choice => choice[0] === review.suggested_cluster_id); const target = document.createElement("p"); target.className = "mt-1"; target.textContent = "Saran mesin: " + (suggested?.[1] || review.suggested_cluster_id); correlation.append(target); }
+            if (review?.method_summary) { const method = document.createElement("p"); method.className = "mt-1 text-xs text-coffee-500"; method.textContent = "Metode: " + review.method_summary; correlation.append(method); }
             if (review?.evidence) { const proof = document.createElement("p"); proof.className = "text-xs text-coffee-500 mt-1"; proof.textContent = "Dasar pemeriksaan: “" + review.evidence + "”"; correlation.append(proof); }
+            const examples = review?.historical_reference?.examples || [];
+            if (examples.length) { const refs = document.createElement("div"); refs.className = "mt-2 border-t border-coffee-200 pt-2 text-xs text-coffee-600"; const heading = document.createElement("strong"); heading.textContent = "Contoh keputusan editor terdekat dari " + (review.historical_reference?.references || "") + " referensi (maksimal 2 ditampilkan; bukan aturan):"; refs.append(heading); for (const example of examples.slice(0, 2)) { const line = document.createElement("p"); line.className = "mt-1"; line.textContent = (example.title ? "“" + example.title + "” — " : "") + (example.reason || (example.reason_type === "no_cluster_fit" ? "Editor mempertahankan artikel di Lainnya karena belum ada cluster yang tepat." : example.reason_type === "coffee_incidental" ? "Editor menilai kopi hanya disebut sepintas." : "artikel ini pernah diputuskan sebagai " + review.suggested_cluster_id)); refs.append(line); } correlation.append(refs); }
             const sourceLink = document.createElement("a"); sourceLink.href = item.url; sourceLink.target = "_blank"; sourceLink.rel = "noopener noreferrer"; sourceLink.className = "inline-block mt-2 underline text-sm"; sourceLink.textContent = "Buka sumber asli";
             const controls = document.createElement("div"); controls.className = "flex flex-wrap items-center gap-2 mt-4";
             const select = document.createElement("select"); select.className = "border border-coffee-300 rounded px-3 py-2"; select.dataset.articleCluster = item.url;
@@ -3131,7 +3144,12 @@ async function loadClusterReview() {
             for (const [id, name] of clusterChoices) { const option = document.createElement("option"); option.value = id; option.textContent = name; select.append(option); }
             const approve = document.createElement("button"); approve.type = "button"; approve.className = "btn-primary"; approve.textContent = "Tetapkan klaster"; approve.dataset.articleUrl = item.url;
             const irrelevant = document.createElement("button"); irrelevant.type = "button"; irrelevant.className = "btn-secondary text-red-700"; irrelevant.textContent = "Tandai tidak relevan"; irrelevant.dataset.irrelevantUrl = item.url;
-            controls.append(select, approve, irrelevant); card.append(label, title, meta, contextLabel, excerpt, correlation, sourceLink, controls); list.append(card);
+            const modelSuggestion = { suggested_cluster_id: review?.suggested_cluster_id || "", thematic_statement: review?.thematic_statement || "", reason: review?.reason || "", evidence: review?.evidence || "", method: review?.method || "thematic_context_v1" };
+            approve.dataset.modelSuggestion = irrelevant.dataset.modelSuggestion = JSON.stringify(modelSuggestion);
+            const reasonType = document.createElement("select"); reasonType.className = "border border-coffee-300 rounded px-3 py-2"; reasonType.dataset.articleReasonType = item.url;
+            for (const [value, text] of [["", "Pilih alasan keputusan"], ["cluster_scope_match", "Isi pokok sesuai cakupan klaster"], ["no_cluster_fit", "Belum ada klaster yang tepat; tetap di Lainnya"], ["insufficient_context", "Konteks/bukti belum cukup"], ["coffee_incidental", "Kopi hanya disebut sepintas; tidak relevan"], ["title_body_mismatch", "Judul dan isi tidak sejalan"], ["other", "Alasan lain"]]) { const option = document.createElement("option"); option.value = value; option.textContent = text; reasonType.append(option); }
+            const reason = document.createElement("textarea"); reason.className = "w-full mt-2 border border-coffee-300 rounded px-3 py-2 text-sm"; reason.rows = 2; reason.maxLength = 500; reason.placeholder = "Jelaskan singkat alasan editor (minimal 15 karakter). Alasan ini dipakai sebagai referensi kontekstual berikutnya."; reason.dataset.articleReason = item.url;
+            controls.append(select, reasonType, approve, irrelevant); card.append(label, title, meta, contextLabel, excerpt, correlation, sourceLink, controls, reason); list.append(card);
         }
         for (const item of candidates) {
             const card = document.createElement("article"); card.className = "content-card";
@@ -3165,11 +3183,16 @@ document.getElementById("cluster-review-list")?.addEventListener("click", async 
     const irrelevantButton = event.target.closest("button[data-irrelevant-url]");
     if (irrelevantButton && adminSessionActive) {
         const url = irrelevantButton.dataset.irrelevantUrl;
+        const reason = [...document.querySelectorAll("textarea[data-article-reason]")].find(item => item.dataset.articleReason === url)?.value.trim() || "";
+        const reasonType = [...document.querySelectorAll("select[data-article-reason-type]")].find(item => item.dataset.articleReasonType === url)?.value || "";
+        if (reason.length < 15 || !reasonType) { showToast("Pilih alasan dan jelaskan keputusan minimal 15 karakter.", "error"); return; }
+        if (reasonType !== "coffee_incidental" && reasonType !== "other") { showToast("Untuk penolakan relevansi, pilih alasan bahwa kopi hanya disebut sepintas atau alasan lain.", "error"); return; }
+        let modelSuggestion = {}; try { modelSuggestion = JSON.parse(irrelevantButton.dataset.modelSuggestion || "{}"); } catch (_) {}
         if (!window.confirm("Tandai artikel ini tidak relevan? Artikel tidak akan masuk klaster maupun feed publik setelah pemrosesan berikutnya.")) return;
         irrelevantButton.disabled = true;
         document.getElementById("cluster-review-status").textContent = "Menyimpan keputusan relevansi editor…";
         try {
-            const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-decisions", { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ article_url: url, decision: "irrelevant", reason: "Editor memastikan penyebutan kopi bukan pokok berita." }) }, 10000);
+            const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-decisions", { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ article_url: url, decision: "irrelevant", reason, reason_type: reasonType, model_suggestion: modelSuggestion }) }, 10000);
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error || "Keputusan relevansi gagal disimpan.");
             irrelevantButton.closest("article")?.remove();
@@ -3184,10 +3207,16 @@ document.getElementById("cluster-review-list")?.addEventListener("click", async 
         const select = [...document.querySelectorAll("select[data-article-cluster]")].find(item => item.dataset.articleCluster === url);
         const clusterId = select?.value || "";
         if (!clusterId) { showToast("Pilih klaster tujuan terlebih dahulu.", "error"); return; }
+        const reason = [...document.querySelectorAll("textarea[data-article-reason]")].find(item => item.dataset.articleReason === url)?.value.trim() || "";
+        const reasonType = [...document.querySelectorAll("select[data-article-reason-type]")].find(item => item.dataset.articleReasonType === url)?.value || "";
+        if (reason.length < 15 || !reasonType) { showToast("Pilih alasan dan jelaskan keputusan minimal 15 karakter.", "error"); return; }
+        if (clusterId === "lainnya" && !["no_cluster_fit", "insufficient_context", "title_body_mismatch", "other"].includes(reasonType)) { showToast("Untuk keputusan tetap di Lainnya, pilih alasan bahwa belum ada cluster yang cocok, konteks kurang, judul dan isi berbeda, atau alasan lain.", "error"); return; }
+        if (clusterId !== "lainnya" && !["cluster_scope_match", "title_body_mismatch", "other"].includes(reasonType)) { showToast("Untuk memasukkan artikel ke cluster, pilih alasan kesesuaian cakupan atau alasan lain.", "error"); return; }
+        let modelSuggestion = {}; try { modelSuggestion = JSON.parse(articleButton.dataset.modelSuggestion || "{}"); } catch (_) {}
         articleButton.disabled = true;
         document.getElementById("cluster-review-status").textContent = "Menyimpan klasifikasi editor…";
         try {
-            const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-decisions", { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ article_url: url, cluster_id: clusterId }) }, 10000);
+            const response = await fetchWithTimeout(BLOG_SYNC_API + "/cluster-decisions", { method: "PUT", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ article_url: url, cluster_id: clusterId, reason, reason_type: reasonType, model_suggestion: modelSuggestion }) }, 10000);
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error || "Klasifikasi artikel gagal disimpan.");
             articleButton.closest("article")?.remove();
@@ -3216,6 +3245,22 @@ function resetMevoReportForm() {
     document.getElementById("mevo-report-form").reset();
     document.getElementById("mevo-report-id").value = "";
     updateMevoReportSlug();
+}
+function setMevoReportActionStatus(message, state = "info") {
+    const note = document.getElementById("mevo-report-action-status");
+    if (!note) return;
+    note.textContent = message;
+    note.style.display = message ? "block" : "none";
+    const colors = {
+        info: ["#62452f", "#e5d7c8", "#fbf7f1"],
+        pending: ["#62452f", "#e5d7c8", "#fbf7f1"],
+        success: ["#145c3a", "#b7d8c3", "#f0faf3"],
+        error: ["#8a2f24", "#e5b8b2", "#fff5f3"],
+        warning: ["#74500b", "#ead8a9", "#fffaf0"]
+    }[state] || ["#62452f", "#e5d7c8", "#fbf7f1"];
+    note.style.color = colors[0];
+    note.style.borderColor = colors[1];
+    note.style.backgroundColor = colors[2];
 }
 function updateMevoReportSlug() {
     const title = document.getElementById("mevo-report-title").value;
@@ -3294,7 +3339,6 @@ function mevoReportPayload(status) {
     };
 }
 async function saveMevoReport(status) {
-    const note = document.getElementById("mevo-report-action-status");
     const submitButton = document.querySelector('#mevo-report-form button[type="submit"]');
     const publishButton = document.querySelector('#mevo-report-form button[onclick="publishMevoReport()"]');
     if (submitButton) submitButton.disabled = true;
@@ -3302,38 +3346,48 @@ async function saveMevoReport(status) {
     const pdfInput = document.getElementById("mevo-report-pdf");
     const pdfFile = pdfInput?.files?.[0] || null;
     const saveAsDraftFirst = status === "published" && Boolean(pdfFile);
-    note.textContent = status === "published" ? (pdfFile ? "Menyimpan draft, mengunggah PDF, lalu menerbitkan versi ID + EN…" : "Menerbitkan report dan menyiapkan versi ID + EN…") : "Menyimpan report sebagai draft…";
+    setMevoReportActionStatus(status === "published" ? (pdfFile ? "Menyimpan draft, mengunggah PDF, lalu menerbitkan versi ID + EN. Status akan dikonfirmasi di sini." : "Mengirim perubahan ke server dan menyiapkan versi ID + EN…") : "Mengirim draft ke server…", "pending");
     try {
         const item = mevoReportPayload(saveAsDraftFirst ? "draft" : status);
         const path = item.id ? "/admin/mevo-reports/" + encodeURIComponent(item.id) : "/admin/mevo-reports";
-        let response = await fetch(BLOG_SYNC_API + path, {
+        let response = await fetchWithTimeout(BLOG_SYNC_API + path, {
             method: "POST", credentials: "include", cache: "no-store",
             headers: { "Content-Type": "application/json" }, body: JSON.stringify(item)
-        });
+        }, 90000);
         let data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || "Report gagal disimpan.");
         const reportId = data.id || item.id;
         if (reportId) document.getElementById("mevo-report-id").value = reportId;
         if (pdfFile) {
-            note.textContent = "Draft tersimpan. Mengunggah PDF full report…";
+            setMevoReportActionStatus("Draft tersimpan di server. Mengunggah PDF full report…", "pending");
             const pdfForm = new FormData(); pdfForm.append("pdf", pdfFile);
-            const pdfResponse = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(reportId) + "/pdf", { method: "POST", credentials: "include", cache: "no-store", body: pdfForm });
+            const pdfResponse = await fetchWithTimeout(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(reportId) + "/pdf", { method: "POST", credentials: "include", cache: "no-store", body: pdfForm }, 90000);
             const pdfData = await pdfResponse.json().catch(() => ({}));
             if (!pdfResponse.ok) throw new Error(`Draft tersimpan, tetapi PDF gagal diunggah: ${pdfData.error || "coba unggah ulang."}`);
             if (saveAsDraftFirst) {
-                note.textContent = "PDF tersimpan. Menerbitkan report dan menyiapkan versi ID + EN…";
-                response = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(reportId), { method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...item, status: "published" }) });
+                setMevoReportActionStatus("PDF tersimpan di server. Menerbitkan report dan menyiapkan versi ID + EN…", "pending");
+                response = await fetchWithTimeout(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(reportId), { method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...item, status: "published" }) }, 90000);
                 data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(`PDF tersimpan sebagai draft, tetapi report belum terbit: ${data.error || "periksa kembali report."}`);
             }
         }
-        note.textContent = status === "published" ? (data.translation_preserved
+        const successMessage = status === "published" ? (data.translation_preserved
             ? `Report diterbitkan. Versi ${data.translated_language?.toUpperCase() || "bahasa pasangan"} yang sudah disunting editor tetap dipakai.`
             : `Report diterbitkan dalam ${item.language.toUpperCase()} + ${data.translated_language?.toUpperCase() || "bahasa pasangan"}. Terjemahan otomatis perlu diperiksa editor.`)
             : (pdfFile ? "Draft dan PDF dwibahasa tersimpan." : "Report tersimpan sebagai draft.");
+        const savedAt = new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date());
+        setMevoReportActionStatus(`${successMessage} Server mengonfirmasi penyimpanan pukul ${savedAt}. Beranda HTML akan ikut diperbarui oleh workflow harian.`, "success");
         resetMevoReportForm();
-        await loadMevoReports();
-    } catch (error) { note.textContent = `Gagal: ${error.message}`; }
+        const savedReports = await loadMevoReports();
+        const savedRow = savedReports?.find(report => report.id === reportId);
+        if (savedRow && savedRow.teaser === item.teaser && savedRow.status === status) {
+            setMevoReportActionStatus(`${successMessage} Terverifikasi dengan membaca ulang data dari server. Beranda HTML akan ikut diperbarui oleh workflow harian.`, "success");
+        } else if (savedReports) {
+            setMevoReportActionStatus(`${successMessage} Namun pemeriksaan ulang daftar belum menemukan cuplikan dan status yang sama. Muat ulang daftar Report untuk memastikan.`, "warning");
+        } else {
+            setMevoReportActionStatus(`${successMessage} Server menerima perubahan, tetapi daftar admin belum berhasil dibaca ulang. Tekan “Muat ulang” untuk verifikasi.`, "warning");
+        }
+    } catch (error) { setMevoReportActionStatus(`Gagal menyimpan atau menerbitkan: ${error.message}. Periksa daftar Report sebelum mengulang agar tidak membuat perubahan ganda.`, "error"); }
     finally { if (submitButton) submitButton.disabled = false; if (publishButton) publishButton.disabled = false; }
 }
 function publishMevoReport() { saveMevoReport("published"); }
@@ -3376,47 +3430,91 @@ async function loadMevoReports() {
                 const translate = document.createElement("button"); translate.type = "button"; translate.className = "btn-secondary"; translate.textContent = "Buat / perbarui versi bahasa";
                 translate.addEventListener("click", async () => {
                     translate.disabled = true;
-                    const actionStatus = document.getElementById("mevo-report-action-status");
-                    actionStatus.textContent = "Membuat versi bahasa dengan penerjemah otomatis…";
+                    setMevoReportActionStatus("Membuat versi bahasa dengan penerjemah otomatis…", "pending");
                     try {
-                        const response = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
+                        const response = await fetchWithTimeout(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
                             method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ slug: report.slug, language: report.language, title: report.title, teaser: report.teaser, report: report.report, status: "published" })
-                        });
+                        }, 90000);
                         const result = await response.json().catch(() => ({}));
                         if (!response.ok) throw new Error(result.error || "Versi bahasa gagal dibuat.");
-                        actionStatus.textContent = result.translation_preserved
+                        setMevoReportActionStatus(result.translation_preserved
                             ? `Versi ${result.translated_language.toUpperCase()} yang sudah disunting editor dipertahankan; tidak ditimpa terjemahan otomatis.`
-                            : `Kedua bahasa diterbitkan: ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}. Periksa hasil terjemahan otomatis.`;
+                            : `Kedua bahasa diterbitkan: ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}. Periksa hasil terjemahan otomatis.`, "success");
                         await loadMevoReports();
-                    } catch (error) { actionStatus.textContent = `Gagal membuat versi bahasa: ${error.message}`; translate.disabled = false; }
+                    } catch (error) { setMevoReportActionStatus(`Gagal membuat versi bahasa: ${error.message}`, "error"); translate.disabled = false; }
                 });
                 actions.append(translate);
             }
             if (report.status !== "published") {
                 const publish = document.createElement("button"); publish.type = "button"; publish.className = "btn-primary"; publish.textContent = "Terbitkan";
                 publish.addEventListener("click", async () => {
-                    const actionStatus = document.getElementById("mevo-report-action-status");
                     publish.disabled = true;
-                    actionStatus.textContent = "Menerbitkan report dan menyiapkan versi ID + EN…";
+                    setMevoReportActionStatus("Menerbitkan report dan menyiapkan versi ID + EN…", "pending");
                     try {
-                        const response = await fetch(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
+                        const response = await fetchWithTimeout(BLOG_SYNC_API + "/admin/mevo-reports/" + encodeURIComponent(report.id), {
                             method: "POST", credentials: "include", cache: "no-store", headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ slug: report.slug, language: report.language, title: report.title, teaser: report.teaser, report: report.report, status: "published" })
-                        });
+                        }, 90000);
                         const result = await response.json().catch(() => ({}));
                         if (!response.ok) throw new Error(result.error || "Report gagal diterbitkan.");
-                        actionStatus.textContent = result.translation_preserved
+                        setMevoReportActionStatus(result.translation_preserved
                             ? `Berhasil diterbitkan. Versi ${result.translated_language.toUpperCase()} yang sudah disunting editor tetap digunakan.`
-                            : `Berhasil diterbitkan dalam ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}. Periksa versi terjemahan.`;
+                            : `Berhasil diterbitkan dalam ${report.language.toUpperCase()} + ${result.translated_language.toUpperCase()}. Periksa versi terjemahan.`, "success");
                         await loadMevoReports();
-                    } catch (error) { actionStatus.textContent = `Gagal menerbitkan: ${error.message}`; publish.disabled = false; }
+                    } catch (error) { setMevoReportActionStatus(`Gagal menerbitkan: ${error.message}`, "error"); publish.disabled = false; }
                 }); actions.append(publish);
             }
             card.append(title, meta, teaser, pdfStatus, actions); list.append(card);
         });
-    } catch (error) { status.textContent = error.message; }
+        return reports;
+    } catch (error) { status.textContent = error.message; return null; }
 }
+let adminMembersCache = [];
+function renderAdminMembers() {
+    const target = document.getElementById("admin-members-list");
+    const query = (document.getElementById("admin-members-search")?.value || "").trim().toLowerCase();
+    const members = adminMembersCache.filter(member => [member.display_name, member.email, member.member_role, member.role_other]
+        .some(value => String(value || "").toLowerCase().includes(query)));
+    target.replaceChildren();
+    if (!members.length) { const empty = document.createElement("p"); empty.className = "text-coffee-500"; empty.textContent = query ? "Tidak ada anggota yang cocok dengan pencarian." : "Belum ada pembaca anggota."; target.append(empty); return; }
+    const table = document.createElement("table"); table.className = "w-full text-sm"; table.style.minWidth = "780px";
+    const headers = ["Nama & email", "Peran", "Keanggotaan", "Newsletter", "Tanggal daftar"];
+    const thead = document.createElement("thead"); thead.className = "bg-coffee-50";
+    const headerRow = document.createElement("tr");
+    for (const label of headers) { const th = document.createElement("th"); th.className = "px-4 py-3 text-left font-semibold text-coffee-700"; th.textContent = label; headerRow.append(th); }
+    thead.append(headerRow); table.append(thead);
+    const tbody = document.createElement("tbody"); tbody.className = "divide-y divide-coffee-100";
+    for (const member of members) {
+        const row = document.createElement("tr");
+        const identity = document.createElement("td"); identity.className = "px-4 py-3";
+        const name = document.createElement("div"); name.className = "font-semibold text-coffee-900"; name.textContent = member.display_name || "Tanpa nama";
+        const email = document.createElement("div"); email.className = "text-coffee-500"; email.textContent = member.email || ""; identity.append(name, email);
+        const role = document.createElement("td"); role.className = "px-4 py-3"; role.textContent = ({petani:"Petani",prosesor:"Prosesor",marketing:"Pemasaran",student:"Pelajar / mahasiswa",lainnya:"Lainnya"})[member.member_role] || (member.member_role || "Belum mengisi"); if (member.member_role === "lainnya" && member.role_other) role.textContent += ` · ${member.role_other}`;
+        const membership = document.createElement("td"); membership.className = "px-4 py-3"; membership.textContent = member.is_member ? "Anggota aktif" : member.account_status === "active" ? "Akun; profil belum lengkap" : "Akun nonaktif";
+        const newsletter = document.createElement("td"); newsletter.className = "px-4 py-3"; newsletter.textContent = member.newsletter_opt_in ? "Berlangganan" : "Tidak berlangganan";
+        const joined = document.createElement("td"); joined.className = "px-4 py-3 whitespace-nowrap"; joined.textContent = member.created_at ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(member.created_at)) : "—";
+        row.append(identity, role, membership, newsletter, joined); tbody.append(row);
+    }
+    table.append(tbody); target.append(table);
+}
+async function loadAdminMembers() {
+    const status = document.getElementById("admin-members-status");
+    const target = document.getElementById("admin-members-list");
+    if (!status || !target || !adminSessionActive) return;
+    status.textContent = "Memuat daftar anggota dari penyimpanan…";
+    try {
+        const response = await fetchWithTimeout(BLOG_SYNC_API + "/admin/members", { credentials: "include", cache: "no-store" }, 15000);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Daftar anggota belum dapat dimuat.");
+        adminMembersCache = data.members || [];
+        renderAdminMembers();
+        const active = adminMembersCache.filter(member => member.is_member).length;
+        const subscribed = adminMembersCache.filter(member => member.newsletter_opt_in).length;
+        status.textContent = `${data.total ?? adminMembersCache.length} akun · ${active} anggota aktif · ${subscribed} berlangganan newsletter${data.truncated ? ` · menampilkan ${data.returned} akun terbaru` : ""}.`;
+    } catch (error) { status.textContent = error.message; target.textContent = "Daftar anggota tidak dapat dimuat."; }
+}
+document.getElementById("admin-members-search")?.addEventListener("input", renderAdminMembers);
 document.getElementById("mevo-report-form")?.addEventListener("submit", event => { event.preventDefault(); saveMevoReport("draft"); });
 document.getElementById("mevo-report-title")?.addEventListener("input", updateMevoReportSlug);
 document.getElementById("mevo-report-language")?.addEventListener("change", updateMevoReportSlug);
@@ -3448,8 +3546,9 @@ function showDashboardSection(section) {
     if (section === "statistics") { }
     if (section === "fieldnotes") loadFieldModeration();
     if (section === "mevoreports") loadMevoReports();
+    if (section === "members") loadAdminMembers();
     if (section === "priceimports") loadPriceListImports();
-    document.getElementById("dashboard-title").textContent = ({fieldnotes:"Suara Komunitas", mevoreports:"Report by MEVO"})[section] || (window.dashboardTitles && window.dashboardTitles[section]) || "Overview";
+    document.getElementById("dashboard-title").textContent = ({fieldnotes:"Suara Komunitas", mevoreports:"Report by MEVO", members:"Anggota"})[section] || (window.dashboardTitles && window.dashboardTitles[section]) || "Overview";
     if (window.innerWidth < 768) {
         document.getElementById("dashboard-sidebar").classList.add("-translate-x-full");
     }
